@@ -43,6 +43,8 @@ const seniorCareLinks: NavLink[] = [
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [internalMedicineOpen, setInternalMedicineOpen] = useState(false);
+  const [seniorCareOpen, setSeniorCareOpen] = useState(false);
   const location = useLocation();
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + "/");
@@ -59,9 +61,11 @@ export function Header() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  // Close mobile menu on route change
+  // Close mobile menu and reset accordions on route change
   useEffect(() => {
     setMobileMenuOpen(false);
+    setInternalMedicineOpen(false);
+    setSeniorCareOpen(false);
   }, [location.pathname]);
 
   return (
@@ -261,10 +265,26 @@ export function Header() {
               </Link>
 
               <div className="space-y-1">
-                <div className="flex items-center gap-1 py-3 px-2 font-medium text-foreground">
-                  Internal Medicine <ChevronDown className="h-4 w-4" aria-hidden="true" />
-                </div>
-                <div className="pl-4 space-y-1">
+                <button
+                  onClick={() => setInternalMedicineOpen(!internalMedicineOpen)}
+                  className="flex items-center justify-between w-full py-3 px-2 font-medium text-foreground hover:bg-accent/50 rounded-md transition-colors touch-target"
+                  aria-expanded={internalMedicineOpen}
+                >
+                  <span>Internal Medicine</span>
+                  <ChevronDown
+                    className={cn(
+                      "h-4 w-4 transition-transform duration-200",
+                      internalMedicineOpen && "rotate-180"
+                    )}
+                    aria-hidden="true"
+                  />
+                </button>
+                <div
+                  className={cn(
+                    "pl-4 space-y-1 overflow-hidden transition-all duration-200",
+                    internalMedicineOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+                  )}
+                >
                   {internalMedicineLinks.map((link) => {
                     const IconComponent = link.icon;
                     return (
@@ -282,10 +302,26 @@ export function Header() {
               </div>
 
               <div className="space-y-1">
-                <div className="flex items-center gap-1 py-3 px-2 font-medium text-foreground">
-                  Senior Care <ChevronDown className="h-4 w-4" aria-hidden="true" />
-                </div>
-                <div className="pl-4 space-y-1">
+                <button
+                  onClick={() => setSeniorCareOpen(!seniorCareOpen)}
+                  className="flex items-center justify-between w-full py-3 px-2 font-medium text-foreground hover:bg-accent/50 rounded-md transition-colors touch-target"
+                  aria-expanded={seniorCareOpen}
+                >
+                  <span>Senior Care</span>
+                  <ChevronDown
+                    className={cn(
+                      "h-4 w-4 transition-transform duration-200",
+                      seniorCareOpen && "rotate-180"
+                    )}
+                    aria-hidden="true"
+                  />
+                </button>
+                <div
+                  className={cn(
+                    "pl-4 space-y-1 overflow-hidden transition-all duration-200",
+                    seniorCareOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+                  )}
+                >
                   {seniorCareLinks.map((link) => {
                     const IconComponent = link.icon;
                     return (
