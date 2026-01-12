@@ -52,15 +52,19 @@ export default function PreventionWellness() {
               ))}
             </ul>
 
-            <div className="bg-muted rounded-xl p-8 mb-8">
+            <div className="bg-secondary/10 rounded-xl p-8 mb-8">
               <h3 className="font-display text-xl font-semibold text-foreground mb-4">
                 Medicare Annual Wellness Visits
               </h3>
-              <p className="text-muted-foreground">
-                If you have Medicare, you're entitled to an annual wellness visit at no cost 
-                to you. This visit focuses on creating a personalized prevention plan, 
-                reviewing your health risks, and making sure you're up to date on recommended 
+              <p className="text-muted-foreground mb-4">
+                If you have Medicare, you're entitled to an annual wellness visit at no cost
+                to you. This visit focuses on creating a personalized prevention plan,
+                reviewing your health risks, and making sure you're up to date on recommended
                 screenings and immunizations.
+              </p>
+              <p className="text-muted-foreground font-medium">
+                We accept Medicare and all covered preventive services. Call us at 626-792-4185
+                to schedule your annual wellness visit.
               </p>
             </div>
 

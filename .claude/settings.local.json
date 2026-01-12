@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(ls -la \"c:\\\\Users\\\\HCI\\\\Desktop\\\\HCI 2026\\\\pasadena-health-hub\\\\src\\\\assets\"\" 2>&1 || echo \"Assets folder check completed \")",
+      "Bash(npm run dev:*)",
+      "Bash(timeout:*)",
+      "Bash(npx tsc:*)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(cd:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}

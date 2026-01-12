@@ -59,22 +59,30 @@ export default function RemoteMonitoring() {
               </h3>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  <strong>1. Setup:</strong> We provide you with easy-to-use monitoring devices 
+                  <strong>1. Setup:</strong> We provide you with easy-to-use monitoring devices
                   and show you how to use them.
                 </p>
                 <p>
-                  <strong>2. Daily Readings:</strong> You take your readings at home — it only 
+                  <strong>2. Daily Readings:</strong> You take your readings at home — it only
                   takes a few minutes each day.
                 </p>
                 <p>
-                  <strong>3. Continuous Monitoring:</strong> Your data is securely transmitted 
+                  <strong>3. Continuous Monitoring:</strong> Your data is securely transmitted
                   to our care team for review.
                 </p>
                 <p>
-                  <strong>4. Proactive Care:</strong> If we notice any concerning changes, 
+                  <strong>4. Proactive Care:</strong> If we notice any concerning changes,
                   we reach out to you right away.
                 </p>
               </div>
+            </div>
+
+            <div className="bg-secondary/10 rounded-xl p-6 mb-8">
+              <p className="text-muted-foreground">
+                <strong>Medicare patients:</strong> Remote Patient Monitoring may be covered
+                by Medicare for qualifying conditions. We accept Medicare and can help you
+                determine if this service is right for you. Call us at 626-792-4185 to learn more.
+              </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">

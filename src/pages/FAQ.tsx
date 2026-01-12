@@ -12,7 +12,19 @@ import { Link } from "react-router-dom";
 const faqs = [
   {
     question: "What insurance plans do you accept?",
-    answer: "We accept most major insurance plans. Please contact our office to verify that your specific plan is accepted. We're happy to work with you on payment options if needed."
+    answer: "We accept Medicare, Regal HMO, and all PPO plans. Please contact our office at 626-792-4185 to verify your specific coverage before your first visit. We're happy to answer any questions about billing and payment options."
+  },
+  {
+    question: "Will I see the same doctor each visit?",
+    answer: "Yes. Continuity of care is central to how we practice medicine. You'll see the same provider at each visit, allowing us to build a real relationship and truly understand your health over time. No rotating doctors or starting over each appointment."
+  },
+  {
+    question: "How quickly can I get an appointment?",
+    answer: "We typically offer same-week appointments for established patients. For new patients, we work to schedule you as quickly as possible. If you have an urgent concern, call us at 626-792-4185 and we'll do our best to see you promptly."
+  },
+  {
+    question: "How long has HCI Medical Group been in Pasadena?",
+    answer: "Dr. Roy H. Jackson founded HCI Medical Group in 1990. We've been serving Pasadena and the San Gabriel Valley for over 35 years, caring for multiple generations of families in our community."
   },
   {
     question: "How do I schedule an appointment?",
@@ -31,6 +43,10 @@ const faqs = [
     answer: "Our office is open Monday through Friday from 9:00 AM to 5:00 PM. We are closed on weekends and major holidays."
   },
   {
+    question: "Do you accept Medicare?",
+    answer: "Yes, we accept Medicare and provide all covered services including Annual Wellness Visits at no cost to you. Our team is experienced in helping Medicare patients navigate their benefits and get the care they need."
+  },
+  {
     question: "How do I request my medical records?",
     answer: "You can request your medical records by contacting our office. We'll provide you with the necessary forms to complete. Please allow adequate time for processing your request."
   },
@@ -41,6 +57,10 @@ const faqs = [
   {
     question: "What senior care services do you offer?",
     answer: "Our senior care services include preventive wellness screenings, chronic disease management, transition of care support (after hospitalization), and remote patient monitoring. We're dedicated to helping older adults maintain their quality of life."
+  },
+  {
+    question: "What areas do you serve?",
+    answer: "We serve patients from Pasadena, Altadena, South Pasadena, San Marino, Arcadia, and throughout the San Gabriel Valley. Our office is conveniently located at 65 N. Madison Ave. in Pasadena."
   },
   {
     question: "Is parking available at your office?",

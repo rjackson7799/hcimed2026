@@ -59,8 +59,8 @@ export default function TransitionCare() {
                 After Your Hospital Stay
               </h3>
               <p className="text-muted-foreground mb-4">
-                If you or a loved one has been hospitalized, please contact our office as 
-                soon as possible. We recommend scheduling a follow-up appointment within 
+                If you or a loved one has been hospitalized, please contact our office as
+                soon as possible. We recommend scheduling a follow-up appointment within
                 7 days of discharge to:
               </p>
               <ul className="space-y-2 text-muted-foreground">
@@ -69,6 +69,15 @@ export default function TransitionCare() {
                 <li>• Address any new symptoms or concerns</li>
                 <li>• Connect you with any additional services you may need</li>
               </ul>
+            </div>
+
+            <div className="bg-secondary/10 rounded-xl p-6 mb-8">
+              <p className="text-muted-foreground">
+                <strong>Medicare patients:</strong> Transition care services are an important
+                part of preventing hospital readmissions. We accept Medicare and work to ensure
+                you receive all covered post-discharge care. Call us at 626-792-4185 after any
+                hospital stay.
+              </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">

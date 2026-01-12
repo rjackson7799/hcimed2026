@@ -66,6 +66,18 @@ export default function ChronicCare() {
               </ul>
             </div>
 
+            <div className="bg-secondary/10 rounded-xl p-8 mb-8">
+              <h3 className="font-display text-xl font-semibold text-foreground mb-4">
+                Medicare Chronic Care Management
+              </h3>
+              <p className="text-muted-foreground">
+                We accept Medicare and participate in Medicare's Chronic Care Management program.
+                If you have two or more chronic conditions, you may qualify for additional care
+                coordination services covered by Medicare. Ask us how this program can help you
+                better manage your health.
+              </p>
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-4">
               <Button asChild size="lg" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground">
                 <Link to="/contact">Start Your Care Plan</Link>

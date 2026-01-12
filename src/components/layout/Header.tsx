@@ -1,6 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Phone, Mail, ChevronDown } from "lucide-react";
+import {
+  Menu, X, Phone, Mail, ChevronDown,
+  Stethoscope, Zap, HeartPulse, UserRound, Microscope,
+  Heart, Shield, Activity, Home, Smartphone,
+  type LucideIcon
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -13,18 +18,27 @@ import {
 import { cn } from "@/lib/utils";
 import hciLogo from "@/assets/hci-logo.png";
 
-const internalMedicineLinks = [
-  { title: "Physical Exams", href: "/internal-medicine/physical-exams", description: "Comprehensive annual wellness visits" },
-  { title: "Women's Health", href: "/internal-medicine/womens-health", description: "Preventive screenings & hormonal health" },
-  { title: "Men's Health", href: "/internal-medicine/mens-health", description: "Prostate health & cardiovascular screening" },
-  { title: "Diagnostics", href: "/internal-medicine/diagnostics", description: "In-office testing & lab services" },
+interface NavLink {
+  title: string;
+  href: string;
+  description: string;
+  icon: LucideIcon;
+}
+
+const internalMedicineLinks: NavLink[] = [
+  { title: "Physical Exams", href: "/internal-medicine/physical-exams", description: "Comprehensive annual wellness visits", icon: Stethoscope },
+  { title: "Acute Care", href: "/internal-medicine/acute-care", description: "Illness, infections & minor injuries", icon: Zap },
+  { title: "Women's Health", href: "/internal-medicine/womens-health", description: "Preventive screenings & hormonal health", icon: HeartPulse },
+  { title: "Men's Health", href: "/internal-medicine/mens-health", description: "Prostate health & cardiovascular screening", icon: UserRound },
+  { title: "Diagnostics", href: "/internal-medicine/diagnostics", description: "In-office testing & lab services", icon: Microscope },
 ];
 
-const seniorCareLinks = [
-  { title: "Prevention & Wellness", href: "/senior-care/prevention-wellness", description: "Age-appropriate screenings & vaccinations" },
-  { title: "Chronic Care Management", href: "/senior-care/chronic-care", description: "Diabetes, hypertension & heart disease" },
-  { title: "Transition of Care", href: "/senior-care/transition-care", description: "Hospital discharge support" },
-  { title: "Remote Monitoring", href: "/senior-care/remote-monitoring", description: "Telehealth & remote patient monitoring" },
+const seniorCareLinks: NavLink[] = [
+  { title: "Senior Care+ Program", href: "/senior-care-plus", description: "Our comprehensive senior care management program", icon: Heart },
+  { title: "Prevention & Wellness", href: "/senior-care/prevention-wellness", description: "Age-appropriate screenings & vaccinations", icon: Shield },
+  { title: "Chronic Care Management", href: "/senior-care/chronic-care", description: "Diabetes, hypertension & heart disease", icon: Activity },
+  { title: "Transition of Care", href: "/senior-care/transition-care", description: "Hospital discharge support", icon: Home },
+  { title: "Remote Monitoring", href: "/senior-care/remote-monitoring", description: "Telehealth & remote patient monitoring", icon: Smartphone },
 ];
 
 export function Header() {
@@ -32,6 +46,23 @@ export function Header() {
   const location = useLocation();
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + "/");
+
+  // Close mobile menu on Escape key
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape' && mobileMenuOpen) {
+      setMobileMenuOpen(false);
+    }
+  }, [mobileMenuOpen]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
@@ -57,7 +88,7 @@ export function Header() {
       {/* Main navigation */}
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          <img src={hciLogo} alt="HCI Medical Group" className="h-12 w-auto" />
+          <img src={hciLogo} alt="HCI Medical Group" className="h-10 w-auto" />
         </Link>
 
         {/* Desktop Navigation */}
@@ -90,47 +121,63 @@ export function Header() {
                 Internal Medicine
               </NavigationMenuTrigger>
               <NavigationMenuContent>
-                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
-                  {internalMedicineLinks.map((link) => (
-                    <li key={link.href}>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          to={link.href}
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        >
-                          <div className="text-sm font-medium leading-none">{link.title}</div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            {link.description}
-                          </p>
-                        </Link>
-                      </NavigationMenuLink>
-                    </li>
-                  ))}
+                <ul className="grid w-[400px] gap-2 p-4 md:w-[540px] md:grid-cols-2">
+                  {internalMedicineLinks.map((link) => {
+                    const IconComponent = link.icon;
+                    return (
+                      <li key={link.href}>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            to={link.href}
+                            className="flex items-start gap-3 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground group"
+                          >
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                              <IconComponent className="h-5 w-5 text-primary" aria-hidden="true" />
+                            </div>
+                            <div className="pt-0.5">
+                              <div className="text-sm font-medium leading-none mb-1.5">{link.title}</div>
+                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                {link.description}
+                              </p>
+                            </div>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    );
+                  })}
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
 
             <NavigationMenuItem>
-              <NavigationMenuTrigger className={cn(isActive("/senior-care") && "bg-accent text-accent-foreground")}>
+              <NavigationMenuTrigger className={cn((isActive("/senior-care") || isActive("/senior-care-plus")) && "bg-accent text-accent-foreground")}>
                 Senior Care
               </NavigationMenuTrigger>
               <NavigationMenuContent>
-                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
-                  {seniorCareLinks.map((link) => (
-                    <li key={link.href}>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          to={link.href}
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        >
-                          <div className="text-sm font-medium leading-none">{link.title}</div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            {link.description}
-                          </p>
-                        </Link>
-                      </NavigationMenuLink>
-                    </li>
-                  ))}
+                <ul className="grid w-[400px] gap-2 p-4 md:w-[540px] md:grid-cols-2">
+                  {seniorCareLinks.map((link) => {
+                    const IconComponent = link.icon;
+                    return (
+                      <li key={link.href}>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            to={link.href}
+                            className="flex items-start gap-3 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground group"
+                          >
+                            <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-secondary/20 transition-colors">
+                              <IconComponent className="h-5 w-5 text-secondary" aria-hidden="true" />
+                            </div>
+                            <div className="pt-0.5">
+                              <div className="text-sm font-medium leading-none mb-1.5">{link.title}</div>
+                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                {link.description}
+                              </p>
+                            </div>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    );
+                  })}
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
@@ -159,9 +206,15 @@ export function Header() {
           </NavigationMenuList>
         </NavigationMenu>
 
-        <div className="hidden lg:flex">
+        <div className="hidden lg:flex items-center gap-3">
+          <Button asChild variant="outline" className="border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground">
+            <a href="tel:626-792-4185">
+              <Phone className="h-4 w-4 mr-2" />
+              Call Now
+            </a>
+          </Button>
           <Button asChild className="bg-secondary hover:bg-secondary/90 text-secondary-foreground">
-            <Link to="/contact">Schedule Appointment</Link>
+            <Link to="/appointments">Request Appointment</Link>
           </Button>
         </div>
 
@@ -169,71 +222,130 @@ export function Header() {
         <Button
           variant="ghost"
           size="icon"
-          className="lg:hidden"
+          className="lg:hidden touch-target"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="mobile-navigation"
+          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
         >
-          {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          {mobileMenuOpen ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
         </Button>
       </div>
 
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-border">
-          <nav className="container py-4 space-y-4">
-            <Link to="/" className="block py-2 text-foreground hover:text-primary" onClick={() => setMobileMenuOpen(false)}>
-              Home
-            </Link>
-            <Link to="/our-story" className="block py-2 text-foreground hover:text-primary" onClick={() => setMobileMenuOpen(false)}>
-              Our Story
-            </Link>
-            
-            <div className="space-y-2">
-              <div className="flex items-center gap-1 py-2 font-medium text-foreground">
-                Internal Medicine <ChevronDown className="h-4 w-4" />
+        <>
+          {/* Backdrop overlay */}
+          <div
+            className="lg:hidden fixed inset-0 top-[104px] bg-background/80 backdrop-blur-sm z-40"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+          <nav
+            id="mobile-navigation"
+            className="lg:hidden border-t border-border bg-background relative z-50"
+            aria-label="Mobile navigation"
+          >
+            <div className="container py-4 space-y-1">
+              <Link
+                to="/"
+                className="block py-3 px-2 text-foreground hover:text-primary hover:bg-accent/50 rounded-md transition-colors touch-target"
+              >
+                Home
+              </Link>
+              <Link
+                to="/our-story"
+                className="block py-3 px-2 text-foreground hover:text-primary hover:bg-accent/50 rounded-md transition-colors touch-target"
+              >
+                Our Story
+              </Link>
+
+              <div className="space-y-1">
+                <div className="flex items-center gap-1 py-3 px-2 font-medium text-foreground">
+                  Internal Medicine <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                </div>
+                <div className="pl-4 space-y-1">
+                  {internalMedicineLinks.map((link) => {
+                    const IconComponent = link.icon;
+                    return (
+                      <Link
+                        key={link.href}
+                        to={link.href}
+                        className="flex items-center gap-3 py-3 px-2 text-muted-foreground hover:text-primary hover:bg-accent/50 rounded-md transition-colors touch-target"
+                      >
+                        <IconComponent className="h-5 w-5 text-primary/70" aria-hidden="true" />
+                        <span>{link.title}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
-              <div className="pl-4 space-y-2">
-                {internalMedicineLinks.map((link) => (
-                  <Link key={link.href} to={link.href} className="block py-1 text-muted-foreground hover:text-primary" onClick={() => setMobileMenuOpen(false)}>
-                    {link.title}
-                  </Link>
-                ))}
+
+              <div className="space-y-1">
+                <div className="flex items-center gap-1 py-3 px-2 font-medium text-foreground">
+                  Senior Care <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                </div>
+                <div className="pl-4 space-y-1">
+                  {seniorCareLinks.map((link) => {
+                    const IconComponent = link.icon;
+                    return (
+                      <Link
+                        key={link.href}
+                        to={link.href}
+                        className="flex items-center gap-3 py-3 px-2 text-muted-foreground hover:text-secondary hover:bg-accent/50 rounded-md transition-colors touch-target"
+                      >
+                        <IconComponent className="h-5 w-5 text-secondary/70" aria-hidden="true" />
+                        <span>{link.title}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <Link
+                to="/faq"
+                className="block py-3 px-2 text-foreground hover:text-primary hover:bg-accent/50 rounded-md transition-colors touch-target"
+              >
+                FAQ
+              </Link>
+              <Link
+                to="/contact"
+                className="block py-3 px-2 text-foreground hover:text-primary hover:bg-accent/50 rounded-md transition-colors touch-target"
+              >
+                Contact
+              </Link>
+
+              <div className="pt-4 border-t border-border space-y-2">
+                <a
+                  href="tel:626-792-4185"
+                  className="flex items-center gap-2 py-2 px-2 text-sm text-muted-foreground hover:text-primary transition-colors touch-target"
+                >
+                  <Phone className="h-4 w-4" aria-hidden="true" />
+                  <span>626-792-4185</span>
+                </a>
+                <a
+                  href="mailto:care@hcimed.com"
+                  className="flex items-center gap-2 py-2 px-2 text-sm text-muted-foreground hover:text-primary transition-colors touch-target"
+                >
+                  <Mail className="h-4 w-4" aria-hidden="true" />
+                  <span>care@hcimed.com</span>
+                </a>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <Button asChild variant="outline" className="border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground min-h-[48px]">
+                  <a href="tel:626-792-4185">
+                    <Phone className="h-4 w-4 mr-2" />
+                    Call
+                  </a>
+                </Button>
+                <Button asChild className="bg-secondary hover:bg-secondary/90 text-secondary-foreground min-h-[48px]">
+                  <Link to="/appointments">Request</Link>
+                </Button>
               </div>
             </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center gap-1 py-2 font-medium text-foreground">
-                Senior Care <ChevronDown className="h-4 w-4" />
-              </div>
-              <div className="pl-4 space-y-2">
-                {seniorCareLinks.map((link) => (
-                  <Link key={link.href} to={link.href} className="block py-1 text-muted-foreground hover:text-primary" onClick={() => setMobileMenuOpen(false)}>
-                    {link.title}
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            <Link to="/faq" className="block py-2 text-foreground hover:text-primary" onClick={() => setMobileMenuOpen(false)}>
-              FAQ
-            </Link>
-            <Link to="/contact" className="block py-2 text-foreground hover:text-primary" onClick={() => setMobileMenuOpen(false)}>
-              Contact
-            </Link>
-
-            <div className="pt-4 border-t border-border space-y-2">
-              <a href="tel:626-792-4185" className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Phone className="h-4 w-4" /> 626-792-4185
-              </a>
-              <a href="mailto:care@hcimed.com" className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Mail className="h-4 w-4" /> care@hcimed.com
-              </a>
-            </div>
-
-            <Button asChild className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground">
-              <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>Schedule Appointment</Link>
-            </Button>
           </nav>
-        </div>
+        </>
       )}
     </header>
   );
