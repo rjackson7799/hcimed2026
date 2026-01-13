@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import type { Context } from "@netlify/functions";
+import { generateApplicationConfirmationEmail } from "./lib/email-templates";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -441,6 +442,26 @@ export default async (request: Request, context: Context) => {
         JSON.stringify({ error: "Failed to send application" }),
         { status: 500, headers: { "Content-Type": "application/json" } }
       );
+    }
+
+    // Send confirmation email to applicant (non-blocking - don't fail if this errors)
+    try {
+      const employmentTypeDisplay = EMPLOYMENT_LABELS[data.employmentType] || data.employmentType;
+      await resend.emails.send({
+        from: "HCI Careers <noreply@hcimed.com>",
+        to: [data.email],
+        subject: `Application Received - ${positionTitle} at HCI Medical Group`,
+        html: generateApplicationConfirmationEmail({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          positionTitle,
+          employmentType: employmentTypeDisplay,
+        }),
+      });
+    } catch (confirmError) {
+      console.error("Failed to send application confirmation email:", confirmError);
+      // Don't fail the request - staff notification was successful
     }
 
     return new Response(JSON.stringify({ success: true }), {

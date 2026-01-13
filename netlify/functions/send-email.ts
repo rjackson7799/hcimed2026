@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 import type { Context } from '@netlify/functions';
+import { generateContactConfirmationEmail } from './lib/email-templates';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -46,6 +47,19 @@ export default async (request: Request, context: Context) => {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
       });
+    }
+
+    // Send confirmation email to user (non-blocking - don't fail if this errors)
+    try {
+      await resend.emails.send({
+        from: 'HCI Medical Group <noreply@hcimed.com>',
+        to: [email],
+        subject: 'Thank you for contacting HCI Medical Group',
+        html: generateContactConfirmationEmail({ name, email, phone, message, preferredDate }),
+      });
+    } catch (confirmError) {
+      console.error('Failed to send confirmation email:', confirmError);
+      // Don't fail the request - staff notification was successful
     }
 
     return new Response(JSON.stringify({ success: true, id: data?.id }), {
