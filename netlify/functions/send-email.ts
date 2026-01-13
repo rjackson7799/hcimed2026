@@ -25,7 +25,7 @@ export default async (request: Request, context: Context) => {
 
     const { data, error } = await resend.emails.send({
       from: 'HCI Contact Form <onboarding@resend.dev>', // Update to your verified domain
-      to: ['care@hcimed.com'],
+      to: ['care@hcimed.com', 'admin@hcimed.com', 'ryan.jackson.2009@gmail.com'],
       replyTo: email,
       subject: `New Appointment Request from ${name}`,
       html: `

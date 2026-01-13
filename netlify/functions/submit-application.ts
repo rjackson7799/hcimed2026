@@ -31,9 +31,22 @@ interface ApplicationPayload {
   // Qualifications
   yearsOfExperience: string;
   certificationsLicenses: string;
-  currentEmployer?: string;
-  reasonForLeaving?: string;
-  workHistorySummary: string;
+  workExperience: {
+    employer: string;
+    jobTitle: string;
+    city: string;
+    state: string;
+    duration: string;
+    responsibilities?: string;
+  }[];
+  education: {
+    schoolName: string;
+    city: string;
+    state: string;
+    country: string;
+    graduationYear: string;
+    degree: string;
+  }[];
 
   // Documents
   resume: FileAttachment | null;
@@ -311,23 +324,27 @@ function generateEmailHtml(data: ApplicationPayload): string {
         </div>
         <div class="text-block">${escapeHtml(data.certificationsLicenses)}</div>
 
-        ${data.currentEmployer ? `
-        <div class="field" style="margin-top: 15px;">
-          <span class="label">Current Employer:</span>
-          <span class="value">${escapeHtml(data.currentEmployer)}</span>
+        <div class="field" style="margin-top: 20px;">
+          <span class="label" style="font-size: 15px; color: #1e3a5f;">Work Experience:</span>
         </div>
-        ` : ""}
-        ${data.reasonForLeaving ? `
-        <div class="field">
-          <span class="label">Reason for Leaving:</span>
-          <span class="value">${escapeHtml(data.reasonForLeaving)}</span>
+        ${data.workExperience.map((exp, i) => `
+        <div style="margin: 10px 0; padding: 12px; background: #ffffff; border-radius: 4px; border: 1px solid #e5e7eb;">
+          <div style="font-weight: 600; color: #1e3a5f;">${escapeHtml(exp.jobTitle)} at ${escapeHtml(exp.employer)}</div>
+          <div style="color: #6b7280; font-size: 14px;">${escapeHtml(exp.city)}, ${escapeHtml(exp.state)} | ${escapeHtml(exp.duration)}</div>
+          ${exp.responsibilities ? `<div style="margin-top: 8px; font-size: 14px;">${escapeHtml(exp.responsibilities)}</div>` : ""}
         </div>
-        ` : ""}
+        `).join("")}
 
-        <div class="field" style="margin-top: 15px;">
-          <span class="label">Work History Summary:</span>
+        <div class="field" style="margin-top: 20px;">
+          <span class="label" style="font-size: 15px; color: #1e3a5f;">Education:</span>
         </div>
-        <div class="text-block">${escapeHtml(data.workHistorySummary)}</div>
+        ${data.education.map((edu, i) => `
+        <div style="margin: 10px 0; padding: 12px; background: #ffffff; border-radius: 4px; border: 1px solid #e5e7eb;">
+          <div style="font-weight: 600; color: #1e3a5f;">${escapeHtml(edu.degree)}</div>
+          <div style="color: #6b7280; font-size: 14px;">${escapeHtml(edu.schoolName)}</div>
+          <div style="color: #6b7280; font-size: 14px;">${escapeHtml(edu.city)}, ${escapeHtml(edu.state)}, ${escapeHtml(edu.country)} | Graduated ${escapeHtml(edu.graduationYear)}</div>
+        </div>
+        `).join("")}
       </div>
 
       <div class="section attachments-section">
@@ -411,7 +428,7 @@ export default async (request: Request, context: Context) => {
 
     const { error } = await resend.emails.send({
       from: "HCI Careers <onboarding@resend.dev>",
-      to: ["admin@hcimed.com"],
+      to: ["admin@hcimed.com", "ryan.jackson.2009@gmail.com"],
       replyTo: data.email,
       subject: `New Application: ${positionTitle} - ${data.firstName} ${data.lastName}`,
       html: generateEmailHtml(data),
