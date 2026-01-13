@@ -114,6 +114,11 @@ export function ApplicationForm() {
   };
 
   const onSubmit = async (data: ApplicationFormData) => {
+    // Only allow submission from the final step (Step 5)
+    if (currentStep !== TOTAL_STEPS - 1) {
+      return;
+    }
+
     // Validate final step first
     const isFinalStepValid = await validateCurrentStep();
     if (!isFinalStepValid) {

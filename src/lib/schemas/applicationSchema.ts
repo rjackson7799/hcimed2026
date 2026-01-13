@@ -223,7 +223,7 @@ export const applicationFormSchema = z.object({
   workExperience: z.array(workExperienceEntrySchema),
   education: z.array(educationEntrySchema),
   // Documents
-  resume: z.custom<File>().optional().nullable(),
+  resume: z.custom<File>((val) => val instanceof File, "Please upload your resume"),
   coverLetter: z.custom<File>().optional().nullable(),
   // Final
   referralSource: z.enum(REFERRAL_SOURCES).optional(),
