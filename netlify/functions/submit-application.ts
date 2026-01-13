@@ -507,16 +507,20 @@ export default async (request: Request, context: Context) => {
   try {
     const data: ApplicationPayload = await request.json();
 
-    // Validate required fields
-    if (
-      !data.firstName ||
-      !data.lastName ||
-      !data.email ||
-      !data.phone ||
-      !data.resume
-    ) {
+    // Validate required fields with detailed logging
+    const missingFields: string[] = [];
+    if (!data.firstName) missingFields.push('firstName');
+    if (!data.lastName) missingFields.push('lastName');
+    if (!data.email) missingFields.push('email');
+    if (!data.phone) missingFields.push('phone');
+    if (!data.resume) missingFields.push('resume');
+
+    if (missingFields.length > 0) {
+      console.error('Missing required fields:', missingFields);
+      console.error('Received data keys:', Object.keys(data));
+      console.error('Resume value:', data.resume);
       return new Response(
-        JSON.stringify({ error: "Missing required fields" }),
+        JSON.stringify({ error: "Missing required fields", missing: missingFields }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
