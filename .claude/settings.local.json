@@ -11,7 +11,12 @@
       "Bash(dir:*)",
       "Bash(findstr:*)",
       "Bash(cd:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd Careers, Appointments pages and update Our Story with team bios\n\nFeatures:\n- Add multi-step Careers application form with validation\n  - Support for Medical Assistants and Providers \\(NP, PA, MD, DO\\)\n  - Employment type options: Full-Time, Part-Time, Open to Either\n  - Day availability checkboxes for part-time positions\n  - Resume/cover letter upload with base64 encoding\n- Add Appointment Request form with new/existing patient flow\n  - HIPAA notice and security messaging\n  - Conditional fields for new patients\n- Update Our Story page with Dr. Jackson''s full bio\n- Add Apple Evangelista NP bio to Care Team section\n- Add Netlify serverless functions for form submissions\n- Add site configuration and accessibility controls\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "Bash(curl:*)",
+      "Bash(bun run build:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

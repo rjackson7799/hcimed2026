@@ -427,7 +427,7 @@ export default async (request: Request, context: Context) => {
         : POSITION_LABELS[data.positionType];
 
     const { error } = await resend.emails.send({
-      from: "HCI Careers <onboarding@resend.dev>",
+      from: "HCI Careers <noreply@hcimed.com>",
       to: ["admin@hcimed.com", "ryan.jackson.2009@gmail.com"],
       replyTo: data.email,
       subject: `New Application: ${positionTitle} - ${data.firstName} ${data.lastName}`,
