@@ -24,7 +24,7 @@ export default async (request: Request, context: Context) => {
     }
 
     const { data, error } = await resend.emails.send({
-      from: 'HCI Contact Form <noreply@hcimed.com>',
+      from: 'HCI Contact Form <noreply@send.hcimed.com>',
       to: ['care@hcimed.com', 'admin@hcimed.com', 'ryan.jackson.2009@gmail.com'],
       replyTo: email,
       subject: `New Appointment Request from ${name}`,
