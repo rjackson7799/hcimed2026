@@ -219,7 +219,14 @@ export function ApplicationForm() {
     <FormProvider {...methods}>
       <form
         id="application-form"
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={(e) => {
+          e.preventDefault();
+          // Only process if triggered by actual Submit button click
+          const submitter = (e.nativeEvent as SubmitEvent).submitter;
+          if (submitter?.getAttribute('type') === 'submit' && currentStep === TOTAL_STEPS - 1) {
+            handleSubmit(onSubmit)(e);
+          }
+        }}
         className="space-y-8"
       >
         {/* Honeypot field - hidden from humans, bots will fill it */}
