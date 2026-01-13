@@ -1,6 +1,5 @@
 import { Resend } from "resend";
 import type { Context } from "@netlify/functions";
-import { generateApplicationConfirmationEmail } from "./lib/email-templates";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -379,6 +378,123 @@ function generateEmailHtml(data: ApplicationPayload): string {
   `;
 }
 
+// Confirmation email for applicants
+function generateApplicationConfirmationEmail(data: {
+  firstName: string;
+  positionTitle: string;
+  employmentType: string;
+}): string {
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; background-color: #f5f5f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <div style="display: none; max-height: 0; overflow: hidden;">Thank you for applying to ${escapeHtml(data.positionTitle)} at HCI Medical Group.</div>
+
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+
+          <!-- Logo Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); padding: 30px; text-align: center;">
+              <img src="https://hcimed.com/email/hci-logo.png" alt="HCI Medical Group" width="220" style="display: block; margin: 0 auto; max-width: 100%;">
+            </td>
+          </tr>
+
+          <!-- Content Area -->
+          <tr>
+            <td style="padding: 40px 30px;">
+              <h2 style="color: #1e3a5f; margin: 0 0 20px; font-size: 24px;">Application Received</h2>
+
+              <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 16px;">
+                Dear ${escapeHtml(data.firstName)},
+              </p>
+
+              <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 16px;">
+                Thank you for your interest in joining HCI Medical Group. We have successfully received your application for the following position:
+              </p>
+
+              <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 24px; margin: 25px 0; text-align: center;">
+                <p style="margin: 0 0 8px; font-size: 14px; color: #1e40af; text-transform: uppercase; letter-spacing: 0.5px;">Position Applied For</p>
+                <p style="margin: 0; font-size: 22px; font-weight: 700; color: #1e3a5f;">
+                  ${escapeHtml(data.positionTitle)}
+                </p>
+                <p style="margin: 8px 0 0; color: #6b7280; font-size: 14px;">${escapeHtml(data.employmentType)}</p>
+              </div>
+
+              <h3 style="color: #1e3a5f; margin: 30px 0 15px; font-size: 18px;">What Happens Next?</h3>
+
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 0 0 25px;">
+                <tr>
+                  <td width="40" valign="top" style="padding-bottom: 16px;">
+                    <div style="width: 32px; height: 32px; background: #2d8bc9; border-radius: 50%; color: white; text-align: center; line-height: 32px; font-weight: 600;">1</div>
+                  </td>
+                  <td valign="top" style="padding-bottom: 16px; padding-left: 12px;">
+                    <strong style="color: #1e3a5f;">Application Review</strong>
+                    <p style="margin: 4px 0 0; color: #666666; font-size: 14px;">Our hiring team will carefully review your qualifications and experience.</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="40" valign="top" style="padding-bottom: 16px;">
+                    <div style="width: 32px; height: 32px; background: #2d8bc9; border-radius: 50%; color: white; text-align: center; line-height: 32px; font-weight: 600;">2</div>
+                  </td>
+                  <td valign="top" style="padding-bottom: 16px; padding-left: 12px;">
+                    <strong style="color: #1e3a5f;">Initial Contact</strong>
+                    <p style="margin: 4px 0 0; color: #666666; font-size: 14px;">If your experience matches our needs, we'll reach out within 5-7 business days to schedule an interview.</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="40" valign="top">
+                    <div style="width: 32px; height: 32px; background: #2d8bc9; border-radius: 50%; color: white; text-align: center; line-height: 32px; font-weight: 600;">3</div>
+                  </td>
+                  <td valign="top" style="padding-left: 12px;">
+                    <strong style="color: #1e3a5f;">Interview Process</strong>
+                    <p style="margin: 4px 0 0; color: #666666; font-size: 14px;">Selected candidates will participate in interviews with our team to explore mutual fit.</p>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 16px;">
+                We appreciate your patience during this process. Due to the volume of applications we receive, we may not be able to respond to every applicant individually, but please know that your application is being carefully considered.
+              </p>
+
+              <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 30px 0 0;">
+                Best regards,<br>
+                <strong style="color: #1e3a5f;">HCI Medical Group Hiring Team</strong>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background: #f3f4f6; padding: 30px; text-align: center; font-size: 13px; color: #6b7280; border-top: 1px solid #e5e7eb;">
+              <p style="margin: 0 0 8px 0; font-weight: 600; color: #1e3a5f;">HCI Medical Group</p>
+              <p style="margin: 0 0 8px 0;">65 N. Madison Ave. #709, Pasadena, CA 91101</p>
+              <p style="margin: 0 0 8px 0;">
+                <a href="tel:6267924185" style="color: #2d8bc9; text-decoration: none;">(626) 792-4185</a>
+                &nbsp;|&nbsp;
+                <a href="mailto:care@hcimed.com" style="color: #2d8bc9; text-decoration: none;">care@hcimed.com</a>
+              </p>
+              <p style="margin: 0;">
+                <a href="https://hcimed.com" style="color: #2d8bc9; text-decoration: none;">www.hcimed.com</a>
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `;
+}
+
 export default async (request: Request, context: Context) => {
   // Only allow POST
   if (request.method !== "POST") {
@@ -453,8 +569,6 @@ export default async (request: Request, context: Context) => {
         subject: `Application Received - ${positionTitle} at HCI Medical Group`,
         html: generateApplicationConfirmationEmail({
           firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
           positionTitle,
           employmentType: employmentTypeDisplay,
         }),

@@ -16,7 +16,8 @@
       "Bash(git push:*)",
       "Bash(curl:*)",
       "Bash(bun run build:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(netlify functions:list:*)"
     ]
   }
 }
