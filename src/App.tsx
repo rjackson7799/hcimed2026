@@ -30,6 +30,7 @@ import RemoteMonitoring from "./pages/senior-care/RemoteMonitoring";
 // Other Pages
 import Careers from "./pages/Careers";
 import Appointments from "./pages/Appointments";
+import InsuranceUpdate from "./pages/InsuranceUpdate";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +67,9 @@ const App = () => (
 
             {/* Appointments */}
             <Route path="/appointments" element={<Appointments />} />
+
+            {/* Insurance Update */}
+            <Route path="/insurance-update" element={<InsuranceUpdate />} />
 
             {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />

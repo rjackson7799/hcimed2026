@@ -4,6 +4,7 @@ import { Footer } from "./Footer";
 import { MobileStickyFooter } from "./MobileStickyFooter";
 import { AccessibilityControls } from "@/components/AccessibilityControls";
 import { CookieConsent } from "@/components/CookieConsent";
+import { InsuranceAlertBanner } from "@/components/InsuranceAlertBanner";
 
 interface LayoutProps {
   children: ReactNode;
@@ -18,6 +19,7 @@ export function Layout({ children }: LayoutProps) {
       </a>
 
       <Header />
+      <InsuranceAlertBanner />
       <main id="main-content" className="flex-1 pb-20 lg:pb-0" tabIndex={-1}>
         {children}
       </main>
