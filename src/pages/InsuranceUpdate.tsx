@@ -10,18 +10,71 @@ export default function InsuranceUpdate() {
       <PageHero
         title="Insurance Update"
         subtitle="Important information about your coverage"
+        className="py-10 md:py-14"
       />
 
-      <section className="py-16 md:py-24">
+      <section className="py-8 md:py-12">
         <div className="container max-w-3xl">
           {/* Back navigation */}
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-secondary hover:text-secondary/80 mb-8 transition-colors"
+            className="inline-flex items-center gap-2 text-secondary hover:text-secondary/80 mb-6 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Home
           </Link>
+
+          {/* Contact card - at top for visibility */}
+          <div className="mb-8 p-6 bg-muted rounded-lg">
+            <h3 className="font-display text-lg font-semibold text-foreground mb-4">
+              Questions? Contact Us
+            </h3>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-secondary/20 flex items-center justify-center">
+                  <Phone className="h-5 w-5 text-secondary" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">HCI Medical Group</p>
+                  <a
+                    href="tel:626-792-4185"
+                    className="text-secondary hover:underline"
+                  >
+                    626-792-4185
+                  </a>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-secondary/20 flex items-center justify-center">
+                  <Phone className="h-5 w-5 text-secondary" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">For Our Existing Optum Patients</p>
+                  <p className="text-sm text-muted-foreground">Please call Eldy Santos</p>
+                  <a
+                    href="tel:818-480-2555"
+                    className="text-secondary hover:underline"
+                  >
+                    818-480-2555
+                  </a>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-secondary/20 flex items-center justify-center">
+                  <Mail className="h-5 w-5 text-secondary" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">General Inquiries</p>
+                  <a
+                    href="mailto:care@hcimed.com"
+                    className="text-secondary hover:underline"
+                  >
+                    care@hcimed.com
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* Letter content */}
           <div className="bg-card rounded-xl p-8 md:p-12 card-shadow">
@@ -111,43 +164,6 @@ export default function InsuranceUpdate() {
                   Medical Director, HCI Medical Group
                 </span>
               </p>
-            </div>
-
-            {/* Contact card */}
-            <div className="mt-12 p-6 bg-muted rounded-lg">
-              <h3 className="font-display text-lg font-semibold text-foreground mb-4">
-                Questions? Contact Us
-              </h3>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-secondary/20 flex items-center justify-center">
-                    <Phone className="h-5 w-5 text-secondary" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-foreground">Eldy Santos</p>
-                    <a
-                      href="tel:818-480-2555"
-                      className="text-secondary hover:underline"
-                    >
-                      818-480-2555
-                    </a>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-secondary/20 flex items-center justify-center">
-                    <Mail className="h-5 w-5 text-secondary" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-foreground">General Inquiries</p>
-                    <a
-                      href="mailto:care@hcimed.com"
-                      className="text-secondary hover:underline"
-                    >
-                      care@hcimed.com
-                    </a>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
