@@ -1,4 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
+import { SEO } from "@/components/SEO";
+import { pageSEO } from "@/config/seo";
 import { PageHero } from "@/components/PageHero";
 import { ContactForm } from "@/components/ContactForm";
 import { OfficeImagePlaceholder } from "@/components/ImagePlaceholder";
@@ -10,7 +12,8 @@ import officePhoto from "@/assets/hci_building.jpg";
 export default function Contact() {
   return (
     <Layout>
-      <PageHero 
+      <SEO {...pageSEO.contact} />
+      <PageHero
         title="Contact Us" 
         subtitle="We're here to help. Reach out to schedule an appointment or ask any questions."
       />

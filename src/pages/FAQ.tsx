@@ -1,4 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
+import { SEO } from "@/components/SEO";
+import { pageSEO } from "@/config/seo";
 import { PageHero } from "@/components/PageHero";
 import {
   Accordion,
@@ -75,7 +77,8 @@ const faqs = [
 export default function FAQ() {
   return (
     <Layout>
-      <PageHero 
+      <SEO {...pageSEO.faq} />
+      <PageHero
         title="Frequently Asked Questions" 
         subtitle="Find answers to common questions about our practice and services"
       />

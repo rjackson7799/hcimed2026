@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { SEO } from "@/components/SEO";
+import { pageSEO } from "@/config/seo";
 import { PageHero } from "@/components/PageHero";
 import { Button } from "@/components/ui/button";
 import { Heart, Users, Award, Clock, ArrowRight } from "lucide-react";
@@ -11,6 +13,7 @@ import { Heart, Users, Award, Clock, ArrowRight } from "lucide-react";
 export default function OurStory() {
   return (
     <Layout>
+      <SEO {...pageSEO.ourStory} />
       <PageHero
         title="Our Story"
         subtitle="Serving Pasadena families since 1978"

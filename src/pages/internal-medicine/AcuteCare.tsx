@@ -1,4 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
+import { SEO } from "@/components/SEO";
+import { pageSEO } from "@/config/seo";
 import { PageHero } from "@/components/PageHero";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -20,6 +22,7 @@ export default function AcuteCare() {
 
   return (
     <Layout>
+      <SEO {...pageSEO.acuteCare} />
       <PageHero
         title="Acute Care"
         subtitle="Prompt treatment for illness, infections, and minor injuries"

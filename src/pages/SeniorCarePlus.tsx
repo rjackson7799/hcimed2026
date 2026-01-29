@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { SEO } from "@/components/SEO";
+import { pageSEO } from "@/config/seo";
 import { PageHero } from "@/components/PageHero";
 import { Button } from "@/components/ui/button";
 import infographic from "@/assets/services/seniorcare_infographic.png";
@@ -19,6 +21,7 @@ import {
 export default function SeniorCarePlus() {
   return (
     <Layout>
+      <SEO {...pageSEO.seniorCarePlus} />
       <PageHero
         title="Senior Care+"
         subtitle="Comprehensive Care Management for Seniors"

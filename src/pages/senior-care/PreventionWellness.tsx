@@ -1,4 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
+import { SEO } from "@/components/SEO";
+import { pageSEO } from "@/config/seo";
 import { PageHero } from "@/components/PageHero";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -18,7 +20,8 @@ export default function PreventionWellness() {
 
   return (
     <Layout>
-      <PageHero 
+      <SEO {...pageSEO.preventionWellness} />
+      <PageHero
         title="Prevention & Wellness" 
         subtitle="Proactive care to help seniors live their healthiest lives"
       />

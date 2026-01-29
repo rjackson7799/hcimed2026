@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { SEO } from "@/components/SEO";
+import { pageSEO } from "@/config/seo";
 import { Button } from "@/components/ui/button";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ContactForm } from "@/components/ContactForm";
@@ -26,13 +28,14 @@ import internalMedicineImage from "@/assets/services/internal-medicine.jpg";
 export default function Index() {
   return (
     <Layout>
+      <SEO {...pageSEO.home} />
       {/* Hero Section */}
       <section className="hero-gradient relative overflow-hidden texture-noise">
         {/* Medical cross pattern background */}
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.05%22%3E%3Cpath%20d%3D%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')] opacity-30" aria-hidden="true"></div>
         {/* Organic gradient blob */}
         <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-secondary/20 rounded-full blur-3xl" aria-hidden="true"></div>
-        <div className="container relative py-6 md:py-8 z-10">
+        <div className="container relative py-4 md:py-6 z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Text content */}
             <div className="max-w-xl">

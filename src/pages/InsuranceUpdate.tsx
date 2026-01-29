@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { SEO } from "@/components/SEO";
+import { pageSEO } from "@/config/seo";
 import { PageHero } from "@/components/PageHero";
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, ArrowLeft } from "lucide-react";
@@ -7,6 +9,7 @@ import { Phone, Mail, ArrowLeft } from "lucide-react";
 export default function InsuranceUpdate() {
   return (
     <Layout>
+      <SEO {...pageSEO.insuranceUpdate} />
       <PageHero
         title="Insurance Update"
         subtitle="Important information about your coverage"

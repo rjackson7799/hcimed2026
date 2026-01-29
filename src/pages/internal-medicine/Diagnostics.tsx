@@ -1,4 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
+import { SEO } from "@/components/SEO";
+import { pageSEO } from "@/config/seo";
 import { PageHero } from "@/components/PageHero";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -18,7 +20,8 @@ export default function Diagnostics() {
 
   return (
     <Layout>
-      <PageHero 
+      <SEO {...pageSEO.diagnostics} />
+      <PageHero
         title="Diagnostics" 
         subtitle="In-office testing and laboratory services for accurate diagnoses"
       />

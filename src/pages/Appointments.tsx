@@ -1,4 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
+import { SEO } from "@/components/SEO";
+import { pageSEO } from "@/config/seo";
 import { PageHero } from "@/components/PageHero";
 import { AppointmentRequestForm } from "@/components/AppointmentRequestForm";
 import { Phone, Clock, MapPin, CalendarCheck, AlertTriangle } from "lucide-react";
@@ -7,6 +9,7 @@ import { Link } from "react-router-dom";
 export default function Appointments() {
   return (
     <Layout>
+      <SEO {...pageSEO.appointments} />
       <PageHero
         title="Request an Appointment"
         subtitle="Schedule your visit with HCI Medical Group. We'll contact you within 1 business day to confirm."

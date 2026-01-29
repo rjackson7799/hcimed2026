@@ -1,4 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
+import { SEO } from "@/components/SEO";
+import { pageSEO } from "@/config/seo";
 import { PageHero } from "@/components/PageHero";
 import { ApplicationForm } from "@/components/careers/ApplicationForm";
 import {
@@ -185,6 +187,7 @@ function JobCard({
 export default function Careers() {
   return (
     <Layout>
+      <SEO {...pageSEO.careers} />
       <PageHero
         title="Join Our Team"
         subtitle="Build a rewarding career in compassionate healthcare with HCI Medical Group"

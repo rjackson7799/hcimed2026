@@ -24,6 +24,7 @@ export function Footer() {
               <li><Link to="/senior-care-plus" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Senior Care+</Link></li>
               <li><Link to="/faq" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">FAQ</Link></li>
               <li><Link to="/contact" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Contact Us</Link></li>
+              <li><Link to="/blog" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Health Resources</Link></li>
               <li><Link to="/careers" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Careers</Link></li>
             </ul>
           </nav>

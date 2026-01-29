@@ -32,6 +32,10 @@ import Careers from "./pages/Careers";
 import Appointments from "./pages/Appointments";
 import InsuranceUpdate from "./pages/InsuranceUpdate";
 
+// Blog Pages
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -70,6 +74,10 @@ const App = () => (
 
             {/* Insurance Update */}
             <Route path="/insurance-update" element={<InsuranceUpdate />} />
+
+            {/* Blog */}
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
 
             {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />

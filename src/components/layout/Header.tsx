@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Menu, X, Phone, Mail, ChevronDown,
+  Menu, X, Phone, Mail, ChevronDown, MapPin,
   Stethoscope, Zap, HeartPulse, UserRound, Microscope,
   Heart, Shield, Activity, Home, Smartphone,
   type LucideIcon
@@ -74,6 +74,10 @@ export function Header() {
       <div className="hidden md:block bg-primary text-primary-foreground">
         <div className="container flex h-10 items-center justify-between text-sm">
           <div className="flex items-center gap-6">
+            <span className="flex items-center gap-2">
+              <MapPin className="h-3.5 w-3.5" />
+              <span>Pasadena, CA</span>
+            </span>
             <a href="tel:626-792-4185" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <Phone className="h-3.5 w-3.5" />
               <span>626-792-4185</span>
