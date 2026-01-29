@@ -46,7 +46,7 @@ export function InsuranceAlertBanner() {
                 className="group flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2"
               >
                 <span className="font-semibold text-foreground group-hover:text-secondary transition-colors">
-                  Important Insurance Update
+                  Important Insurance Update for Our Optum Patients
                 </span>
                 <span className="text-sm text-muted-foreground group-hover:text-secondary/80 transition-colors truncate">
                   HCI Medical Group is joining Regal Medical Group
