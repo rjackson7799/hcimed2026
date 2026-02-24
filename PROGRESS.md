@@ -33,6 +33,17 @@ Tracking document for Pasadena Health Hub (hcimed.com) development.
 - [x] Vercel serverless API functions (3 endpoints)
 - [x] Skip-to-content keyboard navigation
 
+### Patient Outreach Tracking Portal (`src/portal/`)
+
+- [x] **Milestone 0:** Supabase client, type foundations, enums, formatters, constants
+- [x] **Milestone 1:** Dual-path auth (`/hci-login`, `/partner-login`), session timeout (30 min), role-based guards
+- [x] **Milestone 2:** Portal shell with shadcn Sidebar, role-aware navigation, mobile bottom nav
+- [x] **Milestone 3:** Admin project CRUD, CSV upload with validation/dedup, staff assignment, user management
+- [x] **Milestone 4:** Staff patient queue (search, filter, pagination), one-tap call logging with dispositions, call history
+- [ ] **Milestone 5:** Broker forwarding, broker portal, email notifications, messaging
+- [ ] **Milestone 6:** Admin dashboard with real-time charts, CSV export, staff activity tracking
+- [ ] **Milestone 7:** Audit log viewer, print styles, HIPAA compliance polish
+
 ### Known Issues / Recent Fixes
 
 - Fixed careers form auto-submit bug on Step 5 (2026-01-12)
@@ -42,6 +53,11 @@ Tracking document for Pasadena Health Hub (hcimed.com) development.
 ---
 
 ## Upcoming Development Tasks
+
+### Patient Outreach Portal
+- [ ] Milestone 5: Broker forwarding and portal
+- [ ] Milestone 6: Admin dashboard with real-time updates
+- [ ] Milestone 7: HIPAA compliance, print styles, audit log
 
 ### Content & Blog
 - [ ] _Add tasks here_
@@ -64,6 +80,13 @@ Tracking document for Pasadena Health Hub (hcimed.com) development.
 ---
 
 ## Changelog
+
+### 2026-02-24
+- **Portal Milestone 4:** Staff patient queue with search/filter/pagination, one-tap call logging with color-coded dispositions, call history timeline
+- **Portal Milestone 3:** Admin project management, CSV upload with papaparse validation, staff assignment UI
+- **Portal Milestone 2:** Portal shell with shadcn Sidebar, role-aware navigation (admin/staff/broker), mobile bottom nav
+- **Portal Milestone 1:** Dual-path authentication (/hci-login, /partner-login), 30-min session timeout with warning, role guards
+- **Portal Milestone 0:** Supabase client, TypeScript types/enums, formatters, status constants
 
 ### 2026-01-29
 - Added SEO improvements, markdown blog system, and location badge
