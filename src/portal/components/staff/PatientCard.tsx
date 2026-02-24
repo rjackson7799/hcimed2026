@@ -5,6 +5,7 @@ import { Phone, ChevronDown, ChevronUp } from 'lucide-react';
 import { StatusBadge } from '@/portal/components/shared/StatusBadge';
 import { CallLogger } from './CallLogger';
 import { CallHistory } from './CallHistory';
+import { BrokerForward } from './BrokerForward';
 import { formatPhone, formatPatientName, formatRelativeTime } from '@/portal/utils/formatters';
 import type { Patient } from '@/portal/types';
 
@@ -97,6 +98,9 @@ export function PatientCard({ patient }: PatientCardProps) {
               </div>
             )}
           </div>
+
+          {/* Broker forward */}
+          <BrokerForward patient={patient} />
 
           {/* Call logger */}
           {showCallLogger && (
