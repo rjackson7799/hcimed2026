@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { siteConfig } from "@/config/site";
 import hciLogo from "@/assets/hci-logo.png";
 
 export function Footer() {
@@ -48,32 +49,32 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 mt-0.5 flex-shrink-0" aria-hidden="true" />
                 <address className="text-primary-foreground/80 not-italic">
-                  65 N. Madison Ave. #709<br />
-                  Pasadena, CA 91101
+                  {siteConfig.address.street} {siteConfig.address.suite}<br />
+                  {siteConfig.address.city}, {siteConfig.address.state} {siteConfig.address.zip}
                 </address>
               </li>
               <li>
-                <a href="tel:626-792-4185" className="flex items-center gap-3 text-primary-foreground/80 hover:text-primary-foreground transition-colors py-1">
+                <a href={`tel:${siteConfig.contact.phoneRaw}`} className="flex items-center gap-3 text-primary-foreground/80 hover:text-primary-foreground transition-colors py-1">
                   <Phone className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
-                  <span>626-792-4185</span>
+                  <span>{siteConfig.contact.phone}</span>
                 </a>
               </li>
               <li>
-                <a href="mailto:care@hcimed.com" className="flex items-center gap-3 text-primary-foreground/80 hover:text-primary-foreground transition-colors py-1">
+                <a href={`mailto:${siteConfig.contact.email}`} className="flex items-center gap-3 text-primary-foreground/80 hover:text-primary-foreground transition-colors py-1">
                   <Mail className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
-                  <span>care@hcimed.com</span>
+                  <span>{siteConfig.contact.email}</span>
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Clock className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
-                <span className="text-primary-foreground/80">Mon - Fri: 9AM - 5PM</span>
+                <span className="text-primary-foreground/80">{siteConfig.hours.weekdays}</span>
               </li>
             </ul>
           </div>
         </div>
 
         <div className="mt-12 pt-8 border-t border-primary-foreground/20 text-center text-primary-foreground/60 text-sm">
-          <p>&copy; {new Date().getFullYear()} HCI Medical Group. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
         </div>
       </div>
     </footer>

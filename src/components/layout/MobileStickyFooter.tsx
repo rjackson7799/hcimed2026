@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Phone, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { siteConfig } from "@/config/site";
 
 export function MobileStickyFooter() {
   const [isVisible, setIsVisible] = useState(false);
@@ -43,7 +44,7 @@ export function MobileStickyFooter() {
             variant="outline"
             className="border-primary text-primary hover:bg-primary hover:text-primary-foreground min-h-[48px] font-medium"
           >
-            <a href="tel:626-792-4185">
+            <a href={`tel:${siteConfig.contact.phoneRaw}`}>
               <Phone className="h-5 w-5 mr-2" aria-hidden="true" />
               Call Now
             </a>

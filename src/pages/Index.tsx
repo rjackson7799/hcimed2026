@@ -17,6 +17,7 @@ import {
   UserCheck,
   Building2
 } from "lucide-react";
+import { siteConfig } from "@/config/site";
 
 // Hero image
 import heroImage from "@/assets/hero/home-hero-4images.png";
@@ -74,21 +75,21 @@ export default function Index() {
         <div className="container py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-6 flex-wrap justify-center">
-              <a href="tel:626-792-4185" className="flex items-center gap-2 text-foreground hover:text-secondary transition-colors">
+              <a href={`tel:${siteConfig.contact.phoneRaw}`} className="flex items-center gap-2 text-foreground hover:text-secondary transition-colors">
                 <Phone className="h-5 w-5 text-secondary" />
-                <span className="font-medium">626-792-4185</span>
+                <span className="font-medium">{siteConfig.contact.phone}</span>
               </a>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Clock className="h-5 w-5 text-secondary" />
-                <span>Mon - Fri: 9AM - 5PM</span>
+                <span>{siteConfig.hours.weekdays}</span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <MapPin className="h-5 w-5 text-secondary" />
-                <span>Pasadena, CA</span>
+                <span>{siteConfig.address.city}, {siteConfig.address.state}</span>
               </div>
             </div>
             <Button asChild variant="outline" className="border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground">
-              <a href="tel:626-792-4185">Call Now</a>
+              <a href={`tel:${siteConfig.contact.phoneRaw}`}>Call Now</a>
             </Button>
           </div>
         </div>
@@ -259,7 +260,7 @@ export default function Index() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground">Visit Us</h4>
-                    <p className="text-muted-foreground">65 N. Madison Ave. #709<br />Pasadena, CA 91101</p>
+                    <p className="text-muted-foreground">{siteConfig.address.street} {siteConfig.address.suite}<br />{siteConfig.address.city}, {siteConfig.address.state} {siteConfig.address.zip}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -268,7 +269,7 @@ export default function Index() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground">Call Us</h4>
-                    <a href="tel:626-792-4185" className="text-secondary hover:underline">626-792-4185</a>
+                    <a href={`tel:${siteConfig.contact.phoneRaw}`} className="text-secondary hover:underline">{siteConfig.contact.phone}</a>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -277,7 +278,7 @@ export default function Index() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground">Office Hours</h4>
-                    <p className="text-muted-foreground">Monday - Friday: 9AM - 5PM</p>
+                    <p className="text-muted-foreground">{siteConfig.hours.weekdays}</p>
                   </div>
                 </div>
               </div>

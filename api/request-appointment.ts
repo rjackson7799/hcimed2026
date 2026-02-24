@@ -2,6 +2,8 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+const APPOINTMENT_RECIPIENTS = (process.env.EMAIL_RECIPIENTS_APPOINTMENTS || 'care@hcimed.com').split(',').map(e => e.trim());
+
 interface AppointmentPayload {
   patientType: "new" | "existing";
   firstName: string;
@@ -335,7 +337,7 @@ export async function POST(request: Request) {
 
     const { error } = await resend.emails.send({
       from: "HCI Appointments <onboarding@resend.dev>",
-      to: ["care@hcimed.com"],
+      to: APPOINTMENT_RECIPIENTS,
       replyTo: data.email,
       subject: `Appointment Request - ${patientTypeLabel} - ${data.firstName} ${data.lastName}`,
       html: generateEmailHtml(data),

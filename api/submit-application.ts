@@ -2,6 +2,8 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+const CAREERS_RECIPIENTS = (process.env.EMAIL_RECIPIENTS_CAREERS || 'admin@hcimed.com').split(',').map(e => e.trim());
+
 interface FileAttachment {
   filename: string;
   content: string; // base64 encoded
@@ -540,7 +542,7 @@ export async function POST(request: Request) {
 
     const { error } = await resend.emails.send({
       from: "HCI Careers <noreply@hcimed.com>",
-      to: ["admin@hcimed.com", "ryan.jackson.2009@gmail.com"],
+      to: CAREERS_RECIPIENTS,
       replyTo: data.email,
       subject: `New Application: ${positionTitle} - ${data.firstName} ${data.lastName}`,
       html: generateEmailHtml(data),

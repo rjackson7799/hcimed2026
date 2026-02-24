@@ -3,9 +3,25 @@ import { generateContactConfirmationEmail } from '../lib/email-templates';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+const CONTACT_RECIPIENTS = (process.env.EMAIL_RECIPIENTS_CONTACT || 'care@hcimed.com').split(',').map(e => e.trim());
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export async function POST(request: Request) {
   try {
-    const { name, email, phone, message, preferredDate } = await request.json();
+    const body = await request.json();
+    const name = typeof body.name === 'string' ? body.name.trim() : '';
+    const email = typeof body.email === 'string' ? body.email.trim() : '';
+    const phone = typeof body.phone === 'string' ? body.phone.trim() : '';
+    const message = typeof body.message === 'string' ? body.message.trim() : '';
+    const preferredDate = typeof body.preferredDate === 'string' ? body.preferredDate.trim() : '';
 
     // Validate required fields
     if (!name || !email || !phone) {
@@ -17,16 +33,16 @@ export async function POST(request: Request) {
 
     const { data, error } = await resend.emails.send({
       from: 'HCI Contact Form <noreply@hcimed.com>',
-      to: ['care@hcimed.com', 'admin@hcimed.com', 'ryan.jackson.2009@gmail.com'],
+      to: CONTACT_RECIPIENTS,
       replyTo: email,
-      subject: `New Appointment Request from ${name}`,
+      subject: `New Contact Form Message from ${escapeHtml(name)}`,
       html: `
-        <h2>New Appointment Request</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone}</p>
-        ${preferredDate ? `<p><strong>Preferred Date:</strong> ${preferredDate}</p>` : ''}
-        ${message ? `<p><strong>Message:</strong> ${message}</p>` : ''}
+        <h2>New Contact Form Message</h2>
+        <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+        <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+        <p><strong>Phone:</strong> ${escapeHtml(phone)}</p>
+        ${preferredDate ? `<p><strong>Preferred Date:</strong> ${escapeHtml(preferredDate)}</p>` : ''}
+        ${message ? `<p><strong>Message:</strong> ${escapeHtml(message)}</p>` : ''}
         <hr />
         <p style="color: #666; font-size: 12px;">This message was sent from the HCI Medical Group website contact form.</p>
       `

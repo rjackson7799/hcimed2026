@@ -5,6 +5,7 @@ import { PageHero } from "@/components/PageHero";
 import { AppointmentRequestForm } from "@/components/AppointmentRequestForm";
 import { Phone, Clock, MapPin, CalendarCheck, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { siteConfig } from "@/config/site";
 
 export default function Appointments() {
   return (
@@ -50,14 +51,14 @@ export default function Appointments() {
                 <ul className="space-y-4">
                   <li>
                     <a
-                      href="tel:626-792-4185"
+                      href={`tel:${siteConfig.contact.phoneRaw}`}
                       className="flex items-center gap-3 text-foreground hover:text-secondary transition-colors group"
                     >
                       <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center group-hover:bg-secondary/30 transition-colors">
                         <Phone className="h-5 w-5 text-secondary" />
                       </div>
                       <div>
-                        <p className="font-medium">(626) 792-4185</p>
+                        <p className="font-medium">{siteConfig.contact.phone}</p>
                         <p className="text-sm text-muted-foreground">
                           Call to schedule
                         </p>
@@ -71,7 +72,7 @@ export default function Appointments() {
                     </div>
                     <div>
                       <p className="font-medium text-foreground">
-                        Mon - Fri: 9AM - 5PM
+                        {siteConfig.hours.weekdays}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         Office hours
@@ -85,10 +86,10 @@ export default function Appointments() {
                     </div>
                     <div>
                       <p className="font-medium text-foreground">
-                        65 N. Madison Ave. #709
+                        {siteConfig.address.street} {siteConfig.address.suite}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        Pasadena, CA 91101
+                        {siteConfig.address.city}, {siteConfig.address.state} {siteConfig.address.zip}
                       </p>
                     </div>
                   </li>
@@ -122,7 +123,7 @@ export default function Appointments() {
                   prescription refills, and message your care team.
                 </p>
                 <a
-                  href="https://www.healow.com/apps/practice/hci-medical-group-inc-24741?v=2"
+                  href={siteConfig.links.patientPortal}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm font-medium text-secondary hover:underline"
