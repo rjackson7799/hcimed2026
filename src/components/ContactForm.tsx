@@ -3,11 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { ShieldCheck, AlertTriangle } from "lucide-react";
 
 export function ContactForm() {
-  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -21,8 +20,7 @@ export function ContactForm() {
     const honeypot = formData.get('website');
     if (honeypot) {
       // Silently reject spam but show success to not alert bots
-      toast({
-        title: "Message sent!",
+      toast.success("Message sent!", {
         description: "We'll get back to you as soon as possible.",
       });
       form.reset();
@@ -48,17 +46,14 @@ export function ContactForm() {
         throw new Error('Failed to send message');
       }
 
-      toast({
-        title: "Message sent!",
+      toast.success("Message sent!", {
         description: "We'll get back to you as soon as possible.",
       });
 
       form.reset();
     } catch (error) {
-      toast({
-        title: "Failed to send message",
+      toast.error("Failed to send message", {
         description: "Please try again or call us at (626) 792-4185.",
-        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);

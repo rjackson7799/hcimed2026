@@ -26,10 +26,36 @@ import heroImage from "@/assets/hero/home-hero-4images.png";
 import seniorCareImage from "@/assets/services/senior-care.jpg";
 import internalMedicineImage from "@/assets/services/internal-medicine.jpg";
 
+const localBusinessSchema = {
+  "@context": "https://schema.org",
+  "@type": "MedicalBusiness",
+  name: siteConfig.name,
+  url: siteConfig.url,
+  telephone: siteConfig.contact.phone,
+  email: siteConfig.contact.email,
+  foundingDate: "1990",
+  description: siteConfig.description,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: `${siteConfig.address.street} ${siteConfig.address.suite}`,
+    addressLocality: siteConfig.address.city,
+    addressRegion: siteConfig.address.state,
+    postalCode: siteConfig.address.zip,
+    addressCountry: "US",
+  },
+  openingHoursSpecification: {
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    opens: "09:00",
+    closes: "17:00",
+  },
+  medicalSpecialty: ["InternalMedicine", "Geriatric"],
+};
+
 export default function Index() {
   return (
     <Layout>
-      <SEO {...pageSEO.home} />
+      <SEO {...pageSEO.home} structuredData={localBusinessSchema} />
       {/* Hero Section */}
       <section className="hero-gradient relative overflow-hidden texture-noise">
         {/* Medical cross pattern background */}

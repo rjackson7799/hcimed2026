@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Loader2, ArrowLeft, ArrowRight, Send, ShieldCheck, Lock } from "lucide-react";
 import { FormStepIndicator } from "./FormStepIndicator";
 import { PersonalInfoStep } from "./steps/PersonalInfoStep";
@@ -37,7 +37,6 @@ async function fileToBase64(file: File): Promise<string> {
 export function ApplicationForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
 
   const methods = useForm<ApplicationFormData>({
     resolver: zodResolver(applicationFormSchema),
@@ -130,8 +129,7 @@ export function ApplicationForm() {
     const honeypotInput = form?.querySelector('input[name="company"]') as HTMLInputElement;
     if (honeypotInput?.value) {
       // Silently reject spam but show success to not alert bots
-      toast({
-        title: "Application submitted successfully!",
+      toast.success("Application submitted successfully!", {
         description: "Thank you for your interest. We'll review your application and be in touch soon.",
       });
       methods.reset();
@@ -176,10 +174,8 @@ export function ApplicationForm() {
         throw new Error("Submission failed");
       }
 
-      toast({
-        title: "Application submitted successfully!",
-        description:
-          "Thank you for your interest. We'll review your application and be in touch soon.",
+      toast.success("Application submitted successfully!", {
+        description: "Thank you for your interest. We'll review your application and be in touch soon.",
       });
 
       // Reset form and go back to first step
@@ -187,11 +183,8 @@ export function ApplicationForm() {
       setCurrentStep(0);
     } catch (error) {
       console.error("Submission error:", error);
-      toast({
-        title: "Submission failed",
-        description:
-          "There was a problem submitting your application. Please try again or contact us directly at (626) 792-4185.",
-        variant: "destructive",
+      toast.error("Submission failed", {
+        description: "There was a problem submitting your application. Please try again or contact us directly at (626) 792-4185.",
       });
     } finally {
       setIsSubmitting(false);

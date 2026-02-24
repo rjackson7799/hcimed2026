@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Lock, Loader2, ShieldCheck } from "lucide-react";
 import {
   AppointmentFormData,
@@ -37,7 +37,6 @@ import {
 
 export function AppointmentRequestForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
 
   const form = useForm<AppointmentFormData>({
     resolver: zodResolver(appointmentSchema),
@@ -84,20 +83,15 @@ export function AppointmentRequestForm() {
         throw new Error("Submission failed");
       }
 
-      toast({
-        title: "Appointment request submitted!",
-        description:
-          "We'll contact you within 1 business day to confirm your appointment.",
+      toast.success("Appointment request submitted!", {
+        description: "We'll contact you within 1 business day to confirm your appointment.",
       });
 
       form.reset();
     } catch (error) {
       console.error("Submission error:", error);
-      toast({
-        title: "Submission failed",
-        description:
-          "There was a problem submitting your request. Please try again or call us at (626) 792-4185.",
-        variant: "destructive",
+      toast.error("Submission failed", {
+        description: "There was a problem submitting your request. Please try again or call us at (626) 792-4185.",
       });
     } finally {
       setIsSubmitting(false);

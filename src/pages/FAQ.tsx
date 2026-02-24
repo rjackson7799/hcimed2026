@@ -75,9 +75,22 @@ const faqs = [
 ];
 
 export default function FAQ() {
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  };
+
   return (
     <Layout>
-      <SEO {...pageSEO.faq} />
+      <SEO {...pageSEO.faq} structuredData={faqSchema} />
       <PageHero
         title="Frequently Asked Questions" 
         subtitle="Find answers to common questions about our practice and services"
