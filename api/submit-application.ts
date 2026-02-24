@@ -1,5 +1,4 @@
 import { Resend } from "resend";
-import type { Context } from "@netlify/functions";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -495,15 +494,7 @@ function generateApplicationConfirmationEmail(data: {
   `;
 }
 
-export default async (request: Request, context: Context) => {
-  // Only allow POST
-  if (request.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
+export async function POST(request: Request) {
   try {
     const data: ApplicationPayload = await request.json();
 
@@ -593,8 +584,4 @@ export default async (request: Request, context: Context) => {
       headers: { "Content-Type": "application/json" },
     });
   }
-};
-
-export const config = {
-  path: "/api/submit-application",
-};
+}

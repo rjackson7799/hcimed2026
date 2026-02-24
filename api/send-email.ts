@@ -1,18 +1,9 @@
 import { Resend } from 'resend';
-import type { Context } from '@netlify/functions';
-import { generateContactConfirmationEmail } from './lib/email-templates';
+import { generateContactConfirmationEmail } from '../lib/email-templates';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export default async (request: Request, context: Context) => {
-  // Only allow POST requests
-  if (request.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-
+export async function POST(request: Request) {
   try {
     const { name, email, phone, message, preferredDate } = await request.json();
 
@@ -73,8 +64,4 @@ export default async (request: Request, context: Context) => {
       headers: { 'Content-Type': 'application/json' }
     });
   }
-};
-
-export const config = {
-  path: '/api/send-email'
-};
+}

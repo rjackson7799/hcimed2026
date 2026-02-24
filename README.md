@@ -1,73 +1,120 @@
-# Welcome to your Lovable project
+# Pasadena Health Hub
 
-## Project info
+Official website for **HCI Medical Group** — a trusted internal medicine and senior care practice serving Pasadena and the San Gabriel Valley since 1990.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+**Live site:** [hcimed.com](https://hcimed.com)
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+- Internal Medicine service pages (physical exams, acute care, women's & men's health, diagnostics)
+- Senior Care Plus program with specialized service pages
+- Online appointment request system with email notifications
+- Multi-step career application form
+- Health blog with markdown-based content
+- Accessibility controls (font sizing, high contrast, reduced motion)
+- SEO optimization with structured data and auto-generated sitemap
+- Mobile-first responsive design with sticky CTAs
+- Cookie consent management
 
-**Use Lovable**
+## Tech Stack
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+- **Vite 5** + **React 18** + **TypeScript**
+- **Tailwind CSS 3.4** + **shadcn/ui**
+- **React Router 6** (client-side routing)
+- **React Hook Form** + **Zod** (form validation)
+- **TanStack React Query** (data fetching)
+- **Resend** (email API)
+- **marked** (markdown rendering)
+- **Vercel** (deployment with Bun)
 
-Changes made via Lovable will be committed automatically to this repo.
+## Prerequisites
 
-**Use your preferred IDE**
+- [Bun](https://bun.sh/) (recommended)
+- Node.js 18+ (alternative)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Getting Started
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+```bash
+# Clone the repository
+git clone <repository-url>
+cd pasadena-health-hub
 
-Follow these steps:
+# Install dependencies
+bun install
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local and add your RESEND_API_KEY
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+# Start the development server
+bun run dev
+# Opens at http://localhost:8080
 ```
 
-**Edit a file directly in GitHub**
+## Environment Variables
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `RESEND_API_KEY` | Yes | API key from [Resend](https://resend.com) for form email notifications |
+| `VITE_GA_TRACKING_ID` | No | Google Analytics measurement ID |
+| `VITE_SITE_URL` | No | Site URL for OG meta tags (defaults to https://hcimed.com) |
 
-**Use GitHub Codespaces**
+## Project Structure
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```
+src/
+  components/       # UI components (layout, shadcn/ui, blog, careers, custom)
+  pages/            # Route-level page components
+  content/blog/     # Markdown blog posts with frontmatter
+  config/           # Site configuration and SEO metadata
+  context/          # React contexts (accessibility)
+  lib/              # Utilities, blog parser, Zod schemas
+  hooks/            # Custom React hooks
+  types/            # TypeScript type definitions
+api/                # Vercel serverless functions (appointments, contact, careers)
+public/             # Static assets, favicons, robots.txt
+```
 
-## What technologies are used for this project?
+## Available Scripts
 
-This project is built with:
+| Command | Description |
+|---------|-------------|
+| `bun run dev` | Start development server (port 8080) |
+| `bun run build` | Build for production |
+| `bun run preview` | Preview production build locally |
+| `bun run lint` | Run ESLint |
+| `bun run lint:fix` | Auto-fix ESLint issues |
+| `bun run type-check` | Run TypeScript type checking |
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Adding Blog Posts
 
-## How can I deploy this project?
+1. Create a new `.md` file in `src/content/blog/`
+2. Add required frontmatter at the top of the file:
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+```yaml
+---
+title: "Your Post Title"
+slug: "your-post-slug"
+description: "Brief description of the post"
+date: "2026-02-24"
+author: "Author Name"
+tags: ["tag1", "tag2"]
+featured: false
+---
+```
 
-## Can I connect a custom domain to my Lovable project?
+3. Write your content in standard Markdown below the frontmatter
+4. The post will appear automatically on the `/blog` page
 
-Yes, you can!
+## Deployment
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- Hosted on **Vercel** using Bun as the build runtime
+- Build command: `bun run build`
+- Output directory: `dist`
+- Serverless functions in `api/` are auto-deployed as Vercel functions
+- Primary domain: `hcimed.com`
+- Legacy domain `hcimedgroup.com` redirects to `hcimed.com`
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## License
+
+All rights reserved. Copyright HCI Medical Group.
