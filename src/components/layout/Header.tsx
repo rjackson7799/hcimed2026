@@ -1,11 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
-import {
-  Menu, X, Phone, Mail, ChevronDown, MapPin,
-  Stethoscope, Zap, HeartPulse, UserRound, Microscope,
-  Heart, Shield, Activity, Home, Smartphone,
-  type LucideIcon
-} from "lucide-react";
+import { Menu, X, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -18,34 +13,12 @@ import {
 import { cn } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import hciLogo from "@/assets/hci-logo.png";
-
-interface NavLink {
-  title: string;
-  href: string;
-  description: string;
-  icon: LucideIcon;
-}
-
-const internalMedicineLinks: NavLink[] = [
-  { title: "Physical Exams", href: "/internal-medicine/physical-exams", description: "Comprehensive annual wellness visits", icon: Stethoscope },
-  { title: "Acute Care", href: "/internal-medicine/acute-care", description: "Illness, infections & minor injuries", icon: Zap },
-  { title: "Women's Health", href: "/internal-medicine/womens-health", description: "Preventive screenings & hormonal health", icon: HeartPulse },
-  { title: "Men's Health", href: "/internal-medicine/mens-health", description: "Prostate health & cardiovascular screening", icon: UserRound },
-  { title: "Diagnostics", href: "/internal-medicine/diagnostics", description: "In-office testing & lab services", icon: Microscope },
-];
-
-const seniorCareLinks: NavLink[] = [
-  { title: "Senior Care+ Program", href: "/senior-care-plus", description: "Our comprehensive senior care management program", icon: Heart },
-  { title: "Prevention & Wellness", href: "/senior-care/prevention-wellness", description: "Age-appropriate screenings & vaccinations", icon: Shield },
-  { title: "Chronic Care Management", href: "/senior-care/chronic-care", description: "Diabetes, hypertension & heart disease", icon: Activity },
-  { title: "Transition of Care", href: "/senior-care/transition-care", description: "Hospital discharge support", icon: Home },
-  { title: "Remote Monitoring", href: "/senior-care/remote-monitoring", description: "Telehealth & remote patient monitoring", icon: Smartphone },
-];
+import { internalMedicineLinks, seniorCareLinks } from "./nav-data";
+import { ContactBar } from "./ContactBar";
+import { MobileNav } from "./MobileNav";
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [internalMedicineOpen, setInternalMedicineOpen] = useState(false);
-  const [seniorCareOpen, setSeniorCareOpen] = useState(false);
   const location = useLocation();
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + "/");
@@ -62,37 +35,14 @@ export function Header() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  // Close mobile menu and reset accordions on route change
+  // Close mobile menu on route change
   useEffect(() => {
     setMobileMenuOpen(false);
-    setInternalMedicineOpen(false);
-    setSeniorCareOpen(false);
   }, [location.pathname]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      {/* Top bar with contact info */}
-      <div className="hidden md:block bg-primary text-primary-foreground">
-        <div className="container flex h-10 items-center justify-between text-sm">
-          <div className="flex items-center gap-6">
-            <span className="flex items-center gap-2">
-              <MapPin className="h-3.5 w-3.5" />
-              <span>{siteConfig.address.city}, {siteConfig.address.state}</span>
-            </span>
-            <a href={`tel:${siteConfig.contact.phoneRaw}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <Phone className="h-3.5 w-3.5" />
-              <span>{siteConfig.contact.phone}</span>
-            </a>
-            <a href={`mailto:${siteConfig.contact.email}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <Mail className="h-3.5 w-3.5" />
-              <span>{siteConfig.contact.email}</span>
-            </a>
-          </div>
-          <div className="text-primary-foreground/80">
-            {siteConfig.hours.weekdays}
-          </div>
-        </div>
-      </div>
+      <ContactBar />
 
       {/* Main navigation */}
       <div className="container flex h-16 items-center justify-between">
@@ -241,153 +191,7 @@ export function Header() {
         </Button>
       </div>
 
-      {/* Mobile Navigation */}
-      {mobileMenuOpen && (
-        <>
-          {/* Backdrop overlay */}
-          <div
-            className="lg:hidden fixed inset-0 top-[104px] bg-background/80 backdrop-blur-sm z-40"
-            onClick={() => setMobileMenuOpen(false)}
-            aria-hidden="true"
-          />
-          <nav
-            id="mobile-navigation"
-            className="lg:hidden border-t border-border bg-background relative z-50"
-            aria-label="Mobile navigation"
-          >
-            <div className="container py-4 space-y-1">
-              <Link
-                to="/"
-                className="block py-3 px-2 text-foreground hover:text-primary hover:bg-accent/50 rounded-md transition-colors touch-target"
-              >
-                Home
-              </Link>
-              <Link
-                to="/our-story"
-                className="block py-3 px-2 text-foreground hover:text-primary hover:bg-accent/50 rounded-md transition-colors touch-target"
-              >
-                Our Story
-              </Link>
-
-              <div className="space-y-1">
-                <button
-                  onClick={() => setInternalMedicineOpen(!internalMedicineOpen)}
-                  className="flex items-center justify-between w-full py-3 px-2 font-medium text-foreground hover:bg-accent/50 rounded-md transition-colors touch-target"
-                  aria-expanded={internalMedicineOpen}
-                >
-                  <span>Internal Medicine</span>
-                  <ChevronDown
-                    className={cn(
-                      "h-4 w-4 transition-transform duration-200",
-                      internalMedicineOpen && "rotate-180"
-                    )}
-                    aria-hidden="true"
-                  />
-                </button>
-                <div
-                  className={cn(
-                    "pl-4 space-y-1 overflow-hidden transition-all duration-200",
-                    internalMedicineOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-                  )}
-                >
-                  {internalMedicineLinks.map((link) => {
-                    const IconComponent = link.icon;
-                    return (
-                      <Link
-                        key={link.href}
-                        to={link.href}
-                        className="flex items-center gap-3 py-3 px-2 text-muted-foreground hover:text-primary hover:bg-accent/50 rounded-md transition-colors touch-target"
-                      >
-                        <IconComponent className="h-5 w-5 text-primary/70" aria-hidden="true" />
-                        <span>{link.title}</span>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <button
-                  onClick={() => setSeniorCareOpen(!seniorCareOpen)}
-                  className="flex items-center justify-between w-full py-3 px-2 font-medium text-foreground hover:bg-accent/50 rounded-md transition-colors touch-target"
-                  aria-expanded={seniorCareOpen}
-                >
-                  <span>Senior Care</span>
-                  <ChevronDown
-                    className={cn(
-                      "h-4 w-4 transition-transform duration-200",
-                      seniorCareOpen && "rotate-180"
-                    )}
-                    aria-hidden="true"
-                  />
-                </button>
-                <div
-                  className={cn(
-                    "pl-4 space-y-1 overflow-hidden transition-all duration-200",
-                    seniorCareOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-                  )}
-                >
-                  {seniorCareLinks.map((link) => {
-                    const IconComponent = link.icon;
-                    return (
-                      <Link
-                        key={link.href}
-                        to={link.href}
-                        className="flex items-center gap-3 py-3 px-2 text-muted-foreground hover:text-secondary hover:bg-accent/50 rounded-md transition-colors touch-target"
-                      >
-                        <IconComponent className="h-5 w-5 text-secondary/70" aria-hidden="true" />
-                        <span>{link.title}</span>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <Link
-                to="/faq"
-                className="block py-3 px-2 text-foreground hover:text-primary hover:bg-accent/50 rounded-md transition-colors touch-target"
-              >
-                FAQ
-              </Link>
-              <Link
-                to="/contact"
-                className="block py-3 px-2 text-foreground hover:text-primary hover:bg-accent/50 rounded-md transition-colors touch-target"
-              >
-                Contact
-              </Link>
-
-              <div className="pt-4 border-t border-border space-y-2">
-                <a
-                  href={`tel:${siteConfig.contact.phoneRaw}`}
-                  className="flex items-center gap-2 py-2 px-2 text-sm text-muted-foreground hover:text-primary transition-colors touch-target"
-                >
-                  <Phone className="h-4 w-4" aria-hidden="true" />
-                  <span>{siteConfig.contact.phone}</span>
-                </a>
-                <a
-                  href={`mailto:${siteConfig.contact.email}`}
-                  className="flex items-center gap-2 py-2 px-2 text-sm text-muted-foreground hover:text-primary transition-colors touch-target"
-                >
-                  <Mail className="h-4 w-4" aria-hidden="true" />
-                  <span>{siteConfig.contact.email}</span>
-                </a>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <Button asChild variant="outline" className="border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground min-h-[48px]">
-                  <a href={`tel:${siteConfig.contact.phoneRaw}`}>
-                    <Phone className="h-4 w-4 mr-2" />
-                    Call
-                  </a>
-                </Button>
-                <Button asChild className="bg-secondary hover:bg-secondary/90 text-secondary-foreground min-h-[48px]">
-                  <Link to="/appointments">Request</Link>
-                </Button>
-              </div>
-            </div>
-          </nav>
-        </>
-      )}
+      {mobileMenuOpen && <MobileNav onClose={() => setMobileMenuOpen(false)} />}
     </header>
   );
 }
