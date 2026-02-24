@@ -51,6 +51,7 @@ import { AuthProvider } from "@/portal/context/AuthContext";
 import { AuthGuard } from "@/portal/components/auth/AuthGuard";
 import { RoleGuard } from "@/portal/components/auth/RoleGuard";
 import { PortalRedirect } from "@/portal/components/auth/PortalRedirect";
+import { AppShell } from "@/portal/components/layout/AppShell";
 
 const queryClient = new QueryClient();
 
@@ -103,12 +104,17 @@ const App = () => (
               {/* Portal Authenticated Routes */}
               <Route element={<AuthProvider><AuthGuard /></AuthProvider>}>
                 <Route path="/portal" element={<PortalRedirect />} />
-                {/* Admin routes — admin only */}
-                <Route path="/portal/admin" element={<RoleGuard allowedRoles={['admin']}><AdminDashboardPage /></RoleGuard>} />
-                {/* Staff routes — admin + staff can access */}
-                <Route path="/portal/staff" element={<RoleGuard allowedRoles={['admin', 'staff']}><StaffDashboardPage /></RoleGuard>} />
-                {/* Broker routes — broker only */}
-                <Route path="/portal/broker" element={<RoleGuard allowedRoles={['broker']}><BrokerDashboardPage /></RoleGuard>} />
+                {/* Portal routes with sidebar layout */}
+                <Route element={<AppShell />}>
+                  {/* Admin routes — admin only */}
+                  <Route path="/portal/admin" element={<RoleGuard allowedRoles={['admin']}><AdminDashboardPage /></RoleGuard>} />
+                  <Route path="/portal/admin/projects" element={<RoleGuard allowedRoles={['admin']}><AdminDashboardPage /></RoleGuard>} />
+                  <Route path="/portal/admin/users" element={<RoleGuard allowedRoles={['admin']}><AdminDashboardPage /></RoleGuard>} />
+                  {/* Staff routes — admin + staff can access */}
+                  <Route path="/portal/staff" element={<RoleGuard allowedRoles={['admin', 'staff']}><StaffDashboardPage /></RoleGuard>} />
+                  {/* Broker routes — broker only */}
+                  <Route path="/portal/broker" element={<RoleGuard allowedRoles={['broker']}><BrokerDashboardPage /></RoleGuard>} />
+                </Route>
               </Route>
 
               {/* Catch-all route */}

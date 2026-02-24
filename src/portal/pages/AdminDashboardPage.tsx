@@ -1,12 +1,11 @@
-import { Button } from '@/components/ui/button';
 import { useAuth } from '@/portal/context/AuthContext';
-import { LogOut, LayoutDashboard } from 'lucide-react';
+import { LayoutDashboard } from 'lucide-react';
 
 export function AdminDashboardPage() {
-  const { profile, signOut } = useAuth();
+  const { profile } = useAuth();
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-6 p-8">
+    <div className="flex flex-col items-center justify-center gap-6 py-20">
       <div className="rounded-full bg-primary/10 p-4">
         <LayoutDashboard className="h-8 w-8 text-primary" />
       </div>
@@ -19,10 +18,6 @@ export function AdminDashboardPage() {
           Dashboard features coming in Milestone 6
         </p>
       </div>
-      <Button variant="outline" onClick={signOut}>
-        <LogOut className="mr-2 h-4 w-4" />
-        Sign Out
-      </Button>
     </div>
   );
 }

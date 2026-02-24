@@ -1,12 +1,11 @@
-import { Button } from '@/components/ui/button';
 import { useAuth } from '@/portal/context/AuthContext';
-import { LogOut, Briefcase } from 'lucide-react';
+import { Briefcase } from 'lucide-react';
 
 export function BrokerDashboardPage() {
-  const { profile, signOut } = useAuth();
+  const { profile } = useAuth();
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-6 p-8">
+    <div className="flex flex-col items-center justify-center gap-6 py-20">
       <div className="rounded-full bg-slate-100 p-4">
         <Briefcase className="h-8 w-8 text-slate-700" />
       </div>
@@ -19,10 +18,6 @@ export function BrokerDashboardPage() {
           Forwarded patients and status updates coming in Milestone 5
         </p>
       </div>
-      <Button variant="outline" onClick={signOut}>
-        <LogOut className="mr-2 h-4 w-4" />
-        Sign Out
-      </Button>
     </div>
   );
 }
