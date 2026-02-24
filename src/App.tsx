@@ -45,6 +45,9 @@ const PartnerLoginPage = lazy(() => import("@/portal/pages/PartnerLoginPage").th
 const AdminDashboardPage = lazy(() => import("@/portal/pages/AdminDashboardPage").then(m => ({ default: m.AdminDashboardPage })));
 const StaffDashboardPage = lazy(() => import("@/portal/pages/StaffDashboardPage").then(m => ({ default: m.StaffDashboardPage })));
 const BrokerDashboardPage = lazy(() => import("@/portal/pages/BrokerDashboardPage").then(m => ({ default: m.BrokerDashboardPage })));
+const AdminProjectsPage = lazy(() => import("@/portal/pages/AdminProjectsPage").then(m => ({ default: m.AdminProjectsPage })));
+const AdminProjectDetailPage = lazy(() => import("@/portal/pages/AdminProjectDetailPage").then(m => ({ default: m.AdminProjectDetailPage })));
+const AdminUsersPage = lazy(() => import("@/portal/pages/AdminUsersPage").then(m => ({ default: m.AdminUsersPage })));
 
 // Portal Auth Components
 import { AuthProvider } from "@/portal/context/AuthContext";
@@ -108,8 +111,9 @@ const App = () => (
                 <Route element={<AppShell />}>
                   {/* Admin routes — admin only */}
                   <Route path="/portal/admin" element={<RoleGuard allowedRoles={['admin']}><AdminDashboardPage /></RoleGuard>} />
-                  <Route path="/portal/admin/projects" element={<RoleGuard allowedRoles={['admin']}><AdminDashboardPage /></RoleGuard>} />
-                  <Route path="/portal/admin/users" element={<RoleGuard allowedRoles={['admin']}><AdminDashboardPage /></RoleGuard>} />
+                  <Route path="/portal/admin/projects" element={<RoleGuard allowedRoles={['admin']}><AdminProjectsPage /></RoleGuard>} />
+                  <Route path="/portal/admin/projects/:id" element={<RoleGuard allowedRoles={['admin']}><AdminProjectDetailPage /></RoleGuard>} />
+                  <Route path="/portal/admin/users" element={<RoleGuard allowedRoles={['admin']}><AdminUsersPage /></RoleGuard>} />
                   {/* Staff routes — admin + staff can access */}
                   <Route path="/portal/staff" element={<RoleGuard allowedRoles={['admin', 'staff']}><StaffDashboardPage /></RoleGuard>} />
                   {/* Broker routes — broker only */}
