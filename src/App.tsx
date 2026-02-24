@@ -39,6 +39,19 @@ const InsuranceUpdate = lazy(() => import("./pages/InsuranceUpdate"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 
+// Portal Pages (lazy-loaded, isolated from public site)
+const LoginPage = lazy(() => import("@/portal/pages/LoginPage").then(m => ({ default: m.LoginPage })));
+const PartnerLoginPage = lazy(() => import("@/portal/pages/PartnerLoginPage").then(m => ({ default: m.PartnerLoginPage })));
+const AdminDashboardPage = lazy(() => import("@/portal/pages/AdminDashboardPage").then(m => ({ default: m.AdminDashboardPage })));
+const StaffDashboardPage = lazy(() => import("@/portal/pages/StaffDashboardPage").then(m => ({ default: m.StaffDashboardPage })));
+const BrokerDashboardPage = lazy(() => import("@/portal/pages/BrokerDashboardPage").then(m => ({ default: m.BrokerDashboardPage })));
+
+// Portal Auth Components
+import { AuthProvider } from "@/portal/context/AuthContext";
+import { AuthGuard } from "@/portal/components/auth/AuthGuard";
+import { RoleGuard } from "@/portal/components/auth/RoleGuard";
+import { PortalRedirect } from "@/portal/components/auth/PortalRedirect";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -82,6 +95,21 @@ const App = () => (
               {/* Blog */}
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
+
+              {/* Portal Login Routes (no public layout) */}
+              <Route path="/hci-login" element={<LoginPage />} />
+              <Route path="/partner-login" element={<PartnerLoginPage />} />
+
+              {/* Portal Authenticated Routes */}
+              <Route element={<AuthProvider><AuthGuard /></AuthProvider>}>
+                <Route path="/portal" element={<PortalRedirect />} />
+                {/* Admin routes — admin only */}
+                <Route path="/portal/admin" element={<RoleGuard allowedRoles={['admin']}><AdminDashboardPage /></RoleGuard>} />
+                {/* Staff routes — admin + staff can access */}
+                <Route path="/portal/staff" element={<RoleGuard allowedRoles={['admin', 'staff']}><StaffDashboardPage /></RoleGuard>} />
+                {/* Broker routes — broker only */}
+                <Route path="/portal/broker" element={<RoleGuard allowedRoles={['broker']}><BrokerDashboardPage /></RoleGuard>} />
+              </Route>
 
               {/* Catch-all route */}
               <Route path="*" element={<NotFound />} />
