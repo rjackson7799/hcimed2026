@@ -145,10 +145,70 @@ Use `.env.example` as a template: `cp .env.example .env.local`
 - **Accessibility preferences** persisted in localStorage under `hci-accessibility-preferences`
 - **TypeScript** is not in strict mode (`noImplicitAny: false`, `strictNullChecks: false`)
 
+## Patient Outreach Tracking Portal (`src/portal/`)
+
+Internal module for tracking patient outreach across insurance transitions. Isolated from the public site — all portal code lives in `src/portal/`.
+
+### Portal Structure
+```
+src/portal/
+├── components/
+│   ├── admin/       # Dashboard, charts, project manager, CSV upload, audit log
+│   ├── auth/        # AuthGuard, RoleGuard, LoginForm, SessionTimeout
+│   ├── broker/      # ForwardedList, StatusUpdater, MessageThread
+│   ├── layout/      # AppShell, PortalSidebar, TopBar, MobileNav
+│   ├── shared/      # StatusBadge, LoadingStates, ExportButton
+│   └── staff/       # PatientQueue, PatientCard, CallLogger, CallHistory, BrokerForward
+├── context/         # AuthContext, ProjectContext
+├── hooks/           # React Query hooks for all data operations
+├── lib/             # supabase.ts, csv.ts, export.ts
+├── pages/           # Route-level page components (named exports)
+├── schemas/         # Zod validation schemas
+├── types/           # database.ts, enums.ts, index.ts
+└── utils/           # constants.ts, formatters.ts
+```
+
+### Portal Routes
+| Route | Role | Description |
+|-------|------|-------------|
+| `/hci-login` | Public | Admin & Staff login (HCI-branded) |
+| `/partner-login` | Public | Broker login (partner-branded) |
+| `/portal` | Auth | Redirects based on role |
+| `/portal/admin` | Admin | Dashboard with charts |
+| `/portal/admin/projects` | Admin | Project list |
+| `/portal/admin/projects/:id` | Admin | Project detail + CSV upload |
+| `/portal/admin/users` | Admin | User management |
+| `/portal/admin/audit-log` | Admin | HIPAA audit log viewer |
+| `/portal/staff` | Admin, Staff | Patient queue + call logging |
+| `/portal/broker` | Broker | Forwarded patients + status updates |
+
+### Portal Tech
+- **Auth:** Supabase Auth with email/password, 30-min session timeout
+- **Data:** Supabase PostgreSQL with RLS, React Query for caching
+- **Realtime:** Supabase Realtime subscriptions (auto-refresh dashboard)
+- **Charts:** recharts (donut, bar, funnel) via shadcn chart wrapper
+- **Email:** Resend API via `api/send-broker-email.ts` (Vercel serverless)
+- **CSV:** papaparse with Zod validation for patient imports
+
+### Portal Environment Variables
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `VITE_SUPABASE_URL` | Yes | Supabase project URL |
+| `VITE_SUPABASE_ANON_KEY` | Yes | Supabase anonymous key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes (Vercel) | Service role key for broker email API |
+
+### Portal Conventions
+- **Named exports** for all portal components (not default exports)
+- **Lazy imports** use `.then(m => ({ default: m.ComponentName }))` remapping
+- **AuthProvider** wraps only portal routes — never initializes for public visitors
+- **Portal routes excluded** from sitemap and marked `noindex`
+- **Do not add portal routes** to `dynamicRoutes` in `vite.config.ts`
+
 ## Important Warnings
 
 - **Never commit** `.env.local` or any file containing `RESEND_API_KEY`
 - **Never manually edit** files in `src/components/ui/` — use the shadcn CLI
-- **When adding new routes**: also add them to the `dynamicRoutes` array in `vite.config.ts`
-- **When adding new pages**: also add SEO metadata in `src/config/seo.ts`
+- **When adding new public routes**: also add them to the `dynamicRoutes` array in `vite.config.ts`
+- **When adding new public pages**: also add SEO metadata in `src/config/seo.ts`
+- **Portal routes** should NOT be added to sitemap or SEO config
 - **Blog slugs** must match the `slug` field in frontmatter, not the filename

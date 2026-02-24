@@ -48,6 +48,7 @@ const BrokerDashboardPage = lazy(() => import("@/portal/pages/BrokerDashboardPag
 const AdminProjectsPage = lazy(() => import("@/portal/pages/AdminProjectsPage").then(m => ({ default: m.AdminProjectsPage })));
 const AdminProjectDetailPage = lazy(() => import("@/portal/pages/AdminProjectDetailPage").then(m => ({ default: m.AdminProjectDetailPage })));
 const AdminUsersPage = lazy(() => import("@/portal/pages/AdminUsersPage").then(m => ({ default: m.AdminUsersPage })));
+const AdminAuditLogPage = lazy(() => import("@/portal/pages/AdminAuditLogPage").then(m => ({ default: m.AdminAuditLogPage })));
 
 // Portal Auth Components
 import { AuthProvider } from "@/portal/context/AuthContext";
@@ -114,6 +115,7 @@ const App = () => (
                   <Route path="/portal/admin/projects" element={<RoleGuard allowedRoles={['admin']}><AdminProjectsPage /></RoleGuard>} />
                   <Route path="/portal/admin/projects/:id" element={<RoleGuard allowedRoles={['admin']}><AdminProjectDetailPage /></RoleGuard>} />
                   <Route path="/portal/admin/users" element={<RoleGuard allowedRoles={['admin']}><AdminUsersPage /></RoleGuard>} />
+                  <Route path="/portal/admin/audit-log" element={<RoleGuard allowedRoles={['admin']}><AdminAuditLogPage /></RoleGuard>} />
                   {/* Staff routes — admin + staff can access */}
                   <Route path="/portal/staff" element={<RoleGuard allowedRoles={['admin', 'staff']}><StaffDashboardPage /></RoleGuard>} />
                   {/* Broker routes — broker only */}

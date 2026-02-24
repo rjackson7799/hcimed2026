@@ -327,3 +327,52 @@
     border: 0;
   }
 }
+
+/* Portal Print Styles */
+@media print {
+  /* Hide navigation, sidebar, buttons, and interactive elements */
+  [data-sidebar],
+  nav,
+  .mobile-nav,
+  button:not(.print-visible),
+  [role="dialog"],
+  .toaster,
+  [data-sonner-toaster] {
+    display: none !important;
+  }
+
+  /* Reset page layout */
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+  }
+
+  /* Ensure content fills the page */
+  main,
+  [data-content] {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* B&W friendly badges and cards */
+  .rounded-md,
+  .rounded-lg {
+    border: 1px solid #ccc !important;
+  }
+
+  /* Prevent page breaks inside cards */
+  .card,
+  tr {
+    page-break-inside: avoid;
+  }
+
+  /* Show URLs for links */
+  a[href^="tel:"]::after {
+    content: " (" attr(href) ")";
+    font-size: 10pt;
+    color: #666;
+  }
+}

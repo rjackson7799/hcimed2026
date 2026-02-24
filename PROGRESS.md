@@ -40,9 +40,9 @@ Tracking document for Pasadena Health Hub (hcimed.com) development.
 - [x] **Milestone 2:** Portal shell with shadcn Sidebar, role-aware navigation, mobile bottom nav
 - [x] **Milestone 3:** Admin project CRUD, CSV upload with validation/dedup, staff assignment, user management
 - [x] **Milestone 4:** Staff patient queue (search, filter, pagination), one-tap call logging with dispositions, call history
-- [ ] **Milestone 5:** Broker forwarding, broker portal, email notifications, messaging
-- [ ] **Milestone 6:** Admin dashboard with real-time charts, CSV export, staff activity tracking
-- [ ] **Milestone 7:** Audit log viewer, print styles, HIPAA compliance polish
+- [x] **Milestone 5:** Broker forwarding, broker portal, email notifications, messaging
+- [x] **Milestone 6:** Admin dashboard with real-time charts, CSV export, staff activity tracking
+- [x] **Milestone 7:** Audit log viewer, print styles, HIPAA compliance polish
 
 ### Known Issues / Recent Fixes
 
@@ -55,9 +55,9 @@ Tracking document for Pasadena Health Hub (hcimed.com) development.
 ## Upcoming Development Tasks
 
 ### Patient Outreach Portal
-- [ ] Milestone 5: Broker forwarding and portal
-- [ ] Milestone 6: Admin dashboard with real-time updates
-- [ ] Milestone 7: HIPAA compliance, print styles, audit log
+- [x] All 8 milestones complete (MVP feature-complete)
+- [ ] Phase 2: Dark mode, notification bell, bulk actions, keyboard shortcuts
+- [ ] Phase 2: Offline-resilient logging, data anonymization, cross-project search
 
 ### Content & Blog
 - [ ] _Add tasks here_
@@ -82,6 +82,9 @@ Tracking document for Pasadena Health Hub (hcimed.com) development.
 ## Changelog
 
 ### 2026-02-24
+- **Portal Milestone 7:** Audit log viewer, print styles, HIPAA compliance polish, CLAUDE.md portal docs
+- **Portal Milestone 6:** Admin dashboard with recharts (donut, bar, funnel), Supabase Realtime subscriptions, CSV export
+- **Portal Milestone 5:** Broker forwarding with email (Resend API), broker portal with status updates and messaging
 - **Portal Milestone 4:** Staff patient queue with search/filter/pagination, one-tap call logging with color-coded dispositions, call history timeline
 - **Portal Milestone 3:** Admin project management, CSV upload with papaparse validation, staff assignment UI
 - **Portal Milestone 2:** Portal shell with shadcn Sidebar, role-aware navigation (admin/staff/broker), mobile bottom nav
