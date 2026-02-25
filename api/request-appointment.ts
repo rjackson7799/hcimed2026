@@ -336,7 +336,7 @@ export async function POST(request: Request) {
     const patientTypeLabel = isNewPatient ? "New Patient" : "Existing Patient";
 
     const { error } = await resend.emails.send({
-      from: "HCI Appointments <onboarding@resend.dev>",
+      from: "HCI Appointments <noreply@hcimed.com>",
       to: APPOINTMENT_RECIPIENTS,
       cc: ['admin@hcimed.com'],
       replyTo: data.email,
