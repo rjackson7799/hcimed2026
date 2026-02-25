@@ -67,9 +67,11 @@ export interface Profile {
   id: string;
   email: string;
   full_name: string;
-  role: 'admin' | 'staff' | 'broker';
+  role: 'admin' | 'staff' | 'provider' | 'broker';
   phone: string | null;
   is_active: boolean;
+  company_name: string | null;
+  logo_url: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -91,7 +93,7 @@ export interface ProjectAssignment {
   id: string;
   project_id: string;
   user_id: string;
-  role_in_project: 'staff' | 'broker';
+  role_in_project: 'staff' | 'broker' | 'provider';
   assigned_at: string;
   assigned_by: string;
 }

@@ -76,26 +76,37 @@ export function PortalSidebar() {
   );
 
   return (
-    <Sidebar>
-      <SidebarHeader className="border-b px-4 py-3">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground text-sm font-bold">
-            HCI
+    <Sidebar className="border-r-0">
+      <SidebarHeader className="px-3 py-4">
+        {role === 'broker' && profile?.logo_url ? (
+          <div className="flex items-center gap-2">
+            <img
+              src={profile.logo_url}
+              alt={profile.company_name ?? 'Partner'}
+              className="h-8 w-auto max-w-[140px] object-contain"
+            />
+            <span className="text-xs text-muted-foreground">Broker Access</span>
           </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold">HCI Portal</span>
-            <span className="text-xs text-muted-foreground capitalize">{role} Access</span>
+        ) : (
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground text-sm font-bold">
+              HCI
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold">HCI Portal</span>
+              <span className="text-xs text-muted-foreground capitalize">{role} Access</span>
+            </div>
           </div>
-        </div>
+        )}
       </SidebarHeader>
 
       <SidebarContent>
         {/* Admin navigation */}
         {role === 'admin' && renderNavGroup('Administration', adminNav)}
 
-        {/* Staff navigation — visible to admin and staff */}
-        {(role === 'admin' || role === 'staff') && renderNavGroup(
-          role === 'admin' ? 'Staff View' : 'Outreach',
+        {/* Staff navigation — visible to admin, staff, and providers */}
+        {(role === 'admin' || role === 'staff' || role === 'provider') && renderNavGroup(
+          role === 'admin' ? 'Staff View' : role === 'provider' ? 'Patient Outreach' : 'Outreach',
           staffNav
         )}
 
@@ -103,8 +114,8 @@ export function PortalSidebar() {
         {role === 'broker' && renderNavGroup('Broker Portal', brokerNav)}
       </SidebarContent>
 
-      <SidebarFooter className="border-t p-4">
-        <div className="flex items-center gap-3 mb-3">
+      <SidebarFooter className="px-3 pt-4 pb-3">
+        <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-medium">
             {profile?.full_name?.charAt(0) ?? '?'}
           </div>

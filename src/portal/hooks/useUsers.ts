@@ -43,15 +43,63 @@ export function useUpdateUser() {
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Profile> & { id: string }) => {
+      // Whitelist allowed fields to prevent role/privilege escalation
+      const { full_name, phone, company_name, logo_url } = updates as Record<string, unknown>;
+      const safeUpdates: Record<string, unknown> = {};
+      if (full_name !== undefined) safeUpdates.full_name = full_name;
+      if (phone !== undefined) safeUpdates.phone = phone;
+      if (company_name !== undefined) safeUpdates.company_name = company_name;
+      if (logo_url !== undefined) safeUpdates.logo_url = logo_url;
+
       const { data, error } = await supabase
         .from('profiles')
-        .update(updates)
+        .update(safeUpdates)
         .eq('id', id)
         .select()
         .single();
 
       if (error) throw error;
       return data as Profile;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+}
+
+export function useUploadPartnerLogo() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ userId, file, companyName }: { userId: string; file: File; companyName?: string }) => {
+      const ext = file.name.split('.').pop() ?? 'png';
+      const path = `${userId}/logo.${ext}`;
+
+      // Upload to partner-logos bucket (upsert to overwrite previous)
+      const { error: uploadError } = await supabase.storage
+        .from('partner-logos')
+        .upload(path, file, { upsert: true, contentType: file.type });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('partner-logos')
+        .getPublicUrl(path);
+
+      // Update profile with logo URL (and company name if provided)
+      const publicUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+      const updates: Record<string, unknown> = { logo_url: publicUrl };
+      if (companyName !== undefined) updates.company_name = companyName;
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', userId);
+
+      if (updateError) throw updateError;
+
+      return publicUrl;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
@@ -70,6 +118,41 @@ export function useDeactivateUser() {
         .eq('id', userId);
 
       if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+}
+
+export function useInviteUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { email: string; full_name: string; role: string }) => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error('Not authenticated');
+
+      const response = await fetch('/api/invite-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to invite user');
+      }
+
+      return result as {
+        success: boolean;
+        user: { id: string; email: string; full_name: string; role: string };
+        temporary_password: string;
+      };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });

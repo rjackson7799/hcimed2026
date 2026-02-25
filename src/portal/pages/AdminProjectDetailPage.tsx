@@ -3,9 +3,17 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
 import { useProject } from '@/portal/hooks/useProjects';
+import { useProjectSummary, useStaffActivity, useDailyCallVolume } from '@/portal/hooks/useDashboard';
+import { useRealtime } from '@/portal/hooks/useRealtime';
 import { StatusBadge } from '@/portal/components/shared/StatusBadge';
+import { ExportButton } from '@/portal/components/shared/ExportButton';
 import { CsvUploader } from '@/portal/components/admin/CsvUploader';
 import { StaffAssignment } from '@/portal/components/admin/StaffAssignment';
+import { SummaryCards } from '@/portal/components/admin/SummaryCards';
+import { DispositionChart } from '@/portal/components/admin/DispositionChart';
+import { DailyCallChart } from '@/portal/components/admin/DailyCallChart';
+import { PipelineFunnel } from '@/portal/components/admin/PipelineFunnel';
+import { StaffActivityTable } from '@/portal/components/admin/StaffActivityTable';
 import { PageSkeleton } from '@/portal/components/shared/LoadingStates';
 import { formatDate } from '@/portal/utils/formatters';
 
@@ -14,23 +22,31 @@ export function AdminProjectDetailPage() {
 
   const { data: project, isLoading, error, refetch } = useProject(id!);
 
+  // Dashboard data hooks
+  useRealtime(id ?? null);
+  const { data: summary, isLoading: summaryLoading } = useProjectSummary(id ?? '');
+  const { data: staffActivity } = useStaffActivity(id ?? '');
+  const { data: dailyVolume } = useDailyCallVolume(id ?? '');
+
   if (isLoading) return <PageSkeleton />;
   if (error || !project) {
     return <p className="text-destructive">Project not found.</p>;
   }
 
   return (
-    <div className="space-y-6">
+    <div>
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" asChild>
+      <div className="mb-2 flex items-center justify-between">
+        <Button variant="ghost" size="sm" className="-ml-3" asChild>
           <Link to="/portal/admin/projects">
             <ArrowLeft className="mr-1 h-4 w-4" />
             Projects
           </Link>
         </Button>
+        <ExportButton projectId={project.id} projectName={project.name} />
       </div>
 
+      <div className="space-y-6">
       {/* Project Info */}
       <Card>
         <CardHeader>
@@ -73,11 +89,32 @@ export function AdminProjectDetailPage() {
         </CardContent>
       </Card>
 
+      {/* Dashboard Summary */}
+      {summaryLoading ? (
+        <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-24 rounded-lg bg-muted animate-pulse" />
+          ))}
+        </div>
+      ) : summary ? (
+        <>
+          <SummaryCards summary={summary} />
+          <div className="grid gap-6 lg:grid-cols-2">
+            <DispositionChart summary={summary} />
+            <PipelineFunnel summary={summary} />
+          </div>
+        </>
+      ) : null}
+
+      {dailyVolume && <DailyCallChart data={dailyVolume} />}
+      {staffActivity && <StaffActivityTable data={staffActivity} />}
+
       {/* CSV Upload */}
       <CsvUploader projectId={project.id} onImportComplete={() => refetch()} />
 
       {/* Staff Assignment */}
       <StaffAssignment projectId={project.id} />
+      </div>
     </div>
   );
 }

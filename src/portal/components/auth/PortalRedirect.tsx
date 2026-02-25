@@ -17,6 +17,8 @@ export function PortalRedirect() {
       return <Navigate to="/portal/admin" replace />;
     case 'staff':
       return <Navigate to="/portal/staff" replace />;
+    case 'provider':
+      return <Navigate to="/portal/staff" replace />;
     case 'broker':
       return <Navigate to="/portal/broker" replace />;
     default:

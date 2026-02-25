@@ -48,7 +48,32 @@ export function useCreateBrokerUpdate() {
 
       return data as BrokerUpdate;
     },
-    onSuccess: (_, variables) => {
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey: ['broker-updates', variables.patient_id] });
+      const previous = queryClient.getQueryData(['broker-updates', variables.patient_id]);
+
+      // Optimistically add the new update at the top of the list
+      queryClient.setQueryData(
+        ['broker-updates', variables.patient_id],
+        (old: any[] | undefined) => {
+          const optimistic = {
+            id: `optimistic-${Date.now()}`,
+            ...variables,
+            created_at: new Date().toISOString(),
+            profiles: null,
+          };
+          return old ? [optimistic, ...old] : [optimistic];
+        }
+      );
+
+      return { previous };
+    },
+    onError: (_err, variables, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['broker-updates', variables.patient_id], context.previous);
+      }
+    },
+    onSettled: (_, __, variables) => {
       queryClient.invalidateQueries({ queryKey: ['broker-updates', variables.patient_id] });
       queryClient.invalidateQueries({ queryKey: ['broker-patients'] });
       queryClient.invalidateQueries({ queryKey: ['patients'] });

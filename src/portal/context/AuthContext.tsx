@@ -42,9 +42,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, SESSION_WARNING_MS);
 
     logoutTimerRef.current = setTimeout(async () => {
+      const loginPath = profile?.role === 'broker' ? '/partner-login' : '/hci-login';
       await supabase.auth.signOut();
+      window.location.href = loginPath;
     }, SESSION_TIMEOUT_MS);
-  }, []);
+  }, [profile?.role]);
 
   const extendSession = useCallback(() => {
     resetTimers();
@@ -130,13 +132,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      return { error: error.message };
+      // Log failed login attempt for HIPAA audit trail
+      try {
+        await supabase.from('audit_log').insert({
+          action: 'LOGIN_FAILED',
+          table_name: 'auth',
+          new_values: { email, reason: 'invalid_credentials' },
+        });
+      } catch {
+        // Audit log failure should not block login flow
+      }
+      // Return generic message to prevent user enumeration
+      return { error: 'Invalid email or password' };
     }
+
+    // Log successful login
+    try {
+      await supabase.from('audit_log').insert({
+        action: 'LOGIN_SUCCESS',
+        table_name: 'auth',
+        new_values: { email },
+      });
+    } catch {
+      // Audit log failure should not block login flow
+    }
+
     return { error: null };
   };
 
   const signOut = async () => {
+    const loginPath = profile?.role === 'broker' ? '/partner-login' : '/hci-login';
     await supabase.auth.signOut();
+    window.location.href = loginPath;
   };
 
   return (

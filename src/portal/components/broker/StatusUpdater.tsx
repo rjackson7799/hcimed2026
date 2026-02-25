@@ -4,6 +4,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/portal/context/AuthContext';
 import { useCreateBrokerUpdate, useBrokerUpdates } from '@/portal/hooks/useBrokerUpdates';
 import { StatusBadge } from '@/portal/components/shared/StatusBadge';
@@ -27,7 +28,7 @@ export function StatusUpdater({ patient }: StatusUpdaterProps) {
   const [notes, setNotes] = useState('');
   const { user } = useAuth();
   const createUpdate = useCreateBrokerUpdate();
-  const { data: updates } = useBrokerUpdates(patient.id);
+  const { data: updates, isLoading: updatesLoading } = useBrokerUpdates(patient.id);
 
   const handleSubmit = async () => {
     if (!selectedStatus || !user) return;
@@ -51,7 +52,13 @@ export function StatusUpdater({ patient }: StatusUpdaterProps) {
   return (
     <div className="space-y-4">
       {/* Previous updates */}
-      {updates && updates.length > 0 && (
+      {updatesLoading && (
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-28" />
+          <Skeleton className="h-16 w-full rounded-lg" />
+        </div>
+      )}
+      {!updatesLoading && updates && updates.length > 0 && (
         <div className="space-y-2">
           <p className="text-sm font-medium text-muted-foreground">Update History</p>
           {updates.map((update: any) => (
@@ -74,7 +81,7 @@ export function StatusUpdater({ patient }: StatusUpdaterProps) {
       {patient.outreach_status !== 'completed' && patient.outreach_status !== 'unable_to_complete' && (
         <div className="space-y-3">
           <p className="text-sm font-medium text-muted-foreground">Update Status:</p>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {STATUS_OPTIONS.map((option) => (
               <button
                 key={option.value}

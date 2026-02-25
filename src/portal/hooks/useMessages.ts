@@ -39,7 +39,33 @@ export function useSendMessage() {
       if (error) throw error;
       return data as Message;
     },
-    onSuccess: (_, variables) => {
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey: ['messages', variables.patient_id] });
+      const previous = queryClient.getQueryData(['messages', variables.patient_id]);
+
+      // Optimistically append the message to the thread
+      queryClient.setQueryData(
+        ['messages', variables.patient_id],
+        (old: any[] | undefined) => {
+          const optimistic = {
+            id: `optimistic-${Date.now()}`,
+            ...variables,
+            is_read: true,
+            created_at: new Date().toISOString(),
+            profiles: null, // Will be filled on refetch
+          };
+          return old ? [...old, optimistic] : [optimistic];
+        }
+      );
+
+      return { previous };
+    },
+    onError: (_err, variables, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['messages', variables.patient_id], context.previous);
+      }
+    },
+    onSettled: (_, __, variables) => {
       queryClient.invalidateQueries({ queryKey: ['messages', variables.patient_id] });
       queryClient.invalidateQueries({ queryKey: ['unread-count'] });
     },

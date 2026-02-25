@@ -117,7 +117,7 @@ export function MessageThread({ patient }: MessageThreadProps) {
       <div className="flex gap-2">
         <div className="flex-1">
           <Textarea
-            placeholder="Type a message... (Enter to send, Shift+Enter for new line)"
+            placeholder="Type a message..."
             value={body}
             onChange={(e) => setBody(e.target.value.slice(0, MAX_MESSAGE_LENGTH))}
             onKeyDown={handleKeyDown}
@@ -134,7 +134,7 @@ export function MessageThread({ patient }: MessageThreadProps) {
           size="icon"
           onClick={handleSend}
           disabled={!body.trim() || sendMessage.isPending}
-          className="shrink-0 self-end mb-5"
+          className="shrink-0 self-end mb-5 min-h-[44px] min-w-[44px]"
         >
           {sendMessage.isPending ? (
             <Loader2 className="h-4 w-4 animate-spin" />

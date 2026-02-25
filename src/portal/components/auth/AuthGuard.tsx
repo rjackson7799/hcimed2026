@@ -15,9 +15,7 @@ export function AuthGuard() {
   }
 
   if (!isAuthenticated) {
-    // Redirect brokers to partner login, others to HCI login
-    const loginPath = role === 'broker' ? '/partner-login' : '/hci-login';
-    return <Navigate to={loginPath} state={{ from: location }} replace />;
+    return <Navigate to="/hci-login" state={{ from: location }} replace />;
   }
 
   return (

@@ -90,8 +90,10 @@ export function AdminDashboardPage() {
       )}
 
       {/* Dashboard content */}
-      {selectedProjectId && (
+      {selectedProjectId && selectedProject && (
         <>
+          <h2 className="text-lg font-semibold font-display">{selectedProject.name}</h2>
+
           {/* Summary cards */}
           {summaryLoading ? (
             <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">

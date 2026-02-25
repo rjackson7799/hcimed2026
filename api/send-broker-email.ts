@@ -14,7 +14,6 @@ function escapeHtml(str: string): string {
 
 export async function POST(request: Request) {
   try {
-    // Use service role key for server-side queries
     const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -25,7 +24,42 @@ export async function POST(request: Request) {
       });
     }
 
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    // 1. Verify caller is authenticated
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
+
+    const { data: { user: callerUser }, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !callerUser) {
+      return new Response(JSON.stringify({ error: 'Invalid authentication' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // 2. Verify caller is staff or admin
+    const { data: callerProfile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', callerUser.id)
+      .single();
+
+    if (!callerProfile || !['admin', 'staff'].includes(callerProfile.role)) {
+      return new Response(JSON.stringify({ error: 'Staff or admin access required' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     const body = await request.json();
     const { patient_id, project_id } = body;

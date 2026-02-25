@@ -15,8 +15,12 @@ const CSV_HEADERS = [
 
 function escapeCSV(value: string | null | undefined): string {
   if (!value) return '';
-  const str = String(value);
-  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+  let str = String(value);
+  // Prevent CSV formula injection (DDE attacks) by escaping trigger characters
+  if (/^[=+\-@\t\r]/.test(str)) {
+    str = `'${str}`;
+  }
+  if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes("'")) {
     return `"${str.replace(/"/g, '""')}"`;
   }
   return str;

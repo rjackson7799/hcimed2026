@@ -25,10 +25,23 @@ export function ExportButton({ projectId, projectName }: ExportButtonProps) {
 
       if (error) throw error;
 
-      const csv = patientsToCSV((data || []) as Patient[]);
+      const patients = (data || []) as Patient[];
+      const csv = patientsToCSV(patients);
       const filename = `${projectName.replace(/[^a-zA-Z0-9]/g, '_')}_patients_${new Date().toISOString().split('T')[0]}.csv`;
       downloadBlob(csv, filename);
-      toast.success(`Exported ${(data || []).length} patients`);
+
+      // HIPAA audit log: record bulk PHI export
+      try {
+        await supabase.from('audit_log').insert({
+          action: 'EXPORT_CSV',
+          table_name: 'patients',
+          new_values: { project_id: projectId, project_name: projectName, patient_count: patients.length },
+        });
+      } catch {
+        // Audit failure should not block export
+      }
+
+      toast.success(`Exported ${patients.length} patients`);
     } catch {
       toast.error('Failed to export patients');
     } finally {

@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# Seed scripts (may contain test credentials)
+scripts/
+
+# Environment files (catch bare .env in addition to *.local)
+.env
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

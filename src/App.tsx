@@ -116,8 +116,8 @@ const App = () => (
                   <Route path="/portal/admin/projects/:id" element={<RoleGuard allowedRoles={['admin']}><AdminProjectDetailPage /></RoleGuard>} />
                   <Route path="/portal/admin/users" element={<RoleGuard allowedRoles={['admin']}><AdminUsersPage /></RoleGuard>} />
                   <Route path="/portal/admin/audit-log" element={<RoleGuard allowedRoles={['admin']}><AdminAuditLogPage /></RoleGuard>} />
-                  {/* Staff routes — admin + staff can access */}
-                  <Route path="/portal/staff" element={<RoleGuard allowedRoles={['admin', 'staff']}><StaffDashboardPage /></RoleGuard>} />
+                  {/* Staff routes — admin, staff, and providers can access */}
+                  <Route path="/portal/staff" element={<RoleGuard allowedRoles={['admin', 'staff', 'provider']}><StaffDashboardPage /></RoleGuard>} />
                   {/* Broker routes — broker only */}
                   <Route path="/portal/broker" element={<RoleGuard allowedRoles={['broker']}><BrokerDashboardPage /></RoleGuard>} />
                 </Route>

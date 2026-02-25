@@ -29,9 +29,7 @@ function LoginPageInner() {
         {/* Left side - branding */}
         <div className="hidden lg:flex lg:w-1/2 flex-col justify-center px-12 bg-gradient-to-br from-[hsl(207,44%,24%)] to-[hsl(199,67%,38%)]">
           <div className="max-w-md">
-            <h1 className="text-4xl font-bold text-white font-display mb-4">
-              HCI Medical Group
-            </h1>
+            <img src="/email/hci-logo.png" alt="HCI Medical Group" className="h-14 w-auto mb-6 brightness-0 invert" />
             <p className="text-xl text-blue-100 mb-2">
               Staff Portal
             </p>
@@ -47,6 +45,7 @@ function LoginPageInner() {
           <div className="mx-auto w-full max-w-sm">
             {/* Mobile header */}
             <div className="mb-8 lg:hidden">
+              <img src="/email/hci-logo.png" alt="HCI Medical Group" className="h-10 w-auto mb-4" />
               <h1 className="text-2xl font-bold text-primary font-display">
                 HCI Medical Group
               </h1>

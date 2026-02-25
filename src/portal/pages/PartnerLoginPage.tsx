@@ -29,6 +29,7 @@ function PartnerLoginInner() {
         {/* Left side - branding */}
         <div className="hidden lg:flex lg:w-1/2 flex-col justify-center px-12 bg-gradient-to-br from-slate-700 to-slate-900">
           <div className="max-w-md">
+            <img src="/email/hci-logo.png" alt="HCI Medical Group" className="h-14 w-auto mb-6 brightness-0 invert" />
             <h1 className="text-4xl font-bold text-white font-display mb-4">
               Partner Portal
             </h1>
@@ -47,6 +48,7 @@ function PartnerLoginInner() {
           <div className="mx-auto w-full max-w-sm">
             {/* Mobile header */}
             <div className="mb-8 lg:hidden">
+              <img src="/email/hci-logo.png" alt="HCI Medical Group" className="h-10 w-auto mb-4" />
               <h1 className="text-2xl font-bold text-slate-800 font-display">
                 Partner Portal
               </h1>

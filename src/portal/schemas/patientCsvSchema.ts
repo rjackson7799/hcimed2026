@@ -1,17 +1,27 @@
 import { z } from 'zod';
 
+// Strip CSV formula injection trigger characters from imported values
+const safeCsvString = (schema: z.ZodString) =>
+  schema.transform((val) => val.replace(/^[=+\-@\t\r]+/, ''));
+
+const optionalSafeCsvString = z
+  .string()
+  .optional()
+  .or(z.literal(''))
+  .transform((val) => (val ? val.replace(/^[=+\-@\t\r]+/, '') : val));
+
 export const patientCsvRowSchema = z.object({
-  first_name: z.string().min(1, 'First name required'),
-  last_name: z.string().min(1, 'Last name required'),
+  first_name: safeCsvString(z.string().min(1, 'First name required')),
+  last_name: safeCsvString(z.string().min(1, 'Last name required')),
   date_of_birth: z.string().min(1, 'Date of birth required'),
   phone_primary: z.string().min(10, 'Phone number required (10+ digits)'),
-  phone_secondary: z.string().optional().or(z.literal('')),
-  address: z.string().optional().or(z.literal('')),
-  city: z.string().optional().or(z.literal('')),
-  zip_code: z.string().optional().or(z.literal('')),
-  current_insurance: z.string().optional().or(z.literal('')),
-  member_id: z.string().optional().or(z.literal('')),
-  notes: z.string().optional().or(z.literal('')),
+  phone_secondary: optionalSafeCsvString,
+  address: optionalSafeCsvString,
+  city: optionalSafeCsvString,
+  zip_code: optionalSafeCsvString,
+  current_insurance: optionalSafeCsvString,
+  member_id: optionalSafeCsvString,
+  notes: optionalSafeCsvString,
 });
 
 export type PatientCsvRow = z.infer<typeof patientCsvRowSchema>;

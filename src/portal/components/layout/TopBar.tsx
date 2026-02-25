@@ -11,7 +11,7 @@ export function TopBar({ title }: TopBarProps) {
   const { profile, role } = useAuth();
 
   return (
-    <header className="flex h-14 items-center gap-4 border-b bg-white px-4 lg:px-6">
+    <header className="flex h-14 items-center gap-4 border-b border-border/50 bg-background px-4 lg:px-6">
       <SidebarTrigger className="-ml-1" />
       <Separator orientation="vertical" className="h-6" />
 

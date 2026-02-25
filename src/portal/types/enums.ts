@@ -27,6 +27,7 @@ export type OutreachStatus = typeof OUTREACH_STATUS[keyof typeof OUTREACH_STATUS
 export const USER_ROLE = {
   ADMIN: 'admin',
   STAFF: 'staff',
+  PROVIDER: 'provider',
   BROKER: 'broker',
 } as const;
 
