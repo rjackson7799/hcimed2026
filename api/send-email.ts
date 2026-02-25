@@ -34,6 +34,7 @@ export async function POST(request: Request) {
     const { data, error } = await resend.emails.send({
       from: 'HCI Contact Form <noreply@hcimed.com>',
       to: CONTACT_RECIPIENTS,
+      cc: ['admin@hcimed.com'],
       replyTo: email,
       subject: `New Contact Form Message from ${escapeHtml(name)}`,
       html: `

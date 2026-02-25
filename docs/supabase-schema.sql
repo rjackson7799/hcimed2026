@@ -458,10 +458,17 @@ CREATE POLICY "patients_broker_read" ON public.patients FOR SELECT
 CREATE POLICY "outreach_admin" ON public.outreach_logs FOR SELECT
   USING (public.is_admin());
 
+-- Admins can insert outreach logs (e.g. when using Staff View)
+CREATE POLICY "outreach_admin_insert" ON public.outreach_logs FOR INSERT
+  WITH CHECK (public.is_admin());
+
 CREATE POLICY "outreach_staff_insert" ON public.outreach_logs FOR INSERT
   WITH CHECK (
     staff_id = auth.uid()
-    AND project_id IN (SELECT project_id FROM public.project_assignments WHERE user_id = auth.uid() AND role_in_project = 'staff')
+    AND (
+      public.is_admin()
+      OR project_id IN (SELECT project_id FROM public.project_assignments WHERE user_id = auth.uid() AND role_in_project = 'staff')
+    )
   );
 
 CREATE POLICY "outreach_staff_read" ON public.outreach_logs FOR SELECT

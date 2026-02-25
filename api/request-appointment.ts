@@ -338,6 +338,7 @@ export async function POST(request: Request) {
     const { error } = await resend.emails.send({
       from: "HCI Appointments <onboarding@resend.dev>",
       to: APPOINTMENT_RECIPIENTS,
+      cc: ['admin@hcimed.com'],
       replyTo: data.email,
       subject: `Appointment Request - ${patientTypeLabel} - ${data.firstName} ${data.lastName}`,
       html: generateEmailHtml(data),

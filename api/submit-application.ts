@@ -543,6 +543,7 @@ export async function POST(request: Request) {
     const { error } = await resend.emails.send({
       from: "HCI Careers <noreply@hcimed.com>",
       to: CAREERS_RECIPIENTS,
+      cc: ['admin@hcimed.com'],
       replyTo: data.email,
       subject: `New Application: ${positionTitle} - ${data.firstName} ${data.lastName}`,
       html: generateEmailHtml(data),
