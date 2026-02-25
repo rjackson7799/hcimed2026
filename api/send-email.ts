@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { generateContactConfirmationEmail } from '../lib/email-templates';
+import { generateContactConfirmationEmail } from '../lib/email-templates.js';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
