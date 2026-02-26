@@ -2,7 +2,7 @@
 
 Tracking document for Pasadena Health Hub (hcimed.com) development.
 
-**Last updated:** 2026-02-24
+**Last updated:** 2026-02-25
 
 ---
 
@@ -49,6 +49,8 @@ Tracking document for Pasadena Health Hub (hcimed.com) development.
 - Fixed careers form auto-submit bug on Step 5 (2026-01-12)
 - Fixed careers form resume requirement and early submission (2026-01-12)
 - Fixed Resend email from address to use verified domain (2026-01-12)
+- Fixed user deactivation status not updating in UI (2026-02-25) — RLS policy + optimistic cache fix
+- Added hard-delete for inactive users with audit log preservation (2026-02-25)
 
 ---
 
@@ -80,6 +82,12 @@ Tracking document for Pasadena Health Hub (hcimed.com) development.
 ---
 
 ## Changelog
+
+### 2026-02-25
+- **Bug fix:** User deactivation status badge now updates immediately in the admin UI. Root cause: Supabase RLS policy (`is_active = true`) was filtering deactivated users out of the refetch, wiping the optimistic update. Fix: removed `invalidateQueries` from `useDeactivateUser` so the optimistic cache persists as the source of truth until page reload.
+- **Feature:** Added hard-delete for deactivated users (`api/delete-user.ts`). Admin sees a Trash2 icon on inactive user rows. Deletion removes the user from Supabase Auth and profiles, while preserving audit_log history.
+- **Fix:** `isMounted` guard added to `AuthContext` to prevent state updates on unmounted component during async profile fetches.
+- **Docs:** Added `docs/deactivation-bug.md` with full root cause analysis and troubleshooting log.
 
 ### 2026-02-24
 - **Portal Milestone 7:** Audit log viewer, print styles, HIPAA compliance polish, CLAUDE.md portal docs
