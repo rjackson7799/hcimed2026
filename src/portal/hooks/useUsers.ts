@@ -143,9 +143,9 @@ export function useDeactivateUser() {
         queryClient.setQueryData(['users'], context.previous);
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-    },
+    // No invalidation on success: the RLS policy (is_active = true) means a refetch
+    // would exclude the newly deactivated user, wiping out the optimistic update.
+    // The optimistic cache is the correct source of truth until the page reloads.
   });
 }
 
