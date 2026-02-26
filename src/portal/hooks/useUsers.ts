@@ -112,12 +112,23 @@ export function useDeactivateUser() {
 
   return useMutation({
     mutationFn: async (userId: string) => {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ is_active: false })
-        .eq('id', userId);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error('Not authenticated');
 
-      if (error) throw error;
+      const response = await fetch('/api/deactivate-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to deactivate user');
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
@@ -133,20 +144,37 @@ export function useInviteUser() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) throw new Error('Not authenticated');
 
-      const response = await fetch('/api/invite-user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify(data),
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-      const result = await response.json();
+      let response: Response;
+      try {
+        response = await fetch('/api/invite-user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify(data),
+          signal: controller.signal,
+        });
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          throw new Error('Request timed out. Please try again.');
+        }
+        throw err;
+      } finally {
+        clearTimeout(timeoutId);
+      }
 
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to invite user');
+        const text = await response.text();
+        let errorMsg = 'Failed to invite user';
+        try { errorMsg = JSON.parse(text).error || errorMsg; } catch {}
+        throw new Error(errorMsg);
       }
+
+      const result = await response.json();
 
       return result as {
         success: boolean;

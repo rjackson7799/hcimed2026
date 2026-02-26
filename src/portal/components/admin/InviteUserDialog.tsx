@@ -52,7 +52,7 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
 
   const form = useForm<InviteUserFormData>({
     resolver: zodResolver(inviteUserSchema),
-    defaultValues: { full_name: '', email: '', role: undefined },
+    defaultValues: { full_name: '', email: '', role: 'staff' as const },
   });
 
   const onSubmit = async (data: InviteUserFormData) => {
