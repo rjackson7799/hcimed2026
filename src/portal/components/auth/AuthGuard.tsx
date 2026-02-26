@@ -15,7 +15,9 @@ export function AuthGuard() {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/hci-login" state={{ from: location }} replace />;
+    const isBrokerPath = location.pathname.startsWith('/portal/broker');
+    const loginPath = (role === 'broker' || isBrokerPath) ? '/partner-login' : '/hci-login';
+    return <Navigate to={loginPath} state={{ from: location }} replace />;
   }
 
   return (

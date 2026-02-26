@@ -111,6 +111,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, newSession) => {
         if (!isMounted) return;
+
+        // If session is null outside of deliberate sign-out or initial unauthenticated load,
+        // the refresh token was invalidated. Force logout.
+        if (!newSession && event !== 'SIGNED_OUT' && event !== 'INITIAL_SESSION') {
+          setSession(null);
+          setUser(null);
+          setProfile(null);
+          setIsLoading(false);
+          setShowTimeoutWarning(false);
+          if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
+          if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+          window.location.href = '/hci-login';
+          return;
+        }
+
         setSession(newSession);
         setUser(newSession?.user ?? null);
 
@@ -120,6 +135,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setProfile(userProfile);
             setIsLoading(false);
           }
+        }
+
+        if (event === 'TOKEN_REFRESHED' && newSession?.user) {
+          if (!profile) {
+            const userProfile = await fetchProfile(newSession.user.id);
+            if (isMounted) setProfile(userProfile);
+          }
+          if (isMounted) setIsLoading(false);
         }
 
         if (event === 'SIGNED_OUT') {
@@ -170,9 +193,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    const loginPath = profile?.role === 'broker' ? '/partner-login' : '/hci-login';
     await supabase.auth.signOut();
-    window.location.href = loginPath;
   };
 
   return (

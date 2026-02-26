@@ -213,7 +213,7 @@ export function PatientQueue({ projectId }: PatientQueueProps) {
     <div className="space-y-4">
       {/* Filters */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
+        <div className="relative flex-1 min-w-0">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search by name, phone, or member ID..."
