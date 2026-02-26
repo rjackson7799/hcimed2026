@@ -8,7 +8,7 @@ import { useRealtime } from '@/portal/hooks/useRealtime';
 import { StatusBadge } from '@/portal/components/shared/StatusBadge';
 import { ExportButton } from '@/portal/components/shared/ExportButton';
 import { CsvUploader } from '@/portal/components/admin/CsvUploader';
-import { StaffAssignment } from '@/portal/components/admin/StaffAssignment';
+import { ProjectAssignments } from '@/portal/components/admin/ProjectAssignments';
 import { SummaryCards } from '@/portal/components/admin/SummaryCards';
 import { DispositionChart } from '@/portal/components/admin/DispositionChart';
 import { DailyCallChart } from '@/portal/components/admin/DailyCallChart';
@@ -112,8 +112,8 @@ export function AdminProjectDetailPage() {
       {/* CSV Upload */}
       <CsvUploader projectId={project.id} onImportComplete={() => refetch()} />
 
-      {/* Staff Assignment */}
-      <StaffAssignment projectId={project.id} />
+      {/* Assignments */}
+      <ProjectAssignments projectId={project.id} />
       </div>
     </div>
   );

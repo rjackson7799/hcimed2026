@@ -1,4 +1,5 @@
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
+import { lazyWithRetry } from "@/lib/lazyWithRetry";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -12,43 +13,43 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
 // Lazy-load all other pages
-const OurStory = lazy(() => import("./pages/OurStory"));
-const Contact = lazy(() => import("./pages/Contact"));
-const FAQ = lazy(() => import("./pages/FAQ"));
+const OurStory = lazyWithRetry(() => import("./pages/OurStory"));
+const Contact = lazyWithRetry(() => import("./pages/Contact"));
+const FAQ = lazyWithRetry(() => import("./pages/FAQ"));
 
 // Internal Medicine Pages
-const PhysicalExams = lazy(() => import("./pages/internal-medicine/PhysicalExams"));
-const AcuteCare = lazy(() => import("./pages/internal-medicine/AcuteCare"));
-const WomensHealth = lazy(() => import("./pages/internal-medicine/WomensHealth"));
-const MensHealth = lazy(() => import("./pages/internal-medicine/MensHealth"));
-const Diagnostics = lazy(() => import("./pages/internal-medicine/Diagnostics"));
+const PhysicalExams = lazyWithRetry(() => import("./pages/internal-medicine/PhysicalExams"));
+const AcuteCare = lazyWithRetry(() => import("./pages/internal-medicine/AcuteCare"));
+const WomensHealth = lazyWithRetry(() => import("./pages/internal-medicine/WomensHealth"));
+const MensHealth = lazyWithRetry(() => import("./pages/internal-medicine/MensHealth"));
+const Diagnostics = lazyWithRetry(() => import("./pages/internal-medicine/Diagnostics"));
 
 // Senior Care Pages
-const SeniorCarePlus = lazy(() => import("./pages/SeniorCarePlus"));
-const PreventionWellness = lazy(() => import("./pages/senior-care/PreventionWellness"));
-const ChronicCare = lazy(() => import("./pages/senior-care/ChronicCare"));
-const TransitionCare = lazy(() => import("./pages/senior-care/TransitionCare"));
-const RemoteMonitoring = lazy(() => import("./pages/senior-care/RemoteMonitoring"));
+const SeniorCarePlus = lazyWithRetry(() => import("./pages/SeniorCarePlus"));
+const PreventionWellness = lazyWithRetry(() => import("./pages/senior-care/PreventionWellness"));
+const ChronicCare = lazyWithRetry(() => import("./pages/senior-care/ChronicCare"));
+const TransitionCare = lazyWithRetry(() => import("./pages/senior-care/TransitionCare"));
+const RemoteMonitoring = lazyWithRetry(() => import("./pages/senior-care/RemoteMonitoring"));
 
 // Other Pages
-const Careers = lazy(() => import("./pages/Careers"));
-const Appointments = lazy(() => import("./pages/Appointments"));
-const InsuranceUpdate = lazy(() => import("./pages/InsuranceUpdate"));
+const Careers = lazyWithRetry(() => import("./pages/Careers"));
+const Appointments = lazyWithRetry(() => import("./pages/Appointments"));
+const InsuranceUpdate = lazyWithRetry(() => import("./pages/InsuranceUpdate"));
 
 // Blog Pages
-const Blog = lazy(() => import("./pages/Blog"));
-const BlogPost = lazy(() => import("./pages/BlogPost"));
+const Blog = lazyWithRetry(() => import("./pages/Blog"));
+const BlogPost = lazyWithRetry(() => import("./pages/BlogPost"));
 
 // Portal Pages (lazy-loaded, isolated from public site)
-const LoginPage = lazy(() => import("@/portal/pages/LoginPage").then(m => ({ default: m.LoginPage })));
-const PartnerLoginPage = lazy(() => import("@/portal/pages/PartnerLoginPage").then(m => ({ default: m.PartnerLoginPage })));
-const AdminDashboardPage = lazy(() => import("@/portal/pages/AdminDashboardPage").then(m => ({ default: m.AdminDashboardPage })));
-const StaffDashboardPage = lazy(() => import("@/portal/pages/StaffDashboardPage").then(m => ({ default: m.StaffDashboardPage })));
-const BrokerDashboardPage = lazy(() => import("@/portal/pages/BrokerDashboardPage").then(m => ({ default: m.BrokerDashboardPage })));
-const AdminProjectsPage = lazy(() => import("@/portal/pages/AdminProjectsPage").then(m => ({ default: m.AdminProjectsPage })));
-const AdminProjectDetailPage = lazy(() => import("@/portal/pages/AdminProjectDetailPage").then(m => ({ default: m.AdminProjectDetailPage })));
-const AdminUsersPage = lazy(() => import("@/portal/pages/AdminUsersPage").then(m => ({ default: m.AdminUsersPage })));
-const AdminAuditLogPage = lazy(() => import("@/portal/pages/AdminAuditLogPage").then(m => ({ default: m.AdminAuditLogPage })));
+const LoginPage = lazyWithRetry(() => import("@/portal/pages/LoginPage").then(m => ({ default: m.LoginPage })));
+const PartnerLoginPage = lazyWithRetry(() => import("@/portal/pages/PartnerLoginPage").then(m => ({ default: m.PartnerLoginPage })));
+const AdminDashboardPage = lazyWithRetry(() => import("@/portal/pages/AdminDashboardPage").then(m => ({ default: m.AdminDashboardPage })));
+const StaffDashboardPage = lazyWithRetry(() => import("@/portal/pages/StaffDashboardPage").then(m => ({ default: m.StaffDashboardPage })));
+const BrokerDashboardPage = lazyWithRetry(() => import("@/portal/pages/BrokerDashboardPage").then(m => ({ default: m.BrokerDashboardPage })));
+const AdminProjectsPage = lazyWithRetry(() => import("@/portal/pages/AdminProjectsPage").then(m => ({ default: m.AdminProjectsPage })));
+const AdminProjectDetailPage = lazyWithRetry(() => import("@/portal/pages/AdminProjectDetailPage").then(m => ({ default: m.AdminProjectDetailPage })));
+const AdminUsersPage = lazyWithRetry(() => import("@/portal/pages/AdminUsersPage").then(m => ({ default: m.AdminUsersPage })));
+const AdminAuditLogPage = lazyWithRetry(() => import("@/portal/pages/AdminAuditLogPage").then(m => ({ default: m.AdminAuditLogPage })));
 
 // Portal Auth Components
 import { AuthProvider } from "@/portal/context/AuthContext";
