@@ -91,32 +91,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Listen for auth state changes
   useEffect(() => {
+    let isMounted = true;
+
     // Get initial session
     supabase.auth.getSession().then(async ({ data: { session: initialSession } }) => {
+      if (!isMounted) return;
       setSession(initialSession);
       setUser(initialSession?.user ?? null);
 
       if (initialSession?.user) {
         const userProfile = await fetchProfile(initialSession.user.id);
-        setProfile(userProfile);
+        if (isMounted) setProfile(userProfile);
       }
 
-      setIsLoading(false);
+      if (isMounted) setIsLoading(false);
     });
 
     // Subscribe to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, newSession) => {
+        if (!isMounted) return;
         setSession(newSession);
         setUser(newSession?.user ?? null);
 
         if (event === 'SIGNED_IN' && newSession?.user) {
           const userProfile = await fetchProfile(newSession.user.id);
-          setProfile(userProfile);
+          if (isMounted) {
+            setProfile(userProfile);
+            setIsLoading(false);
+          }
         }
 
         if (event === 'SIGNED_OUT') {
           setProfile(null);
+          setIsLoading(false);
           setShowTimeoutWarning(false);
           if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
           if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
@@ -125,6 +133,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 
     return () => {
+      isMounted = false;
       subscription.unsubscribe();
     };
   }, [fetchProfile]);

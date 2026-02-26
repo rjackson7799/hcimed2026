@@ -19,9 +19,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { UserX, ImagePlus, Upload, UserPlus } from 'lucide-react';
+import { UserX, ImagePlus, Upload, UserPlus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useUsers, useDeactivateUser, useUploadPartnerLogo, useUpdateUser } from '@/portal/hooks/useUsers';
+import { useUsers, useDeactivateUser, useDeleteUser, useUploadPartnerLogo, useUpdateUser } from '@/portal/hooks/useUsers';
 import { TableSkeleton } from '@/portal/components/shared/LoadingStates';
 import { InviteUserDialog } from '@/portal/components/admin/InviteUserDialog';
 import { formatDate, formatPhone } from '@/portal/utils/formatters';
@@ -30,6 +30,7 @@ import type { Profile } from '@/portal/types';
 export function AdminUsersPage() {
   const { data: users, isLoading, error } = useUsers();
   const deactivateUser = useDeactivateUser();
+  const deleteUser = useDeleteUser();
   const uploadLogo = useUploadPartnerLogo();
   const updateUser = useUpdateUser();
 
@@ -47,6 +48,16 @@ export function AdminUsersPage() {
       toast.success(`${name} has been deactivated`);
     } catch {
       toast.error('Failed to deactivate user');
+    }
+  };
+
+  const handleDelete = async (userId: string, name: string) => {
+    if (!confirm(`Permanently delete ${name}? This cannot be undone.`)) return;
+    try {
+      await deleteUser.mutateAsync(userId);
+      toast.success(`${name} has been deleted`);
+    } catch {
+      toast.error('Failed to delete user');
     }
   };
 
@@ -173,8 +184,20 @@ export function AdminUsersPage() {
                         size="sm"
                         onClick={() => handleDeactivate(u.id, u.full_name)}
                         disabled={deactivateUser.isPending}
+                        title="Deactivate user"
                       >
                         <UserX className="h-4 w-4 text-destructive" />
+                      </Button>
+                    )}
+                    {!u.is_active && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(u.id, u.full_name)}
+                        disabled={deleteUser.isPending}
+                        title="Permanently delete user"
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     )}
                   </div>

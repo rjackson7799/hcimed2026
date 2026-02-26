@@ -130,6 +130,61 @@ export function useDeactivateUser() {
         throw new Error(result.error || 'Failed to deactivate user');
       }
     },
+    onMutate: async (userId: string) => {
+      await queryClient.cancelQueries({ queryKey: ['users'] });
+      const previous = queryClient.getQueryData<Profile[]>(['users']);
+      queryClient.setQueryData<Profile[]>(['users'], (old) =>
+        old?.map((u) => u.id === userId ? { ...u, is_active: false } : u) ?? []
+      );
+      return { previous };
+    },
+    onError: (_err, _userId, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['users'], context.previous);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+}
+
+export function useDeleteUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error('Not authenticated');
+
+      const response = await fetch('/api/delete-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to delete user');
+      }
+    },
+    onMutate: async (userId: string) => {
+      await queryClient.cancelQueries({ queryKey: ['users'] });
+      const previous = queryClient.getQueryData<Profile[]>(['users']);
+      queryClient.setQueryData<Profile[]>(['users'], (old) =>
+        old?.filter((u) => u.id !== userId) ?? []
+      );
+      return { previous };
+    },
+    onError: (_err, _userId, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['users'], context.previous);
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
