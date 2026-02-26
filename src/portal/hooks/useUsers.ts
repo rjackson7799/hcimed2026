@@ -17,7 +17,7 @@ export function useUsers() {
   });
 }
 
-export function useActiveUsers(role?: Profile['role']) {
+export function useActiveUsers(role?: Profile['role'] | Profile['role'][]) {
   return useQuery({
     queryKey: ['users', 'active', role],
     queryFn: async () => {
@@ -27,7 +27,9 @@ export function useActiveUsers(role?: Profile['role']) {
         .eq('is_active', true)
         .order('full_name', { ascending: true });
 
-      if (role) {
+      if (Array.isArray(role)) {
+        query = query.in('role', role);
+      } else if (role) {
         query = query.eq('role', role);
       }
 
