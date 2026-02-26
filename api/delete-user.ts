@@ -68,23 +68,16 @@ export async function POST(request: Request) {
       });
     }
 
-    // 4. Verify target user is inactive (must deactivate before deleting)
+    // 4. Verify target user exists
     const { data: targetProfile } = await supabaseAdmin
       .from('profiles')
-      .select('is_active, full_name')
+      .select('full_name')
       .eq('id', userId)
       .single();
 
     if (!targetProfile) {
       return new Response(JSON.stringify({ error: 'User not found' }), {
         status: 404,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
-    if (targetProfile.is_active) {
-      return new Response(JSON.stringify({ error: 'User must be deactivated before deletion' }), {
-        status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
     }
