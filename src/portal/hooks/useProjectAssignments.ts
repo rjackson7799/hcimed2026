@@ -8,7 +8,7 @@ export function useProjectAssignments(projectId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('project_assignments')
-        .select('*, profiles:user_id(id, full_name, email, role)')
+        .select('*, profiles:user_id(id, full_name, email, role, phone)')
         .eq('project_id', projectId);
 
       if (error) throw error;

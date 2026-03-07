@@ -85,15 +85,40 @@ export async function POST(request: Request) {
       });
     }
 
-    // Fetch project to get broker email
+    // Fetch project details
     const { data: project, error: projectError } = await supabase
       .from('projects')
       .select('name, broker_email')
       .eq('id', project_id)
       .single();
 
-    if (projectError || !project || !project.broker_email) {
-      return new Response(JSON.stringify({ error: 'Project or broker email not found' }), {
+    if (projectError || !project) {
+      return new Response(JSON.stringify({ error: 'Project not found' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Fetch all assigned brokers for this project
+    const { data: brokerAssignments } = await supabase
+      .from('project_assignments')
+      .select('profiles:user_id(email)')
+      .eq('project_id', project_id)
+      .eq('role_in_project', 'broker');
+
+    const assignedBrokerEmails: string[] = (brokerAssignments || [])
+      .map((a: any) => a.profiles?.email)
+      .filter(Boolean);
+
+    // Fall back to legacy broker_email if no assignments exist
+    const brokerEmails = assignedBrokerEmails.length > 0
+      ? assignedBrokerEmails
+      : project.broker_email
+        ? [project.broker_email]
+        : [];
+
+    if (brokerEmails.length === 0) {
+      return new Response(JSON.stringify({ error: 'No broker assigned to this project' }), {
         status: 404,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -117,7 +142,7 @@ export async function POST(request: Request) {
     // Send email to broker
     const { data, error: emailError } = await resend.emails.send({
       from: 'HCI Patient Outreach <noreply@hcimed.com>',
-      to: [project.broker_email],
+      to: brokerEmails,
       cc: ['admin@hcimed.com', 'billing@hcimed.com'],
       subject: `Patient Forwarded: ${escapeHtml(patient.first_name)} ${escapeHtml(patient.last_name)} — ${escapeHtml(project.name)}`,
       html: `

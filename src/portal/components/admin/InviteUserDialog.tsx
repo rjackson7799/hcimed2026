@@ -31,6 +31,8 @@ import { Loader2, AlertCircle, Copy, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { useInviteUser } from '@/portal/hooks/useUsers';
 import { inviteUserSchema, type InviteUserFormData } from '@/portal/schemas/inviteUserSchema';
+import { supabase } from '@/portal/lib/supabase';
+import { TITLE_OPTIONS_BY_ROLE } from '@/portal/types/enums';
 
 interface InviteUserDialogProps {
   open: boolean;
@@ -52,18 +54,24 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
 
   const form = useForm<InviteUserFormData>({
     resolver: zodResolver(inviteUserSchema),
-    defaultValues: { full_name: '', email: '', role: 'staff' as const },
+    defaultValues: { full_name: '', email: '', role: 'staff' as const, title: '', phone: '' },
   });
+
+  const selectedRole = form.watch('role');
+  const titleOptions = TITLE_OPTIONS_BY_ROLE[selectedRole];
 
   const onSubmit = async (data: InviteUserFormData) => {
     setError(null);
     try {
       const response = await inviteUser.mutateAsync(data);
+      if (data.phone && response.user.id) {
+        await supabase.from('profiles').update({ phone: data.phone }).eq('id', response.user.id);
+      }
       setResult({
         email: data.email,
         password: response.temporary_password,
       });
-      toast.success(`${data.full_name} has been invited as ${data.role}`);
+      toast.success(`${data.full_name} has been invited as ${data.title || data.role}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to invite user');
     }
@@ -159,7 +167,16 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        // Clear title when switching roles
+                        if (!TITLE_OPTIONS_BY_ROLE[value as keyof typeof TITLE_OPTIONS_BY_ROLE]) {
+                          form.setValue('title', '');
+                        }
+                      }}
+                      value={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a role" />
@@ -180,6 +197,49 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
                   </FormItem>
                 )}
               />
+
+              {titleOptions && (
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || ''}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a title" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {titleOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {selectedRole === 'broker' && (
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone Number</FormLabel>
+                      <FormControl>
+                        <Input placeholder="(626) 555-1234" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={handleClose}>

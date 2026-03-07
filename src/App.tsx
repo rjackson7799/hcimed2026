@@ -50,6 +50,7 @@ const AdminProjectsPage = lazyWithRetry(() => import("@/portal/pages/AdminProjec
 const AdminProjectDetailPage = lazyWithRetry(() => import("@/portal/pages/AdminProjectDetailPage").then(m => ({ default: m.AdminProjectDetailPage })));
 const AdminUsersPage = lazyWithRetry(() => import("@/portal/pages/AdminUsersPage").then(m => ({ default: m.AdminUsersPage })));
 const AdminAuditLogPage = lazyWithRetry(() => import("@/portal/pages/AdminAuditLogPage").then(m => ({ default: m.AdminAuditLogPage })));
+const PracticeHealthPage = lazyWithRetry(() => import("@/portal/pages/PracticeHealthPage").then(m => ({ default: m.PracticeHealthPage })));
 
 // Portal Auth Components
 import { AuthProvider } from "@/portal/context/AuthContext";
@@ -117,6 +118,7 @@ const App = () => (
                   <Route path="/portal/admin/projects/:id" element={<RoleGuard allowedRoles={['admin']}><AdminProjectDetailPage /></RoleGuard>} />
                   <Route path="/portal/admin/users" element={<RoleGuard allowedRoles={['admin']}><AdminUsersPage /></RoleGuard>} />
                   <Route path="/portal/admin/audit-log" element={<RoleGuard allowedRoles={['admin']}><AdminAuditLogPage /></RoleGuard>} />
+                  <Route path="/portal/admin/practice-health" element={<RoleGuard allowedRoles={['admin']}><PracticeHealthPage /></RoleGuard>} />
                   {/* Staff routes — admin, staff, and providers can access */}
                   <Route path="/portal/staff" element={<RoleGuard allowedRoles={['admin', 'staff', 'provider']}><StaffDashboardPage /></RoleGuard>} />
                   {/* Broker routes — broker only */}

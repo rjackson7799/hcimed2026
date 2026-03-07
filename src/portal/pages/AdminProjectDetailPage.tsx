@@ -9,6 +9,7 @@ import { StatusBadge } from '@/portal/components/shared/StatusBadge';
 import { ExportButton } from '@/portal/components/shared/ExportButton';
 import { CsvUploader } from '@/portal/components/admin/CsvUploader';
 import { ProjectAssignments } from '@/portal/components/admin/ProjectAssignments';
+import { useProjectAssignments } from '@/portal/hooks/useProjectAssignments';
 import { SummaryCards } from '@/portal/components/admin/SummaryCards';
 import { DispositionChart } from '@/portal/components/admin/DispositionChart';
 import { DailyCallChart } from '@/portal/components/admin/DailyCallChart';
@@ -21,6 +22,10 @@ export function AdminProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
 
   const { data: project, isLoading, error, refetch } = useProject(id!);
+
+  const { data: assignments } = useProjectAssignments(id!);
+  const assignedBrokers = (assignments || []).filter((a: any) => a.role_in_project === 'broker');
+  const assignedStaff = (assignments || []).filter((a: any) => a.role_in_project === 'staff');
 
   // Dashboard data hooks
   useRealtime(id ?? null);
@@ -67,10 +72,23 @@ export function AdminProjectDetailPage() {
               <dt className="text-muted-foreground">Created</dt>
               <dd>{formatDate(project.created_at)}</dd>
             </div>
-            {project.broker_email && (
+            {assignedBrokers.length > 0 && (
               <div>
-                <dt className="text-muted-foreground">Broker Email</dt>
-                <dd>{project.broker_email}</dd>
+                <dt className="text-muted-foreground">
+                  {assignedBrokers.length > 1 ? 'Brokers' : 'Broker'}
+                </dt>
+                <dd>
+                  {assignedBrokers.map((a: any) => {
+                    const p = a.profiles;
+                    return p.phone ? `${p.full_name} (${p.phone})` : p.full_name;
+                  }).join(', ')}
+                </dd>
+              </div>
+            )}
+            {assignedStaff.length > 0 && (
+              <div>
+                <dt className="text-muted-foreground">Staff</dt>
+                <dd>{assignedStaff.map((a: any) => a.profiles.full_name).join(', ')}</dd>
               </div>
             )}
             {project.target_start && (

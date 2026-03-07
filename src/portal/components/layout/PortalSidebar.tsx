@@ -20,9 +20,11 @@ import {
   Briefcase,
   MessageSquare,
   ShieldCheck,
+  Activity,
   LogOut,
 } from 'lucide-react';
 import { useAuth } from '@/portal/context/AuthContext';
+import { getDisplayTitle } from '@/portal/utils/formatters';
 import { cn } from '@/lib/utils';
 
 interface NavItem {
@@ -36,6 +38,7 @@ const adminNav: NavItem[] = [
   { title: 'Projects', href: '/portal/admin/projects', icon: FolderKanban },
   { title: 'Users', href: '/portal/admin/users', icon: Users },
   { title: 'Audit Log', href: '/portal/admin/audit-log', icon: ShieldCheck },
+  { title: 'Practice Health', href: '/portal/admin/practice-health', icon: Activity },
 ];
 
 const staffNav: NavItem[] = [
@@ -94,7 +97,7 @@ export function PortalSidebar() {
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold">HCI Portal</span>
-              <span className="text-xs text-muted-foreground capitalize">{role} Access</span>
+              <span className="text-xs text-muted-foreground">{profile ? getDisplayTitle(profile) : role} Access</span>
             </div>
           </div>
         )}

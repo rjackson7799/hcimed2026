@@ -12,6 +12,8 @@ export const inviteUserSchema = z.object({
   role: z.enum(['admin', 'staff', 'provider', 'broker'], {
     required_error: 'Please select a role',
   }),
+  title: z.string().optional(),
+  phone: z.string().optional(),
 });
 
 export type InviteUserFormData = z.infer<typeof inviteUserSchema>;

@@ -30,3 +30,8 @@ export function formatPatientName(firstName: string, lastName: string): string {
 export function formatDateOfBirth(dateString: string): string {
   return format(parseISO(dateString), 'MM/dd/yyyy');
 }
+
+export function getDisplayTitle(profile: { role: string; title?: string | null }): string {
+  if (profile.title) return profile.title;
+  return profile.role.charAt(0).toUpperCase() + profile.role.slice(1);
+}

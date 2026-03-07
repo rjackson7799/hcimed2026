@@ -65,7 +65,7 @@ export async function POST(request: Request) {
 
     // 3. Validate input
     const body = await request.json();
-    const { email, full_name, role } = body;
+    const { email, full_name, role, title } = body;
 
     if (!email || !full_name || !role) {
       return new Response(JSON.stringify({ error: 'Missing required fields: email, full_name, role' }), {
@@ -103,7 +103,7 @@ export async function POST(request: Request) {
       email,
       password: temporaryPassword,
       email_confirm: true,
-      user_metadata: { full_name, role },
+      user_metadata: { full_name, role, ...(title && { title }) },
     });
 
     if (createError) {
@@ -120,13 +120,21 @@ export async function POST(request: Request) {
       });
     }
 
-    // 6. Record in audit log
+    // 6. Update profile with title if provided
+    if (title) {
+      await supabaseAdmin
+        .from('profiles')
+        .update({ title })
+        .eq('id', newUser.user.id);
+    }
+
+    // 7. Record in audit log
     await supabaseAdmin.from('audit_log').insert({
       user_id: callerUser.id,
       action: 'INVITE_USER',
       table_name: 'profiles',
       record_id: newUser.user.id,
-      new_values: { email, full_name, role },
+      new_values: { email, full_name, role, ...(title && { title }) },
     });
 
     return new Response(JSON.stringify({

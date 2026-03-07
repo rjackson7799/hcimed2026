@@ -24,7 +24,7 @@ import { toast } from 'sonner';
 import { useUsers, useDeactivateUser, useDeleteUser, useUploadPartnerLogo, useUpdateUser } from '@/portal/hooks/useUsers';
 import { TableSkeleton } from '@/portal/components/shared/LoadingStates';
 import { InviteUserDialog } from '@/portal/components/admin/InviteUserDialog';
-import { formatDate, formatPhone } from '@/portal/utils/formatters';
+import { formatDate, formatPhone, getDisplayTitle } from '@/portal/utils/formatters';
 import type { Profile } from '@/portal/types';
 
 export function AdminUsersPage() {
@@ -150,7 +150,7 @@ export function AdminUsersPage() {
                 </TableCell>
                 <TableCell className="text-muted-foreground">{u.email}</TableCell>
                 <TableCell>
-                  <Badge variant="outline" className="capitalize">{u.role}</Badge>
+                  <Badge variant="outline">{getDisplayTitle(u)}</Badge>
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {u.company_name || '—'}

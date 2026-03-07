@@ -4,6 +4,18 @@
  *   npx supabase gen types typescript --project-id <id> > src/portal/types/database.ts
  */
 
+import type {
+  PhUpload,
+  PhProvider,
+  PhFacility,
+  PhRvuLookup,
+  PhCharge,
+  PhCollection,
+  PhProductivity,
+  PhKpiDaily,
+  PhAiInsight,
+} from './practice-health';
+
 export interface Database {
   public: {
     Tables: {
@@ -47,6 +59,52 @@ export interface Database {
         Insert: Omit<AuditLog, 'id' | 'created_at'>;
         Update: never; // Append-only table
       };
+      // Practice Health Module tables (ph_ prefix)
+      ph_uploads: {
+        Row: PhUpload;
+        Insert: Omit<PhUpload, 'id' | 'created_at' | 'validation_errors'> & { validation_errors?: PhUpload['validation_errors'] };
+        Update: Partial<Pick<PhUpload, 'status' | 'row_count' | 'date_range_start' | 'date_range_end' | 'validation_errors' | 'error_message'>>;
+      };
+      ph_providers: {
+        Row: PhProvider;
+        Insert: Omit<PhProvider, 'id' | 'fte' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<PhProvider, 'id' | 'fte' | 'created_at'>>;
+      };
+      ph_facilities: {
+        Row: PhFacility;
+        Insert: Omit<PhFacility, 'id' | 'created_at'>;
+        Update: Partial<Omit<PhFacility, 'id' | 'created_at'>>;
+      };
+      ph_rvu_lookup: {
+        Row: PhRvuLookup;
+        Insert: Omit<PhRvuLookup, 'id'>;
+        Update: Partial<Omit<PhRvuLookup, 'id'>>;
+      };
+      ph_charges: {
+        Row: PhCharge;
+        Insert: Omit<PhCharge, 'id' | 'created_at'>;
+        Update: never; // Append-only via uploads
+      };
+      ph_collections: {
+        Row: PhCollection;
+        Insert: Omit<PhCollection, 'id' | 'created_at'>;
+        Update: never;
+      };
+      ph_productivity: {
+        Row: PhProductivity;
+        Insert: Omit<PhProductivity, 'id' | 'created_at'>;
+        Update: never;
+      };
+      ph_kpi_daily: {
+        Row: PhKpiDaily;
+        Insert: Omit<PhKpiDaily, 'id' | 'created_at'>;
+        Update: Partial<Omit<PhKpiDaily, 'id' | 'created_at'>>;
+      };
+      ph_ai_insights: {
+        Row: PhAiInsight;
+        Insert: Omit<PhAiInsight, 'id' | 'created_at'>;
+        Update: never; // Append-only
+      };
     };
     Views: {
       v_project_summary: {
@@ -68,6 +126,7 @@ export interface Profile {
   email: string;
   full_name: string;
   role: 'admin' | 'staff' | 'provider' | 'broker';
+  title: string | null;
   phone: string | null;
   is_active: boolean;
   company_name: string | null;

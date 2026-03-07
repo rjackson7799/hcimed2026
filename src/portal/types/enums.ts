@@ -33,6 +33,20 @@ export const USER_ROLE = {
 
 export type UserRole = typeof USER_ROLE[keyof typeof USER_ROLE];
 
+export const USER_TITLE = {
+  ADMINISTRATOR: 'Administrator',
+  MEDICAL_DIRECTOR: 'Medical Director',
+} as const;
+
+export type UserTitle = typeof USER_TITLE[keyof typeof USER_TITLE];
+
+export const TITLE_OPTIONS_BY_ROLE: Partial<Record<UserRole, { value: string; label: string }[]>> = {
+  admin: [
+    { value: 'Administrator', label: 'Administrator' },
+    { value: 'Medical Director', label: 'Medical Director' },
+  ],
+};
+
 export const BROKER_STATUS = {
   RECEIVED: 'received',
   IN_PROGRESS: 'in_progress',
@@ -50,3 +64,64 @@ export const PROJECT_STATUS = {
 } as const;
 
 export type ProjectStatus = typeof PROJECT_STATUS[keyof typeof PROJECT_STATUS];
+
+// ─── Practice Health Module Enums ──────────────────────────────────
+
+export const PH_REPORT_TYPE = {
+  CHARGES: '371.02',
+  COLLECTIONS: '36.14',
+  PRODUCTIVITY: '4.06',
+  RVU: 'rvu',
+} as const;
+
+export type PhReportType = typeof PH_REPORT_TYPE[keyof typeof PH_REPORT_TYPE];
+
+export const PH_SERVICE_LINE = {
+  HCI_OFFICE: 'hci_office',
+  MOBILE_DOCS: 'mobile_docs',
+} as const;
+
+export type PhServiceLine = typeof PH_SERVICE_LINE[keyof typeof PH_SERVICE_LINE];
+
+export const PH_UPLOAD_STATUS = {
+  PROCESSING: 'processing',
+  SUCCESS: 'success',
+  ERROR: 'error',
+  DUPLICATE: 'duplicate',
+} as const;
+
+export type PhUploadStatus = typeof PH_UPLOAD_STATUS[keyof typeof PH_UPLOAD_STATUS];
+
+export const PH_PROVIDER_ROLE = {
+  PHYSICIAN: 'physician',
+  NP: 'np',
+  PA: 'pa',
+} as const;
+
+export type PhProviderRole = typeof PH_PROVIDER_ROLE[keyof typeof PH_PROVIDER_ROLE];
+
+export const PH_INSIGHT_TYPE = {
+  DAILY_SUMMARY: 'daily_summary',
+  RECOMMENDATION: 'recommendation',
+  TREND: 'trend',
+  ALERT: 'alert',
+} as const;
+
+export type PhInsightType = typeof PH_INSIGHT_TYPE[keyof typeof PH_INSIGHT_TYPE];
+
+export const PH_INSIGHT_SEVERITY = {
+  CRITICAL: 'critical',
+  WARNING: 'warning',
+  INFO: 'info',
+} as const;
+
+export type PhInsightSeverity = typeof PH_INSIGHT_SEVERITY[keyof typeof PH_INSIGHT_SEVERITY];
+
+export const PH_INSIGHT_CATEGORY = {
+  PRODUCTIVITY: 'productivity',
+  REVENUE: 'revenue',
+  CODING: 'coding',
+  EFFICIENCY: 'efficiency',
+} as const;
+
+export type PhInsightCategory = typeof PH_INSIGHT_CATEGORY[keyof typeof PH_INSIGHT_CATEGORY];
