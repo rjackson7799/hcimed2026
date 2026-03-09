@@ -15,6 +15,9 @@ dist-ssr
 # Seed scripts (may contain test credentials)
 scripts/
 
+# Patient data files (HIPAA — never commit PHI to source control)
+docs/files/
+
 # Environment files (catch bare .env in addition to *.local)
 .env
 

@@ -6,7 +6,8 @@ import { StatusBadge } from '@/portal/components/shared/StatusBadge';
 import { CallLogger } from './CallLogger';
 import { CallHistory } from './CallHistory';
 import { BrokerForward } from './BrokerForward';
-import { formatPhone, formatPatientName, formatRelativeTime } from '@/portal/utils/formatters';
+import { formatPhone, formatPhoneMasked, formatPatientName, formatRelativeTime } from '@/portal/utils/formatters';
+import { useAuth } from '@/portal/context/AuthContext';
 import type { Patient } from '@/portal/types';
 
 interface PatientCardProps {
@@ -16,6 +17,9 @@ interface PatientCardProps {
 export function PatientCard({ patient }: PatientCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showCallLogger, setShowCallLogger] = useState(false);
+  const { role } = useAuth();
+  // Admins see full phone; staff/provider/broker see masked number per HIPAA minimum-necessary
+  const displayPhone = role === 'admin' ? formatPhone : formatPhoneMasked;
 
   return (
     <Card className="overflow-hidden">
@@ -32,7 +36,7 @@ export function PatientCard({ patient }: PatientCardProps) {
             <StatusBadge status={patient.outreach_status} />
           </div>
           <div className="flex items-center gap-3 mt-0.5 text-xs text-muted-foreground">
-            <span>{formatPhone(patient.phone_primary)}</span>
+            <span>{displayPhone(patient.phone_primary)}</span>
             {patient.member_id && <span>ID: {patient.member_id}</span>}
             {patient.total_attempts > 0 && (
               <span>{patient.total_attempts} attempt{patient.total_attempts !== 1 ? 's' : ''}</span>

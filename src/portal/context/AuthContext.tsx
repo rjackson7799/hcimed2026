@@ -74,38 +74,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [session, showTimeoutWarning, resetTimers]);
 
-  // Fetch profile from Supabase
-  const fetchProfile = useCallback(async (userId: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+  // Fetch profile from Supabase with retry for transient failures
+  const fetchProfile = useCallback(async (userId: string, retries = 2): Promise<Profile | null> => {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
 
-    if (error) {
-      console.error('Failed to fetch profile:', error);
-      return null;
+      if (!error && data) return data as Profile;
+
+      console.error(`Failed to fetch profile (attempt ${attempt + 1}/${retries + 1}):`, error);
+
+      if (attempt < retries) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+      }
     }
-    return data as Profile;
+    return null;
   }, []);
 
   // Listen for auth state changes
   useEffect(() => {
     let isMounted = true;
 
-    // Get initial session
-    supabase.auth.getSession().then(async ({ data: { session: initialSession } }) => {
-      if (!isMounted) return;
-      setSession(initialSession);
-      setUser(initialSession?.user ?? null);
-
-      if (initialSession?.user) {
-        const userProfile = await fetchProfile(initialSession.user.id);
-        if (isMounted) setProfile(userProfile);
-      }
-
+    // Safety timeout: if loading takes more than 10s, force it off
+    const safetyTimeout = setTimeout(() => {
       if (isMounted) setIsLoading(false);
-    });
+    }, 10_000);
+
+    // Get initial session
+    (async () => {
+      try {
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
+        if (!isMounted) return;
+        setSession(initialSession);
+        setUser(initialSession?.user ?? null);
+
+        if (initialSession?.user) {
+          const userProfile = await fetchProfile(initialSession.user.id);
+          if (isMounted) setProfile(userProfile);
+        }
+      } catch (err) {
+        console.error('Failed to get session:', err);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    })();
 
     // Subscribe to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -130,19 +145,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(newSession?.user ?? null);
 
         if (event === 'SIGNED_IN' && newSession?.user) {
-          const userProfile = await fetchProfile(newSession.user.id);
-          if (isMounted) {
-            setProfile(userProfile);
-            setIsLoading(false);
+          try {
+            const userProfile = await fetchProfile(newSession.user.id);
+            if (isMounted) {
+              setProfile(userProfile);
+              setIsLoading(false);
+            }
+          } catch {
+            if (isMounted) setIsLoading(false);
           }
         }
 
         if (event === 'TOKEN_REFRESHED' && newSession?.user) {
-          if (!profile) {
-            const userProfile = await fetchProfile(newSession.user.id);
-            if (isMounted) setProfile(userProfile);
+          try {
+            if (!profile) {
+              const userProfile = await fetchProfile(newSession.user.id);
+              if (isMounted) setProfile(userProfile);
+            }
+          } catch {
+            // Profile fetch failed on refresh — non-critical if profile already exists
+          } finally {
+            if (isMounted) setIsLoading(false);
           }
-          if (isMounted) setIsLoading(false);
         }
 
         if (event === 'SIGNED_OUT') {
@@ -157,6 +181,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       isMounted = false;
+      clearTimeout(safetyTimeout);
       subscription.unsubscribe();
     };
   }, [fetchProfile]);
@@ -170,6 +195,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           action: 'LOGIN_FAILED',
           table_name: 'auth',
           new_values: { email, reason: 'invalid_credentials' },
+          user_agent: navigator.userAgent,
         });
       } catch {
         // Audit log failure should not block login flow
@@ -184,6 +210,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         action: 'LOGIN_SUCCESS',
         table_name: 'auth',
         new_values: { email },
+        user_agent: navigator.userAgent,
       });
     } catch {
       // Audit log failure should not block login flow

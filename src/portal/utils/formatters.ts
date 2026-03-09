@@ -11,6 +11,18 @@ export function formatPhone(phone: string): string {
   return phone;
 }
 
+/** Returns phone with last 4 digits masked — use for non-admin roles per HIPAA minimum-necessary. */
+export function formatPhoneMasked(phone: string): string {
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length === 10) {
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-••••`;
+  }
+  if (digits.length === 11 && digits[0] === '1') {
+    return `(${digits.slice(1, 4)}) ${digits.slice(4, 7)}-••••`;
+  }
+  return '•••-••••';
+}
+
 export function formatDate(dateString: string): string {
   return format(parseISO(dateString), 'MMM d, yyyy');
 }

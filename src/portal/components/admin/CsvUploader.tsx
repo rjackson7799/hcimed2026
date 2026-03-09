@@ -20,7 +20,15 @@ export function CsvUploader({ projectId, onImportComplete }: CsvUploaderProps) {
   const [isDragOver, setIsDragOver] = useState(false);
 
   const handleFile = useCallback(async (file: File) => {
-    if (!file.name.endsWith('.csv')) {
+    // Validate extension
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+      toast.error('Please upload a CSV file');
+      return;
+    }
+    // Validate MIME type — CSV MIME types vary across browsers/OS (text/csv,
+    // application/vnd.ms-excel, text/plain, or empty). Block only obviously wrong types.
+    const blockedMimePrefixes = ['image/', 'video/', 'audio/', 'application/pdf', 'application/zip', 'application/x-zip'];
+    if (file.type && blockedMimePrefixes.some(prefix => file.type.startsWith(prefix))) {
       toast.error('Please upload a CSV file');
       return;
     }

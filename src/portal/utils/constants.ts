@@ -42,8 +42,10 @@ export const DISPOSITION_OPTIONS = [
   { value: 'disconnected',    label: 'Disconnected',     color: 'border-red-300 hover:bg-red-50' },
 ] as const;
 
-export const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
-export const SESSION_WARNING_MS = 25 * 60 * 1000; // 25 minutes (show warning)
+// HIPAA requires automatic logoff after inactivity. 30-min timeout with a 5-min warning
+// is standard for healthcare portals. Adjust only with compliance review.
+export const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes of inactivity → auto-logout
+export const SESSION_WARNING_MS = 25 * 60 * 1000; // warn at 25 min (5 min before logout)
 export const MAX_NOTE_LENGTH = 500;
 export const MAX_MESSAGE_LENGTH = 1000;
 export const SEARCH_DEBOUNCE_MS = 300;

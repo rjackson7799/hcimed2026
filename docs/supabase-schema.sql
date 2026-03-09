@@ -380,6 +380,17 @@ $$ LANGUAGE sql SECURITY DEFINER STABLE;
 -- 3.2 Profiles policies
 -- Users can read their own profile, or profiles of users sharing a project assignment.
 -- Admins can read all active profiles.
+-- SECURITY NOTE: The project-based join means brokers can see staff/admin names and emails
+-- for users in their shared projects. This is intentional (needed for messaging/display),
+-- but the exposed columns should be minimized in application queries (select only full_name,
+-- title, role — never select phone or company_name for cross-role reads).
+-- If stricter isolation is needed, replace the project-based OR clause with:
+--   OR (public.is_admin() OR EXISTS (
+--     SELECT 1 FROM public.project_assignments pa1
+--     JOIN public.project_assignments pa2 ON pa1.project_id = pa2.project_id
+--     WHERE pa1.user_id = auth.uid() AND pa2.user_id = id
+--       AND pa1.role_in_project NOT IN ('broker')  -- brokers cannot see other profiles
+--   ))
 CREATE POLICY "profiles_read" ON public.profiles FOR SELECT
   USING (
     is_active = true

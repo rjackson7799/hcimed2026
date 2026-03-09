@@ -83,12 +83,18 @@ export async function POST(request: Request) {
     }
 
     // 5. Record audit log before deletion (so we have a record even if deletion succeeds)
+    const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      || request.headers.get('x-real-ip')
+      || null;
+    const userAgent = request.headers.get('user-agent') || null;
     await supabaseAdmin.from('audit_log').insert({
       user_id: callerUser.id,
       action: 'DELETE_USER',
       table_name: 'profiles',
       record_id: userId,
       new_values: { deleted: true, full_name: targetProfile.full_name },
+      ip_address: ipAddress,
+      user_agent: userAgent,
     });
 
     // 6. Hard delete from Supabase Auth (cascades to profiles via FK)

@@ -129,12 +129,18 @@ export async function POST(request: Request) {
     }
 
     // 7. Record in audit log
+    const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      || request.headers.get('x-real-ip')
+      || null;
+    const userAgent = request.headers.get('user-agent') || null;
     await supabaseAdmin.from('audit_log').insert({
       user_id: callerUser.id,
       action: 'INVITE_USER',
       table_name: 'profiles',
       record_id: newUser.user.id,
       new_values: { email, full_name, role, ...(title && { title }) },
+      ip_address: ipAddress,
+      user_agent: userAgent,
     });
 
     return new Response(JSON.stringify({

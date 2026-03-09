@@ -2,6 +2,26 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Simple in-memory rate limiter (3 requests per IP per 10 minutes — applications are slower submissions)
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT = 3;
+const RATE_WINDOW_MS = 10 * 60 * 1000;
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    return true;
+  }
+  if (entry.count >= RATE_LIMIT) return false;
+  entry.count++;
+  return true;
+}
+
+// ~5MB raw file limit expressed as max base64 length (~6.7MB base64 per file)
+const MAX_FILE_B64_LENGTH = 7 * 1024 * 1024;
+
 const CAREERS_RECIPIENTS = (process.env.EMAIL_RECIPIENTS_CAREERS || 'admin@hcimed.com').split(',').map(e => e.trim());
 
 interface FileAttachment {
@@ -498,6 +518,16 @@ function generateApplicationConfirmationEmail(data: {
 
 export async function POST(request: Request) {
   try {
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      || request.headers.get('x-real-ip')
+      || 'unknown';
+    if (!checkRateLimit(ip)) {
+      return new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json', 'Retry-After': '600' }
+      });
+    }
+
     const data: ApplicationPayload = await request.json();
 
     // Validate required fields with detailed logging
@@ -515,6 +545,20 @@ export async function POST(request: Request) {
       return new Response(
         JSON.stringify({ error: "Missing required fields", missing: missingFields }),
         { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // Server-side file size validation (client-side limit can be bypassed by direct POST)
+    if (data.resume?.content && data.resume.content.length > MAX_FILE_B64_LENGTH) {
+      return new Response(
+        JSON.stringify({ error: 'Resume file exceeds the 5MB size limit' }),
+        { status: 413, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+    if (data.coverLetter?.content && data.coverLetter.content.length > MAX_FILE_B64_LENGTH) {
+      return new Response(
+        JSON.stringify({ error: 'Cover letter file exceeds the 5MB size limit' }),
+        { status: 413, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
