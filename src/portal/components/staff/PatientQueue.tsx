@@ -43,8 +43,8 @@ function StaffPatientTable({ patients }: StaffPatientTableProps) {
   const [callLoggerId, setCallLoggerId] = useState<string | null>(null);
 
   return (
-    <div className="rounded-lg border overflow-x-auto">
-      <Table>
+    <div className="rounded-lg border overflow-hidden">
+      <Table className="table-fixed">
         <TableHeader>
           <TableRow>
             <TableHead>Patient</TableHead>
@@ -65,24 +65,24 @@ function StaffPatientTable({ patients }: StaffPatientTableProps) {
                 className="cursor-pointer"
                 onClick={() => setExpandedId(expandedId === patient.id ? null : patient.id)}
               >
-                <TableCell className="font-medium whitespace-nowrap">
+                <TableCell className="font-medium truncate max-w-0">
                   {formatPatientName(patient.first_name, patient.last_name)}
                 </TableCell>
-                <TableCell className="whitespace-nowrap">
+                <TableCell>
                   {formatDateOfBirth(patient.date_of_birth)}
                 </TableCell>
-                <TableCell className="whitespace-nowrap">
+                <TableCell>
                   {formatPhone(patient.phone_primary)}
                 </TableCell>
-                <TableCell>{patient.member_id || '—'}</TableCell>
-                <TableCell className="hidden lg:table-cell">
+                <TableCell className="truncate max-w-0">{patient.member_id || '—'}</TableCell>
+                <TableCell className="hidden lg:table-cell truncate max-w-0">
                   {patient.current_insurance || '—'}
                 </TableCell>
                 <TableCell>
                   <StatusBadge status={patient.outreach_status} />
                 </TableCell>
                 <TableCell className="text-center">{patient.total_attempts}</TableCell>
-                <TableCell className="hidden lg:table-cell whitespace-nowrap text-muted-foreground">
+                <TableCell className="hidden lg:table-cell text-muted-foreground truncate max-w-0">
                   {patient.last_contacted_at ? formatRelativeTime(patient.last_contacted_at) : '—'}
                 </TableCell>
                 <TableCell className="text-right">

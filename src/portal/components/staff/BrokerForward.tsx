@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -82,13 +81,13 @@ export function BrokerForward({ patient }: BrokerForwardProps) {
 
         <AlertDialogFooter>
           <AlertDialogCancel disabled={forwardToBroker.isPending}>Cancel</AlertDialogCancel>
-          <AlertDialogAction
+          <Button
             onClick={handleForward}
             disabled={forwardToBroker.isPending}
           >
             {forwardToBroker.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Forward Patient
-          </AlertDialogAction>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

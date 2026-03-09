@@ -40,11 +40,13 @@ export function useForwardToBroker() {
 
       if (patientError) throw patientError;
 
-      // 3. Call API to send broker email notification
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        await fetch('/api/send-broker-email', {
+      // 3. Fire-and-forget broker email notification (non-blocking)
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10_000);
+        fetch('/api/send-broker-email', {
           method: 'POST',
+          signal: controller.signal,
           headers: {
             'Content-Type': 'application/json',
             ...(session?.access_token && { 'Authorization': `Bearer ${session.access_token}` }),
@@ -52,12 +54,12 @@ export function useForwardToBroker() {
           body: JSON.stringify({
             patient_id: params.patient_id,
             project_id: params.project_id,
+            notes: params.notes,
           }),
-        });
-      } catch {
-        // Email failure shouldn't block the forward operation
-        console.error('Failed to send broker email notification');
-      }
+        })
+          .catch(() => console.error('Failed to send broker email notification'))
+          .finally(() => clearTimeout(timeout));
+      });
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['patients', variables.project_id] });

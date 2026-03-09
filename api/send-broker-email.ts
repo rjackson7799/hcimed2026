@@ -62,7 +62,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { patient_id, project_id } = body;
+    const { patient_id, project_id, notes } = body;
 
     if (!patient_id || !project_id) {
       return new Response(JSON.stringify({ error: 'Missing patient_id or project_id' }), {
@@ -71,10 +71,10 @@ export async function POST(request: Request) {
       });
     }
 
-    // Fetch patient details
+    // Fetch patient details (only first name + phone for email)
     const { data: patient, error: patientError } = await supabase
       .from('patients')
-      .select('*')
+      .select('first_name, phone_primary')
       .eq('id', patient_id)
       .single();
 
@@ -124,46 +124,33 @@ export async function POST(request: Request) {
       });
     }
 
-    // Fetch recent outreach logs for context
-    const { data: logs } = await supabase
-      .from('outreach_logs')
-      .select('disposition, notes, call_timestamp')
-      .eq('patient_id', patient_id)
-      .order('call_timestamp', { ascending: false })
-      .limit(5);
+    // Send email to brokers (cc admin)
+    const notesHtml = notes
+      ? `<h3>Notes</h3><p>${escapeHtml(notes)}</p>`
+      : '';
 
-    const logsHtml = (logs || [])
-      .map(
-        (log: any) =>
-          `<li>${escapeHtml(new Date(log.call_timestamp).toLocaleDateString())} — ${escapeHtml(log.disposition)}${log.notes ? `: ${escapeHtml(log.notes)}` : ''}</li>`
-      )
-      .join('');
-
-    // Send email to broker
     const { data, error: emailError } = await resend.emails.send({
       from: 'HCI Patient Outreach <noreply@hcimed.com>',
       to: brokerEmails,
       cc: ['admin@hcimed.com', 'billing@hcimed.com'],
-      subject: `Patient Forwarded: ${escapeHtml(patient.first_name)} ${escapeHtml(patient.last_name)} — ${escapeHtml(project.name)}`,
+      subject: `Patient Forwarded: ${escapeHtml(patient.first_name)} — ${escapeHtml(project.name)}`,
       html: `
         <h2>Patient Forwarded for Broker Assistance</h2>
         <p>A patient has been forwarded to you from the <strong>${escapeHtml(project.name)}</strong> outreach project.</p>
 
         <h3>Patient Information</h3>
         <table style="border-collapse: collapse; width: 100%; max-width: 500px;">
-          <tr><td style="padding: 6px 12px; font-weight: bold;">Name</td><td style="padding: 6px 12px;">${escapeHtml(patient.first_name)} ${escapeHtml(patient.last_name)}</td></tr>
+          <tr><td style="padding: 6px 12px; font-weight: bold;">First Name</td><td style="padding: 6px 12px;">${escapeHtml(patient.first_name)}</td></tr>
           <tr><td style="padding: 6px 12px; font-weight: bold;">Phone</td><td style="padding: 6px 12px;">${escapeHtml(patient.phone_primary)}</td></tr>
-          ${patient.member_id ? `<tr><td style="padding: 6px 12px; font-weight: bold;">Member ID</td><td style="padding: 6px 12px;">${escapeHtml(patient.member_id)}</td></tr>` : ''}
-          ${patient.current_insurance ? `<tr><td style="padding: 6px 12px; font-weight: bold;">Current Insurance</td><td style="padding: 6px 12px;">${escapeHtml(patient.current_insurance)}</td></tr>` : ''}
-          ${patient.target_insurance ? `<tr><td style="padding: 6px 12px; font-weight: bold;">Target Insurance</td><td style="padding: 6px 12px;">${escapeHtml(patient.target_insurance)}</td></tr>` : ''}
         </table>
 
-        ${logsHtml ? `<h3>Recent Outreach History</h3><ul>${logsHtml}</ul>` : ''}
+        ${notesHtml}
+
+        <p>Log in to the <a href="https://hcimed.com/partner-login">Partner Portal</a> to view full patient details.</p>
 
         <hr />
         <p style="color: #666; font-size: 12px;">
           This is an automated message from the HCI Patient Outreach system.
-          Please log in to the <a href="https://hcimed.com/partner-login">Partner Portal</a> to manage this patient.
         </p>
       `,
     });
