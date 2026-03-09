@@ -106,7 +106,43 @@ export function AdminUsersPage() {
   };
 
   if (isLoading) return <TableSkeleton rows={5} />;
-  if (error) return <p className="text-destructive">Failed to load users.</p>;
+
+  if (error) {
+    return (
+      <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-6 text-center">
+        <p className="font-medium text-destructive">Failed to load users</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {error instanceof Error ? error.message : 'An unexpected error occurred.'}
+        </p>
+        <Button variant="outline" size="sm" className="mt-3" onClick={() => window.location.reload()}>
+          Retry
+        </Button>
+      </div>
+    );
+  }
+
+  if (!users || users.length === 0) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold">User Management</h2>
+            <p className="text-sm text-muted-foreground">
+              Manage staff, admin, provider, and broker accounts.
+            </p>
+          </div>
+          <Button onClick={() => setInviteOpen(true)}>
+            <UserPlus className="mr-2 h-4 w-4" />
+            Invite User
+          </Button>
+        </div>
+        <div className="rounded-lg border p-8 text-center text-muted-foreground">
+          No users found. Invite a user to get started.
+        </div>
+        <InviteUserDialog open={inviteOpen} onOpenChange={setInviteOpen} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">

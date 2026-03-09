@@ -11,9 +11,13 @@ export function useUsers() {
         .select('*')
         .order('full_name', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('[useUsers] Supabase query failed:', error.message, error);
+        throw error;
+      }
       return data as Profile[];
     },
+    retry: 1,
   });
 }
 
@@ -34,9 +38,13 @@ export function useActiveUsers(role?: Profile['role'] | Profile['role'][]) {
       }
 
       const { data, error } = await query;
-      if (error) throw error;
+      if (error) {
+        console.error('[useActiveUsers] Supabase query failed:', error.message, error);
+        throw error;
+      }
       return data as Profile[];
     },
+    retry: 1,
   });
 }
 
