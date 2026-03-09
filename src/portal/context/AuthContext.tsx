@@ -175,6 +175,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setShowTimeoutWarning(false);
           if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
           if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+          // Safety net: redirect to login if signOut() didn't already navigate
+          window.location.href = '/hci-login';
+          return;
         }
       }
     );
@@ -224,7 +227,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    const loginPath = profile?.role === 'broker' ? '/partner-login' : '/hci-login';
     await supabase.auth.signOut();
+    window.location.href = loginPath;
   };
 
   return (

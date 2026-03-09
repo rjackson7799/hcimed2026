@@ -59,7 +59,15 @@ import { RoleGuard } from "@/portal/components/auth/RoleGuard";
 import { PortalRedirect } from "@/portal/components/auth/PortalRedirect";
 import { AppShell } from "@/portal/components/layout/AppShell";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 30_000,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <AccessibilityProvider>
