@@ -9,17 +9,6 @@
       "has": [
         {
           "type": "host",
-          "value": "www.hcimed.com"
-        }
-      ],
-      "destination": "https://hcimed.com/:path",
-      "permanent": true
-    },
-    {
-      "source": "/:path(.*)",
-      "has": [
-        {
-          "type": "host",
           "value": "hcimedgroup.com"
         }
       ],
