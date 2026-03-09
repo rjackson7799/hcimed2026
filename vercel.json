@@ -9,6 +9,17 @@
       "has": [
         {
           "type": "host",
+          "value": "www.hcimed.com"
+        }
+      ],
+      "destination": "https://hcimed.com/:path",
+      "permanent": true
+    },
+    {
+      "source": "/:path(.*)",
+      "has": [
+        {
+          "type": "host",
           "value": "hcimedgroup.com"
         }
       ],
@@ -48,5 +59,15 @@
   ],
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/practice-health-report?type=weekly",
+      "schedule": "0 14 * * 1"
+    },
+    {
+      "path": "/api/cron/practice-health-report?type=monthly",
+      "schedule": "0 14 1 * *"
+    }
   ]
 }

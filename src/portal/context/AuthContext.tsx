@@ -189,13 +189,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      // Log failed login attempt for HIPAA audit trail
+      // Log failed login attempt for HIPAA audit trail (server-side)
       try {
-        await supabase.from('audit_log').insert({
-          action: 'LOGIN_FAILED',
-          table_name: 'auth',
-          new_values: { email, reason: 'invalid_credentials' },
-          user_agent: navigator.userAgent,
+        await fetch('/api/audit-log', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'LOGIN_FAILED', email }),
         });
       } catch {
         // Audit log failure should not block login flow
@@ -204,13 +203,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { error: 'Invalid email or password' };
     }
 
-    // Log successful login
+    // Log successful login (server-side with auth token)
     try {
-      await supabase.from('audit_log').insert({
-        action: 'LOGIN_SUCCESS',
-        table_name: 'auth',
-        new_values: { email },
-        user_agent: navigator.userAgent,
+      const { data: { session: newSession } } = await supabase.auth.getSession();
+      await fetch('/api/audit-log', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(newSession?.access_token && {
+            Authorization: `Bearer ${newSession.access_token}`,
+          }),
+        },
+        body: JSON.stringify({ action: 'LOGIN_SUCCESS', email }),
       });
     } catch {
       // Audit log failure should not block login flow
