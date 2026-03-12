@@ -2,7 +2,7 @@
 
 Tracking document for Pasadena Health Hub (hcimed.com) development.
 
-**Last updated:** 2026-03-05
+**Last updated:** 2026-03-12
 
 ---
 
@@ -122,6 +122,16 @@ Full PRD: `docs/Practice_Health_Module_PRD_v1.0.md`
 ---
 
 ## Changelog
+
+### 2026-03-12
+- **Portal auth/session reliability hardening (admin + staff login loading):**
+  - Updated `AuthContext` to make audit logging non-blocking during login (`/api/audit-log` now fire-and-forget with timeout) so `LoginForm` navigation is not blocked on slow serverless responses.
+  - Added profile hydration on `INITIAL_SESSION` in `onAuthStateChange` to reduce login-to-portal race conditions when portal `AuthProvider` mounts after login page unmount.
+  - Added broker-aware login path resolver for invalid-session/sign-out redirects so broker context correctly routes to `/partner-login` (instead of always `/hci-login`).
+  - Removed stale closure risk in token refresh handling by reading profile from a ref during auth event handling.
+  - Added explicit Supabase query timeouts (`AbortController`) to `useProjects`, `useProject`, and `useMyProjects` so dashboard loading states fail fast instead of hanging indefinitely.
+  - Hardened `api/audit-log.ts` env handling (`SUPABASE_URL`-first with fallbacks), added explicit misconfiguration logging, and now throws on failed `audit_log` inserts.
+  - Validation: `bun run type-check` passes; targeted lint on modified files passes with one pre-existing Fast Refresh warning in `AuthContext`.
 
 ### 2026-03-05
 - **Practice Health Module — Step 4 (Dashboard UI + Route Integration):**

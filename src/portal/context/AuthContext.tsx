@@ -29,6 +29,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const warningTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const logoutTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const lastActivityRef = useRef<number>(Date.now());
+  const profileRef = useRef<Profile | null>(null);
+
+  useEffect(() => {
+    profileRef.current = profile;
+  }, [profile]);
+
+  const getLoginPath = useCallback((roleValue?: Profile['role'] | null) => {
+    if (roleValue === 'broker' || window.location.pathname.startsWith('/portal/broker')) {
+      return '/partner-login';
+    }
+    return '/hci-login';
+  }, []);
+
+  const logAuditEvent = useCallback((
+    action: 'LOGIN_FAILED' | 'LOGIN_SUCCESS',
+    email: string,
+    accessToken?: string
+  ) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8_000);
+
+    fetch('/api/audit-log', {
+      method: 'POST',
+      signal: controller.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+      },
+      body: JSON.stringify({ action, email }),
+    })
+      .catch(() => {
+        // Audit log failure should not block login flow
+      })
+      .finally(() => clearTimeout(timeoutId));
+  }, []);
 
   const resetTimers = useCallback(() => {
     lastActivityRef.current = Date.now();
@@ -42,11 +77,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, SESSION_WARNING_MS);
 
     logoutTimerRef.current = setTimeout(async () => {
-      const loginPath = profile?.role === 'broker' ? '/partner-login' : '/hci-login';
+      const loginPath = getLoginPath(profileRef.current?.role);
       await supabase.auth.signOut();
       window.location.href = loginPath;
     }, SESSION_TIMEOUT_MS);
-  }, [profile?.role]);
+  }, [getLoginPath]);
 
   const extendSession = useCallback(() => {
     resetTimers();
@@ -130,6 +165,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // If session is null outside of deliberate sign-out or initial unauthenticated load,
         // the refresh token was invalidated. Force logout.
         if (!newSession && event !== 'SIGNED_OUT' && event !== 'INITIAL_SESSION') {
+          const loginPath = getLoginPath(profileRef.current?.role);
           setSession(null);
           setUser(null);
           setProfile(null);
@@ -137,14 +173,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setShowTimeoutWarning(false);
           if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
           if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
-          window.location.href = '/hci-login';
+          window.location.href = loginPath;
           return;
         }
 
         setSession(newSession);
         setUser(newSession?.user ?? null);
 
-        if (event === 'SIGNED_IN' && newSession?.user) {
+        if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && newSession?.user) {
           try {
             const userProfile = await fetchProfile(newSession.user.id);
             if (isMounted) {
@@ -158,7 +194,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (event === 'TOKEN_REFRESHED' && newSession?.user) {
           try {
-            if (!profile) {
+            if (!profileRef.current) {
               const userProfile = await fetchProfile(newSession.user.id);
               if (isMounted) setProfile(userProfile);
             }
@@ -170,13 +206,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         if (event === 'SIGNED_OUT') {
+          const loginPath = getLoginPath(profileRef.current?.role);
           setProfile(null);
           setIsLoading(false);
           setShowTimeoutWarning(false);
           if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
           if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
           // Safety net: redirect to login if signOut() didn't already navigate
-          window.location.href = '/hci-login';
+          window.location.href = loginPath;
           return;
         }
       }
@@ -187,47 +224,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       clearTimeout(safetyTimeout);
       subscription.unsubscribe();
     };
-  }, [fetchProfile]);
+  }, [fetchProfile, getLoginPath]);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      // Log failed login attempt for HIPAA audit trail (server-side)
-      try {
-        await fetch('/api/audit-log', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'LOGIN_FAILED', email }),
-        });
-      } catch {
-        // Audit log failure should not block login flow
-      }
+      logAuditEvent('LOGIN_FAILED', email);
       // Return generic message to prevent user enumeration
       return { error: 'Invalid email or password' };
     }
 
-    // Log successful login (server-side with auth token)
-    try {
-      const { data: { session: newSession } } = await supabase.auth.getSession();
-      await fetch('/api/audit-log', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(newSession?.access_token && {
-            Authorization: `Bearer ${newSession.access_token}`,
-          }),
-        },
-        body: JSON.stringify({ action: 'LOGIN_SUCCESS', email }),
-      });
-    } catch {
-      // Audit log failure should not block login flow
-    }
+    logAuditEvent('LOGIN_SUCCESS', email, data.session?.access_token);
 
     return { error: null };
   };
 
   const signOut = async () => {
-    const loginPath = profile?.role === 'broker' ? '/partner-login' : '/hci-login';
+    const loginPath = getLoginPath(profile?.role);
     await supabase.auth.signOut();
     window.location.href = loginPath;
   };

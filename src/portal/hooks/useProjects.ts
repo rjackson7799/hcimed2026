@@ -6,13 +6,26 @@ export function useProjects() {
   return useQuery({
     queryKey: ['projects'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12_000);
 
-      if (error) throw error;
-      return data as Project[];
+      try {
+        const { data, error } = await supabase
+          .from('projects')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .abortSignal(controller.signal);
+
+        if (error) throw error;
+        return data as Project[];
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          throw new Error('Projects request timed out. Please try again.');
+        }
+        throw err;
+      } finally {
+        clearTimeout(timeoutId);
+      }
     },
   });
 }
@@ -21,14 +34,27 @@ export function useProject(projectId: string) {
   return useQuery({
     queryKey: ['projects', projectId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('id', projectId)
-        .single();
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12_000);
 
-      if (error) throw error;
-      return data as Project;
+      try {
+        const { data, error } = await supabase
+          .from('projects')
+          .select('*')
+          .eq('id', projectId)
+          .single()
+          .abortSignal(controller.signal);
+
+        if (error) throw error;
+        return data as Project;
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          throw new Error('Project request timed out. Please try again.');
+        }
+        throw err;
+      } finally {
+        clearTimeout(timeoutId);
+      }
     },
     enabled: !!projectId,
   });
