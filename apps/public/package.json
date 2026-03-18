@@ -12,7 +12,6 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@hci/shared": "workspace:*",
     "@tanstack/react-query": "^5.83.0",
     "dompurify": "^3.3.1",
     "marked": "^17.0.1",

@@ -12,7 +12,6 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@hci/shared": "workspace:*",
     "@anthropic-ai/sdk": "^0.78.0",
     "@react-pdf/renderer": "^4.3.2",
     "@supabase/supabase-js": "^2.97.0",
