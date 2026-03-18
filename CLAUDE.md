@@ -9,206 +9,204 @@
 Official website for **HCI Medical Group** — a trusted internal medicine and senior care practice in Pasadena, CA, serving the San Gabriel Valley since 1990.
 
 - **Live site:** https://hcimed.com
-- **Package name:** `pasadena-health-hub`
-- **Type:** Single-page application with serverless API functions
+- **Portal:** https://portal.hcimed.com
+- **Type:** Bun workspace monorepo with two Vite apps and a shared package
+
+## Monorepo Structure
+
+```
+pasadena-health-hub/
+├── apps/
+│   ├── public/                        # Marketing site → hcimed.com
+│   │   ├── src/                       # Public site source
+│   │   │   ├── assets/                # Images (hero/, services/, logo)
+│   │   │   ├── components/            # Layout, blog, careers, SEO, etc.
+│   │   │   ├── config/                # seo.ts, site.ts
+│   │   │   ├── content/blog/          # Markdown blog posts
+│   │   │   ├── context/               # AccessibilityContext
+│   │   │   ├── lib/                   # blog.ts, schemas/
+│   │   │   ├── pages/                 # Route-level page components
+│   │   │   ├── types/                 # TypeScript types
+│   │   │   ├── App.tsx                # Public routes
+│   │   │   ├── main.tsx               # Entry point
+│   │   │   └── index.css              # Global styles, CSS variables
+│   │   ├── api/                       # Public API functions (contact, appointments, careers)
+│   │   ├── public/                    # Static assets, favicons, robots.txt
+│   │   ├── index.html
+│   │   ├── vite.config.ts             # Port 8080
+│   │   ├── vercel.json                # Public headers, portal redirects
+│   │   ├── tailwind.config.ts
+│   │   ├── tsconfig.json
+│   │   └── package.json
+│   │
+│   └── portal/                        # Internal portal → portal.hcimed.com
+│       ├── src/
+│       │   ├── components/            # admin, auth, broker, staff, mobile-docs, awv, ccm
+│       │   ├── context/               # AuthContext, ProjectContext
+│       │   ├── hooks/                 # 38+ React Query hooks
+│       │   ├── lib/                   # supabase.ts, csv.ts, export.ts, parsers
+│       │   ├── pages/                 # Portal route pages
+│       │   ├── schemas/               # Zod validation schemas
+│       │   ├── types/                 # database.ts, enums, module types
+│       │   ├── utils/                 # constants.ts, formatters.ts
+│       │   ├── App.tsx                # Portal-only routes (no /portal prefix)
+│       │   ├── main.tsx               # Portal entry point
+│       │   └── index.css              # Portal styles
+│       ├── api/                       # Portal API functions (broker email, user mgmt, cron)
+│       ├── index.html                 # No SEO tags, no GA
+│       ├── vite.config.ts             # Port 8081
+│       ├── vercel.json                # HIPAA-hardened headers, noindex, cron jobs
+│       ├── tailwind.config.ts
+│       ├── tsconfig.json
+│       └── package.json
+│
+├── packages/
+│   └── shared/                        # @hci/shared — shared between both apps
+│       ├── ui/                        # shadcn/ui components — DO NOT manually edit
+│       ├── lib/utils.ts               # cn() utility (clsx + tailwind-merge)
+│       ├── hooks/                     # use-mobile, use-toast
+│       ├── tailwind/preset.ts         # Shared Tailwind preset (colors, fonts, tokens)
+│       ├── tsconfig.json
+│       └── package.json
+│
+├── package.json                       # Root workspace config
+├── tsconfig.json                      # Root tsconfig with project references
+├── CLAUDE.md
+├── docs/                              # Shared docs, schemas, specs
+└── scripts/                           # Seed scripts
+```
 
 ## Tech Stack
 
 | Category | Technology |
 |----------|-----------|
-| Runtime / Package Manager | Bun |
+| Runtime / Package Manager | Bun (workspace monorepo) |
 | Build Tool | Vite 5 with @vitejs/plugin-react-swc |
 | Framework | React 18 + TypeScript |
 | Styling | Tailwind CSS 3.4 with CSS variables (HSL), @tailwindcss/typography |
-| UI Components | shadcn/ui (Radix UI primitives, slate base color) |
+| UI Components | shadcn/ui (Radix UI, in `packages/shared/ui/`) |
 | Routing | React Router DOM 6 (BrowserRouter) |
 | Forms | React Hook Form 7 + Zod validation |
 | Data Fetching | TanStack React Query 5 |
 | Email | Resend API (via Vercel serverless functions) |
-| SEO | react-helmet-async, vite-plugin-sitemap, JSON-LD structured data |
+| SEO | react-helmet-async, vite-plugin-sitemap, JSON-LD (public app only) |
 | Icons | Lucide React |
-| Markdown | marked (blog post rendering) |
-| Deployment | Vercel |
-
-## Project Structure
-
-```
-pasadena-health-hub/
-├── api/                              # Vercel serverless functions
-│   ├── request-appointment.ts        # Appointment form handler
-│   ├── send-email.ts                 # Contact form email handler
-│   └── submit-application.ts         # Careers application handler
-├── public/                           # Static assets, favicons, robots.txt
-├── src/
-│   ├── assets/                       # Images (hero/, services/, logo)
-│   ├── components/
-│   │   ├── layout/                   # Layout, Header, Footer, MobileStickyFooter
-│   │   ├── ui/                       # shadcn/ui primitives — DO NOT manually edit
-│   │   ├── blog/                     # BlogCard, BlogContent
-│   │   ├── careers/                  # ApplicationForm, FormStepIndicator
-│   │   │   └── steps/               # 5 form step components
-│   │   └── [custom components]       # SEO, PageHero, ContactForm, etc.
-│   ├── config/
-│   │   ├── seo.ts                    # Per-page SEO metadata
-│   │   └── site.ts                   # Global site config (name, contact, address, hours)
-│   ├── content/blog/                 # Markdown blog posts with YAML frontmatter
-│   ├── context/
-│   │   └── AccessibilityContext.tsx   # Font size, high contrast, reduced motion
-│   ├── hooks/                        # Custom React hooks (use-mobile, use-toast)
-│   ├── lib/
-│   │   ├── blog.ts                   # Blog post parsing (frontmatter + marked)
-│   │   ├── utils.ts                  # cn() utility (clsx + tailwind-merge)
-│   │   └── schemas/                  # Zod validation schemas
-│   ├── pages/                        # Route-level page components
-│   │   ├── internal-medicine/        # PhysicalExams, AcuteCare, WomensHealth, MensHealth, Diagnostics
-│   │   └── senior-care/              # PreventionWellness, ChronicCare, TransitionCare, RemoteMonitoring
-│   ├── types/                        # TypeScript type definitions
-│   ├── App.tsx                       # Route definitions and provider tree
-│   ├── main.tsx                      # Entry point (HelmetProvider wraps App)
-│   └── index.css                     # Global styles, CSS variables, design tokens
-├── CLAUDE.md
-├── PROGRESS.md
-├── README.md
-├── package.json
-├── vite.config.ts
-├── tailwind.config.ts
-├── tsconfig.json
-├── vercel.json
-└── .env.example
-```
+| Deployment | Vercel (two projects, one repo) |
 
 ## Development Commands
 
 ```bash
-bun install          # Install dependencies
-bun run dev          # Start dev server (http://localhost:8080)
-bun run build        # Production build (output: dist/)
-bun run preview      # Preview production build locally
-bun run lint         # Run ESLint
-bun run lint:fix     # Auto-fix ESLint issues
-bun run type-check   # TypeScript type checking (tsc --noEmit)
+bun install              # Install all workspace dependencies (from root)
+
+# Public site (hcimed.com)
+bun run dev:public       # Start public dev server (http://localhost:8080)
+bun run build:public     # Build public app
+
+# Portal (portal.hcimed.com)
+bun run dev:portal       # Start portal dev server (http://localhost:8081)
+bun run build:portal     # Build portal app
+
+# Both
+bun run build            # Build both apps
 ```
 
 ## Environment Variables
 
+### Public Site (hcimed.com)
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `RESEND_API_KEY` | Yes | Resend API key for form email notifications |
 | `VITE_GA_TRACKING_ID` | No | Google Analytics measurement ID |
 | `VITE_SITE_URL` | No | Site URL for OG meta tags (defaults to https://hcimed.com) |
 
-Use `.env.example` as a template: `cp .env.example .env.local`
-
-## Coding Conventions
-
-### Imports
-- Use `@/` path alias for all imports from `src/` (e.g., `import { Layout } from "@/components/layout/Layout"`)
-
-### Components
-- Functional components with hooks
-- Page components use **default exports**; other components use **named exports**
-- All pages wrap content in the `<Layout>` component
-- Each page uses the `<SEO>` component for meta tags
-
-### Styling
-- Tailwind utility classes for all styling
-- Use `cn()` from `@/lib/utils` for conditional class merging
-- Colors use HSL-based CSS variables defined in `index.css`
-- Fonts: Playfair Display (headings) + Source Sans 3 (body)
-
-### shadcn/ui
-- Components live in `src/components/ui/` — these are **auto-generated** by the shadcn CLI
-- **Do not manually edit** files in `src/components/ui/`
-- To add new components: `npx shadcn-ui@latest add <component>`
-
-### Forms
-- React Hook Form with Zod resolvers
-- Validation schemas in `src/lib/schemas/`
-
-### Blog
-- Markdown files in `src/content/blog/` with YAML frontmatter
-- Required frontmatter: title, slug, description, date, author, tags
-- Parsed at build time via `import.meta.glob`
-
-### SEO
-- Page metadata defined in `src/config/seo.ts`
-- Sitemap routes configured in `vite.config.ts` (`dynamicRoutes` array)
-
-## Architecture Notes
-
-- **Provider tree** (App.tsx): `AccessibilityProvider > QueryClientProvider > TooltipProvider > BrowserRouter`
-- **HelmetProvider** wraps `App` in `main.tsx`
-- **SPA routing**: Vercel `vercel.json` rewrites all non-API routes to `index.html`
-- **Domain redirects**: `hcimedgroup.com` and `www.hcimedgroup.com` → `hcimed.com`
-- **Security headers** set in `vercel.json`: X-Frame-Options, X-XSS-Protection, X-Content-Type-Options, Referrer-Policy
-- **Static asset caching**: `/assets/` files get immutable cache headers (1 year)
-- **Accessibility preferences** persisted in localStorage under `hci-accessibility-preferences`
-- **TypeScript** is not in strict mode (`noImplicitAny: false`, `strictNullChecks: false`)
-
-## Patient Outreach Tracking Portal (`src/portal/`)
-
-Internal module for tracking patient outreach across insurance transitions. Isolated from the public site — all portal code lives in `src/portal/`.
-
-### Portal Structure
-```
-src/portal/
-├── components/
-│   ├── admin/       # Dashboard, charts, project manager, CSV upload, audit log
-│   ├── auth/        # AuthGuard, RoleGuard, LoginForm, SessionTimeout
-│   ├── broker/      # ForwardedList, StatusUpdater, MessageThread
-│   ├── layout/      # AppShell, PortalSidebar, TopBar, MobileNav
-│   ├── shared/      # StatusBadge, LoadingStates, ExportButton
-│   └── staff/       # PatientQueue, PatientCard, CallLogger, CallHistory, BrokerForward
-├── context/         # AuthContext, ProjectContext
-├── hooks/           # React Query hooks for all data operations
-├── lib/             # supabase.ts, csv.ts, export.ts
-├── pages/           # Route-level page components (named exports)
-├── schemas/         # Zod validation schemas
-├── types/           # database.ts, enums.ts, index.ts
-└── utils/           # constants.ts, formatters.ts
-```
-
-### Portal Routes
-| Route | Role | Description |
-|-------|------|-------------|
-| `/hci-login` | Public | Admin & Staff login (HCI-branded) |
-| `/partner-login` | Public | Broker login (partner-branded) |
-| `/portal` | Auth | Redirects based on role |
-| `/portal/admin` | Admin | Dashboard with charts |
-| `/portal/admin/projects` | Admin | Project list |
-| `/portal/admin/projects/:id` | Admin | Project detail + CSV upload |
-| `/portal/admin/users` | Admin | User management |
-| `/portal/admin/audit-log` | Admin | HIPAA audit log viewer |
-| `/portal/staff` | Admin, Staff | Patient queue + call logging |
-| `/portal/broker` | Broker | Forwarded patients + status updates |
-
-### Portal Tech
-- **Auth:** Supabase Auth with email/password, 30-min session timeout
-- **Data:** Supabase PostgreSQL with RLS, React Query for caching
-- **Realtime:** Supabase Realtime subscriptions (auto-refresh dashboard)
-- **Charts:** recharts (donut, bar, funnel) via shadcn chart wrapper
-- **Email:** Resend API via `api/send-broker-email.ts` (Vercel serverless)
-- **CSV:** papaparse with Zod validation for patient imports
-
-### Portal Environment Variables
+### Portal (portal.hcimed.com)
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `VITE_SUPABASE_URL` | Yes | Supabase project URL |
 | `VITE_SUPABASE_ANON_KEY` | Yes | Supabase anonymous key |
-| `SUPABASE_SERVICE_ROLE_KEY` | Yes (Vercel) | Service role key for broker email API |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Service role key for server-side operations |
+| `RESEND_API_KEY` | Yes | Resend API key for broker emails |
+| `ANTHROPIC_API_KEY` | Yes | Claude API key for AI insights |
+| `CRON_SECRET` | Yes | Secret for authenticating cron job requests |
 
-### Portal Conventions
-- **Named exports** for all portal components (not default exports)
-- **Lazy imports** use `.then(m => ({ default: m.ComponentName }))` remapping
-- **AuthProvider** wraps only portal routes — never initializes for public visitors
-- **Portal routes excluded** from sitemap and marked `noindex`
-- **Do not add portal routes** to `dynamicRoutes` in `vite.config.ts`
+## Coding Conventions
+
+### Imports
+- Public app: `@/` alias → `apps/public/src/`
+- Portal app: `@/` alias → `apps/portal/src/`
+- Shared: `@hci/shared/ui/*`, `@hci/shared/lib/utils`, `@hci/shared/hooks/*`
+
+### Components
+- Functional components with hooks
+- Public page components use **default exports**; portal components use **named exports**
+- Public pages wrap content in `<Layout>` component and use `<SEO>` for meta tags
+
+### Styling
+- Tailwind utility classes for all styling
+- Use `cn()` from `@hci/shared/lib/utils` for conditional class merging
+- Colors use HSL-based CSS variables defined in `index.css`
+- Fonts: Playfair Display (headings) + Source Sans 3 (body)
+
+### shadcn/ui
+- Components live in `packages/shared/ui/` — **auto-generated** by shadcn CLI
+- **Do not manually edit** files in `packages/shared/ui/`
+- Hooks live in `packages/shared/hooks/`
+
+### Forms
+- React Hook Form with Zod resolvers
+- Public schemas: `apps/public/src/lib/schemas/`
+- Portal schemas: `apps/portal/src/schemas/`
+
+## Public Site Architecture
+
+- **Provider tree** (App.tsx): `AccessibilityProvider > QueryClientProvider > TooltipProvider > BrowserRouter`
+- **HelmetProvider** wraps `App` in `main.tsx`
+- **SPA routing**: `vercel.json` rewrites all non-API routes to `index.html`
+- **Domain redirects**: `hcimedgroup.com` → `hcimed.com`
+- **Portal redirects**: `/hci-login` → `portal.hcimed.com/login`, `/portal/*` → `portal.hcimed.com/*`
+
+## Portal Architecture
+
+- **Deployed to:** `portal.hcimed.com` (separate Vercel project, same Git repo)
+- **Auth:** Supabase Auth with email/password, 30-min session timeout
+- **Data:** Supabase PostgreSQL with RLS, React Query for caching
+- **Realtime:** Supabase Realtime subscriptions
+- **Charts:** recharts via shadcn chart wrapper
+- **CSV:** papaparse with Zod validation
+
+### Portal Routes (on portal.hcimed.com)
+| Route | Role | Description |
+|-------|------|-------------|
+| `/login` | Public | Admin & Staff login |
+| `/partner-login` | Public | Broker login |
+| `/` | Auth | Redirects based on role |
+| `/admin` | Admin | Dashboard |
+| `/admin/projects` | Admin | Project list |
+| `/admin/projects/:id` | Admin | Project detail + CSV upload |
+| `/admin/users` | Admin | User management |
+| `/admin/audit-log` | Admin | HIPAA audit log |
+| `/admin/practice-health` | Admin | Practice health reports |
+| `/admin/mobile-docs` | Admin | Facility directory |
+| `/admin/awv-tracker` | Admin, Staff | AWV tracking |
+| `/admin/ccm-rpm` | Admin, Staff | CCM/RPM tracking |
+| `/staff` | Admin, Staff, Provider | Patient queue |
+| `/broker` | Broker | Forwarded patients |
+
+## Vercel Deployment
+
+| Project | Domain | Root Directory | Install Command |
+|---------|--------|----------------|-----------------|
+| `pasadena-health-hub` | `hcimed.com` | `apps/public` | `cd ../.. && bun install` |
+| `hci-portal` | `portal.hcimed.com` | `apps/portal` | `cd ../.. && bun install` |
+
+Both projects point to the same Git repository with different root directories.
 
 ## Important Warnings
 
-- **Never commit** `.env.local` or any file containing `RESEND_API_KEY`
-- **Never manually edit** files in `src/components/ui/` — use the shadcn CLI
-- **When adding new public routes**: also add them to the `dynamicRoutes` array in `vite.config.ts`
-- **When adding new public pages**: also add SEO metadata in `src/config/seo.ts`
+- **Never commit** `.env.local` or any file containing API keys
+- **Never manually edit** files in `packages/shared/ui/` — use the shadcn CLI
+- **When adding new public routes**: add to `dynamicRoutes` in `apps/public/vite.config.ts`
+- **When adding new public pages**: add SEO metadata in `apps/public/src/config/seo.ts`
 - **Portal routes** should NOT be added to sitemap or SEO config
-- **Blog slugs** must match the `slug` field in frontmatter, not the filename
+- **Portal is noindexed** via both `X-Robots-Tag` header and `<meta>` tag
+- **Supabase env vars** exist ONLY on the portal Vercel project — never on public
