@@ -2,7 +2,7 @@
 
 Tracking document for Pasadena Health Hub (hcimed.com) development.
 
-**Last updated:** 2026-03-12
+**Last updated:** 2026-03-18
 
 ---
 
@@ -26,17 +26,36 @@ Tracking document for Pasadena Health Hub (hcimed.com) development.
 - [x] Accessibility controls (font size, high contrast, reduced motion)
 - [x] Mobile responsive design with sticky footer CTAs
 - [x] Cookie consent banner
-- [x] Vercel deployment with Bun
+- [x] Vercel deployment with Bun (two projects: hcimed.com + portal.hcimed.com)
+- [x] Bun workspace monorepo (apps/public, apps/portal, packages/shared)
 - [x] Domain setup with redirects (hcimedgroup.com → hcimed.com)
 - [x] Security headers (X-Frame-Options, XSS Protection, etc.)
 - [x] Branded confirmation emails for contact and careers forms
 - [x] Vercel serverless API functions (3 endpoints)
 - [x] Skip-to-content keyboard navigation
 
-### Patient Outreach Tracking Portal (`src/portal/`)
+### Monorepo Migration & Portal Subdomain (2026-03-18)
+
+- [x] **Restructured to Bun workspace monorepo** — single SPA split into two Vite apps + shared package
+  - `apps/public` → hcimed.com (marketing site, port 8080)
+  - `apps/portal` → portal.hcimed.com (internal portal, port 8081)
+  - `packages/shared` → @hci/shared (shadcn/ui components, cn(), hooks, Tailwind preset)
+- [x] **Security isolation** — Supabase keys, auth logic, and portal deps (recharts, papaparse, leaflet, anthropic SDK) no longer shipped in the public site bundle
+- [x] **Portal deployed to `portal.hcimed.com`** — separate Vercel project with HIPAA-hardened headers (`X-Robots-Tag: noindex`, `Referrer-Policy: same-origin`, strict CSP)
+- [x] **Portal routes simplified** — dropped `/portal` prefix (now `/admin`, `/staff`, `/broker`, `/login`)
+- [x] **Auth paths updated** — `getLoginPath()` returns `/login` instead of `/hci-login`, AuthGuard broker detection fixed
+- [x] **CRON_SECRET security fix** — made authentication check unconditional (was previously skipped when env var missing)
+- [x] **Public site CSP cleaned** — removed Supabase domains from `connect-src`
+- [x] **301 redirects** — `/hci-login` → `portal.hcimed.com/login`, `/portal/*` → `portal.hcimed.com/*`
+- [x] **Supabase Site URL** — updated to `https://portal.hcimed.com` with redirect URLs configured
+- [x] **DNS** — `portal.hcimed.com` CNAME configured in GoDaddy, SSL cert issued by Vercel
+
+Design spec: `docs/superpowers/specs/2026-03-18-portal-subdomain-migration-design.md`
+
+### Patient Outreach Tracking Portal (`apps/portal/`)
 
 - [x] **Milestone 0:** Supabase client, type foundations, enums, formatters, constants
-- [x] **Milestone 1:** Dual-path auth (`/hci-login`, `/partner-login`), session timeout (30 min), role-based guards
+- [x] **Milestone 1:** Dual-path auth (`/login`, `/partner-login` on portal.hcimed.com), session timeout (30 min), role-based guards
 - [x] **Milestone 2:** Portal shell with shadcn Sidebar, role-aware navigation, mobile bottom nav
 - [x] **Milestone 3:** Admin project CRUD, CSV upload with validation/dedup, staff assignment, user management
 - [x] **Milestone 4:** Staff patient queue (search, filter, pagination), one-tap call logging with dispositions, call history
@@ -44,7 +63,7 @@ Tracking document for Pasadena Health Hub (hcimed.com) development.
 - [x] **Milestone 6:** Admin dashboard with real-time charts, CSV export, staff activity tracking
 - [x] **Milestone 7:** Audit log viewer, print styles, HIPAA compliance polish
 
-### Practice Health Module (`src/portal/` — Phase 1 in progress)
+### Practice Health Module (`apps/portal/`)
 
 AI-powered analytics platform for eClinicalWorks data. Transforms raw billing, collections, and productivity reports into KPIs, dashboards, and AI-generated insights.
 
@@ -132,7 +151,7 @@ Patient eligibility, completion tracking, and revenue attribution for Medicare A
 
 Full PRD: `docs/AWV_Tracker_PRD_v1_0.md`
 
-### CCM / RPM Program Tracker (`src/portal/components/ccm-rpm/`)
+### CCM / RPM Program Tracker (`apps/portal/src/components/ccm-rpm/`)
 
 Combined module for Chronic Care Management and Remote Patient Monitoring enrollment, device tracking, and monthly reimbursement verification. Revenue assurance tool comparing actual EOB collections against expected revenue per enrolled patient.
 
@@ -198,7 +217,7 @@ Combined module for Chronic Care Management and Remote Patient Monitoring enroll
 
 Full PRD: `docs/CCM_RPM_Program_Tracker_PRD_v1_0.md`
 
-### Mobile Docs Facility Directory (`src/portal/components/mobile-docs/`)
+### Mobile Docs Facility Directory (`apps/portal/src/components/mobile-docs/`)
 
 Operational management system for all Mobile Docs care locations (SNFs, board-and-care homes, homebound patients). Replaces spreadsheet tracking with a structured directory, census management, contact lifecycle, pipeline tracking, geographic intelligence, and revenue attribution.
 
