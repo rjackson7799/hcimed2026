@@ -1,4 +1,3 @@
-import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 
 export async function POST(request: Request) {
@@ -30,32 +29,47 @@ export async function POST(request: Request) {
       { status: 200, headers: { 'Content-Type': 'application/json' } },
     );
 
-    const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
-      auth: { autoRefreshToken: false, persistSession: false },
-    });
-
-    // Generate recovery link via Admin API (bypasses GoTrue client endpoint)
-    const { data, error } = await supabaseAdmin.auth.admin.generateLink({
-      type: 'recovery',
-      email,
-      options: {
-        redirectTo: 'https://portal.hcimed.com/reset-password',
+    // Call Supabase GoTrue Admin API directly (bypasses JS client JSON parsing bug)
+    const generateLinkRes = await fetch(
+      `${supabaseUrl}/auth/v1/admin/generate_link`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${serviceRoleKey}`,
+          apikey: serviceRoleKey,
+        },
+        body: JSON.stringify({
+          type: 'recovery',
+          email,
+          redirect_to: 'https://portal.hcimed.com/reset-password',
+        }),
       },
-    });
+    );
 
-    if (error || !data?.properties?.action_link) {
-      console.error('generateLink error:', error?.message || 'No action link', JSON.stringify(data));
-      // Temporarily return debug info — remove after fixing
+    if (!generateLinkRes.ok) {
+      const errText = await generateLinkRes.text();
+      console.error('generateLink HTTP error:', generateLinkRes.status, errText);
+      // Temporarily return debug info
       return new Response(
-        JSON.stringify({ debug: true, generateLinkError: error?.message || null, hasData: !!data, hasLink: !!data?.properties?.action_link }),
+        JSON.stringify({ debug: true, status: generateLinkRes.status, body: errText }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    }
+
+    const linkData = await generateLinkRes.json();
+    const actionLink = linkData?.action_link;
+
+    if (!actionLink) {
+      console.error('No action_link in response:', JSON.stringify(linkData));
+      return new Response(
+        JSON.stringify({ debug: true, error: 'No action_link', keys: Object.keys(linkData || {}) }),
         { status: 200, headers: { 'Content-Type': 'application/json' } },
       );
     }
 
     // Send the recovery email via Resend
     const resend = new Resend(resendApiKey);
-    const resetLink = data.properties.action_link;
-    console.log('Recovery link generated, sending email to:', email);
 
     const { error: emailError } = await resend.emails.send({
       from: 'HCI Medical Group <noreply@hcimed.com>',
@@ -69,7 +83,7 @@ export async function POST(request: Request) {
             We received a request to reset the password for your HCI Staff Portal account.
             Click the button below to set a new password.
           </p>
-          <a href="${resetLink}" style="display: inline-block; background: #1e3a5f; color: #ffffff; padding: 12px 32px; border-radius: 6px; text-decoration: none; font-weight: 500; margin: 24px 0;">
+          <a href="${actionLink}" style="display: inline-block; background: #1e3a5f; color: #ffffff; padding: 12px 32px; border-radius: 6px; text-decoration: none; font-weight: 500; margin: 24px 0;">
             Reset Password
           </a>
           <p style="color: #94a3b8; font-size: 13px; line-height: 1.5;">
@@ -86,7 +100,6 @@ export async function POST(request: Request) {
 
     if (emailError) {
       console.error('Resend error:', emailError);
-      // Still return success to prevent enumeration
     }
 
     return successResponse;
