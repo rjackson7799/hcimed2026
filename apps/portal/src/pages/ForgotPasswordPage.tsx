@@ -15,7 +15,6 @@ import { Input } from '@hci/shared/ui/input';
 import { Button } from '@hci/shared/ui/button';
 import { Alert, AlertDescription } from '@hci/shared/ui/alert';
 import { Loader2, AlertCircle, Mail, ArrowLeft, ShieldCheck } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
 
 const forgotPasswordSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -38,19 +37,26 @@ export function ForgotPasswordPage() {
     setIsSubmitting(true);
     setError(null);
 
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(
-      data.email,
-      { redirectTo: `${window.location.origin}/reset-password` },
-    );
+    try {
+      const res = await fetch('/api/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: data.email }),
+      });
 
-    if (resetError) {
-      setError(resetError.message);
+      if (!res.ok) {
+        const result = await res.json().catch(() => ({ error: 'Something went wrong' }));
+        setError(result.error || 'Something went wrong');
+        setIsSubmitting(false);
+        return;
+      }
+
+      setEmailSent(true);
+    } catch {
+      setError('Unable to send reset link. Please try again.');
+    } finally {
       setIsSubmitting(false);
-      return;
     }
-
-    setEmailSent(true);
-    setIsSubmitting(false);
   };
 
   return (
