@@ -29,6 +29,10 @@ export async function POST(request: Request) {
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const resendApiKey = process.env.RESEND_API_KEY;
 
+    console.log('ENV check — VITE_SUPABASE_URL:', process.env.VITE_SUPABASE_URL ? 'set' : 'missing',
+      'SUPABASE_URL:', process.env.SUPABASE_URL ? 'set' : 'missing',
+      'resolved:', supabaseUrl?.substring(0, 30));
+
     if (!supabaseUrl || !serviceRoleKey || !resendApiKey) {
       return new Response(JSON.stringify({ error: 'Server configuration error' }), {
         status: 500,
@@ -58,15 +62,26 @@ export async function POST(request: Request) {
     });
 
     // Look up user via profiles table (PostgREST, not GoTrue)
-    const { data: profile, error: profileError } = await supabaseAdmin
-      .from('profiles')
-      .select('id, email')
-      .ilike('email', email)
-      .single();
+    // First, verify URL is reachable with a direct fetch
+    const testRes = await fetch(`${supabaseUrl}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}&select=id,email&limit=1`, {
+      headers: {
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
+      },
+    });
+    console.log('Direct REST test — status:', testRes.status, 'content-type:', testRes.headers.get('content-type'));
 
-    if (profileError || !profile) {
-      console.error('Profile lookup failed:', profileError?.message, profileError?.code, 'email:', email);
-      // User doesn't exist — return success anyway to prevent enumeration
+    if (!testRes.ok || !testRes.headers.get('content-type')?.includes('json')) {
+      const body = await testRes.text();
+      console.error('Direct REST failed:', testRes.status, body.substring(0, 200));
+      return successResponse;
+    }
+
+    const profiles = await testRes.json();
+    const profile = Array.isArray(profiles) ? profiles[0] : null;
+
+    if (!profile) {
+      console.log('No profile found for email:', email);
       return successResponse;
     }
 
