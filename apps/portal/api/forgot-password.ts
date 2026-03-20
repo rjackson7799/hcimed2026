@@ -57,29 +57,26 @@ export async function POST(request: Request) {
       auth: { autoRefreshToken: false, persistSession: false },
     });
 
-    const { data: users, error: listError } = await supabaseAdmin.auth.admin.listUsers();
-    if (listError) {
-      console.error('listUsers error:', listError.message);
-      return successResponse;
-    }
+    // Look up user via profiles table (PostgREST, not GoTrue)
+    const { data: profile, error: profileError } = await supabaseAdmin
+      .from('profiles')
+      .select('id, email')
+      .ilike('email', email)
+      .single();
 
-    const user = users.users.find(
-      (u) => u.email?.toLowerCase() === email.toLowerCase(),
-    );
-
-    if (!user) {
+    if (profileError || !profile) {
       // User doesn't exist — return success anyway to prevent enumeration
       return successResponse;
     }
 
     // Generate HMAC-signed reset token (expires in 1 hour)
     const expires = Date.now() + 60 * 60 * 1000; // 1 hour
-    const message = `${user.id}:${email.toLowerCase()}:${expires}`;
+    const message = `${profile.id}:${email.toLowerCase()}:${expires}`;
     const token = await hmacSign(serviceRoleKey, message);
 
     const resetLink =
       `https://portal.hcimed.com/reset-password` +
-      `?uid=${user.id}&email=${encodeURIComponent(email)}&t=${expires}&token=${token}`;
+      `?uid=${profile.id}&email=${encodeURIComponent(email)}&t=${expires}&token=${token}`;
 
     // Send the recovery email via Resend
     const resend = new Resend(resendApiKey);
