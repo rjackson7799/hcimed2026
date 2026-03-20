@@ -25,13 +25,10 @@ async function hmacSign(secret: string, message: string): Promise<string> {
 
 export async function POST(request: Request) {
   try {
-    const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+    // Prefer SUPABASE_URL (server-side) over VITE_ prefix (client-side, may resolve incorrectly)
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const resendApiKey = process.env.RESEND_API_KEY;
-
-    console.log('ENV check — VITE_SUPABASE_URL:', process.env.VITE_SUPABASE_URL ? 'set' : 'missing',
-      'SUPABASE_URL:', process.env.SUPABASE_URL ? 'set' : 'missing',
-      'resolved:', supabaseUrl?.substring(0, 30));
 
     if (!supabaseUrl || !serviceRoleKey || !resendApiKey) {
       return new Response(JSON.stringify({ error: 'Server configuration error' }), {
@@ -61,31 +58,17 @@ export async function POST(request: Request) {
       auth: { autoRefreshToken: false, persistSession: false },
     });
 
-    // Look up user via profiles table (PostgREST, not GoTrue)
-    // First, verify URL is reachable with a direct fetch
-    const testRes = await fetch(`${supabaseUrl}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}&select=id,email&limit=1`, {
-      headers: {
-        apikey: serviceRoleKey,
-        Authorization: `Bearer ${serviceRoleKey}`,
-      },
-    });
-    console.log('Direct REST test — status:', testRes.status, 'content-type:', testRes.headers.get('content-type'));
+    // Look up user via profiles table (PostgREST)
+    const { data: profile, error: profileError } = await supabaseAdmin
+      .from('profiles')
+      .select('id, email')
+      .eq('email', email.toLowerCase())
+      .single();
 
-    if (!testRes.ok || !testRes.headers.get('content-type')?.includes('json')) {
-      const body = await testRes.text();
-      console.error('Direct REST failed:', testRes.status, body.substring(0, 200));
+    if (profileError || !profile) {
+      // User doesn't exist — return success anyway to prevent enumeration
       return successResponse;
     }
-
-    const profiles = await testRes.json();
-    const profile = Array.isArray(profiles) ? profiles[0] : null;
-
-    if (!profile) {
-      console.log('No profile found for email:', email);
-      return successResponse;
-    }
-
-    console.log('Profile found:', profile.id, profile.email);
 
     // Generate HMAC-signed reset token (expires in 1 hour)
     const expires = Date.now() + 60 * 60 * 1000; // 1 hour
@@ -128,8 +111,6 @@ export async function POST(request: Request) {
 
     if (emailError) {
       console.error('Resend error:', emailError);
-    } else {
-      console.log('Reset email sent successfully to:', email);
     }
 
     return successResponse;
