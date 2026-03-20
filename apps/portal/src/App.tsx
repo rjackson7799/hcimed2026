@@ -77,10 +77,10 @@ const App = () => (
                 {/* Broker routes */}
                 <Route path="/broker" element={<RoleGuard allowedRoles={['broker']}><BrokerDashboardPage /></RoleGuard>} />
               </Route>
-            </Route>
 
-            {/* Catch-all → redirect to root */}
-            <Route path="*" element={<PortalRedirect />} />
+              {/* Catch-all → redirect based on role */}
+              <Route path="*" element={<PortalRedirect />} />
+            </Route>
           </Routes>
         </Suspense>
       </BrowserRouter>
