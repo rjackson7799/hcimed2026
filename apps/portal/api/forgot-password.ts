@@ -1,4 +1,27 @@
+import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
+
+/**
+ * Custom password reset flow that bypasses GoTrue's broken /recover and
+ * /admin/generate_link endpoints (both return 405 on this Supabase instance).
+ *
+ * Strategy: HMAC-signed token with 1-hour expiry, verified by /api/reset-password.
+ */
+
+async function hmacSign(secret: string, message: string): Promise<string> {
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    enc.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  );
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(message));
+  return Array.from(new Uint8Array(sig))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
 
 export async function POST(request: Request) {
   try {
@@ -29,44 +52,34 @@ export async function POST(request: Request) {
       { status: 200, headers: { 'Content-Type': 'application/json' } },
     );
 
-    // Call Supabase GoTrue Admin API directly (bypasses JS client JSON parsing bug)
-    const generateLinkRes = await fetch(
-      `${supabaseUrl}/auth/v1/admin/generate_link`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${serviceRoleKey}`,
-          apikey: serviceRoleKey,
-        },
-        body: JSON.stringify({
-          type: 'recovery',
-          email,
-          redirect_to: 'https://portal.hcimed.com/reset-password',
-        }),
-      },
+    // Look up user by email using admin API
+    const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
+
+    const { data: users, error: listError } = await supabaseAdmin.auth.admin.listUsers();
+    if (listError) {
+      console.error('listUsers error:', listError.message);
+      return successResponse;
+    }
+
+    const user = users.users.find(
+      (u) => u.email?.toLowerCase() === email.toLowerCase(),
     );
 
-    if (!generateLinkRes.ok) {
-      const errText = await generateLinkRes.text();
-      console.error('generateLink HTTP error:', generateLinkRes.status, errText);
-      // Temporarily return debug info
-      return new Response(
-        JSON.stringify({ debug: true, status: generateLinkRes.status, body: errText }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      );
+    if (!user) {
+      // User doesn't exist — return success anyway to prevent enumeration
+      return successResponse;
     }
 
-    const linkData = await generateLinkRes.json();
-    const actionLink = linkData?.action_link;
+    // Generate HMAC-signed reset token (expires in 1 hour)
+    const expires = Date.now() + 60 * 60 * 1000; // 1 hour
+    const message = `${user.id}:${email.toLowerCase()}:${expires}`;
+    const token = await hmacSign(serviceRoleKey, message);
 
-    if (!actionLink) {
-      console.error('No action_link in response:', JSON.stringify(linkData));
-      return new Response(
-        JSON.stringify({ debug: true, error: 'No action_link', keys: Object.keys(linkData || {}) }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      );
-    }
+    const resetLink =
+      `https://portal.hcimed.com/reset-password` +
+      `?uid=${user.id}&email=${encodeURIComponent(email)}&t=${expires}&token=${token}`;
 
     // Send the recovery email via Resend
     const resend = new Resend(resendApiKey);
@@ -83,12 +96,12 @@ export async function POST(request: Request) {
             We received a request to reset the password for your HCI Staff Portal account.
             Click the button below to set a new password.
           </p>
-          <a href="${actionLink}" style="display: inline-block; background: #1e3a5f; color: #ffffff; padding: 12px 32px; border-radius: 6px; text-decoration: none; font-weight: 500; margin: 24px 0;">
+          <a href="${resetLink}" style="display: inline-block; background: #1e3a5f; color: #ffffff; padding: 12px 32px; border-radius: 6px; text-decoration: none; font-weight: 500; margin: 24px 0;">
             Reset Password
           </a>
           <p style="color: #94a3b8; font-size: 13px; line-height: 1.5;">
             If you didn't request this, you can safely ignore this email.
-            This link expires in 24 hours.
+            This link expires in 1 hour.
           </p>
           <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
           <p style="color: #94a3b8; font-size: 12px;">

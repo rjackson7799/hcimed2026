@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -14,8 +14,7 @@ import {
 import { Input } from '@hci/shared/ui/input';
 import { Button } from '@hci/shared/ui/button';
 import { Alert, AlertDescription } from '@hci/shared/ui/alert';
-import { Loader2, AlertCircle, CheckCircle2, ShieldCheck } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { Loader2, AlertCircle, CheckCircle2, ShieldCheck, ArrowLeft } from 'lucide-react';
 
 const resetPasswordSchema = z
   .object({
@@ -39,6 +38,18 @@ function ResetPasswordPageInner() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Extract token params from URL
+  const uid = searchParams.get('uid');
+  const email = searchParams.get('email');
+  const t = searchParams.get('t');
+  const token = searchParams.get('token');
+
+  const hasValidParams = uid && email && t && token;
+
+  // Check if token has expired (client-side pre-check)
+  const isExpired = t ? Date.now() > Number(t) : false;
 
   const form = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
@@ -53,20 +64,35 @@ function ResetPasswordPageInner() {
     setIsSubmitting(true);
     setError(null);
 
-    const { error: updateError } = await supabase.auth.updateUser({
-      password: data.password,
-    });
+    try {
+      const res = await fetch('/api/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid,
+          email,
+          t,
+          token,
+          password: data.password,
+        }),
+      });
 
-    if (updateError) {
-      setError(updateError.message);
+      const result = await res.json().catch(() => ({ error: 'Something went wrong' }));
+
+      if (!res.ok || result.error) {
+        setError(result.error || 'Failed to update password');
+        setIsSubmitting(false);
+        return;
+      }
+
+      setSuccess(true);
+      setTimeout(() => {
+        navigate('/login', { replace: true });
+      }, 2000);
+    } catch {
+      setError('Unable to update password. Please try again.');
       setIsSubmitting(false);
-      return;
     }
-
-    setSuccess(true);
-    setTimeout(() => {
-      navigate('/login', { replace: true });
-    }, 2000);
   };
 
   return (
@@ -106,7 +132,25 @@ function ResetPasswordPageInner() {
             </p>
           </div>
 
-          {success ? (
+          {!hasValidParams || isExpired ? (
+            <div className="space-y-6">
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  {isExpired
+                    ? 'This reset link has expired. Please request a new one.'
+                    : 'Invalid reset link. Please request a new password reset.'}
+                </AlertDescription>
+              </Alert>
+              <Link
+                to="/forgot-password"
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Request a new reset link
+              </Link>
+            </div>
+          ) : success ? (
             <div className="space-y-4">
               <Alert>
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
