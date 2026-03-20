@@ -44,9 +44,17 @@ export function ForgotPasswordPage() {
         body: JSON.stringify({ email: data.email }),
       });
 
+      const result = await res.json().catch(() => ({ error: 'Something went wrong' }));
+
       if (!res.ok) {
-        const result = await res.json().catch(() => ({ error: 'Something went wrong' }));
         setError(result.error || 'Something went wrong');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Temporary debug: show API response if generateLink failed
+      if (result.debug) {
+        setError(`Debug: ${JSON.stringify(result)}`);
         setIsSubmitting(false);
         return;
       }

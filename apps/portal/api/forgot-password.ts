@@ -44,14 +44,18 @@ export async function POST(request: Request) {
     });
 
     if (error || !data?.properties?.action_link) {
-      // User may not exist — return success anyway to prevent enumeration
-      console.error('generateLink error:', error?.message || 'No action link');
-      return successResponse;
+      console.error('generateLink error:', error?.message || 'No action link', JSON.stringify(data));
+      // Temporarily return debug info — remove after fixing
+      return new Response(
+        JSON.stringify({ debug: true, generateLinkError: error?.message || null, hasData: !!data, hasLink: !!data?.properties?.action_link }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
     }
 
     // Send the recovery email via Resend
     const resend = new Resend(resendApiKey);
     const resetLink = data.properties.action_link;
+    console.log('Recovery link generated, sending email to:', email);
 
     const { error: emailError } = await resend.emails.send({
       from: 'HCI Medical Group <noreply@hcimed.com>',
