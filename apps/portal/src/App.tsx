@@ -13,6 +13,8 @@ import { AppShell } from "@/components/layout/AppShell";
 // Login pages (no auth required)
 const LoginPage = lazy(() => import("@/pages/LoginPage").then(m => ({ default: m.LoginPage })));
 const PartnerLoginPage = lazy(() => import("@/pages/PartnerLoginPage").then(m => ({ default: m.PartnerLoginPage })));
+const ResetPasswordPage = lazy(() => import("@/pages/ResetPasswordPage").then(m => ({ default: m.ResetPasswordPage })));
+const ForgotPasswordPage = lazy(() => import("@/pages/ForgotPasswordPage").then(m => ({ default: m.ForgotPasswordPage })));
 
 // Admin pages
 const AdminDashboardPage = lazy(() => import("@/pages/AdminDashboardPage").then(m => ({ default: m.AdminDashboardPage })));
@@ -49,6 +51,8 @@ const App = () => (
             {/* Login routes (no auth) */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/partner-login" element={<PartnerLoginPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
             {/* Authenticated routes */}
             <Route element={<AuthProvider><AuthGuard /></AuthProvider>}>

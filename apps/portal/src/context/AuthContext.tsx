@@ -194,6 +194,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
         }
 
+        if (event === 'PASSWORD_RECOVERY' && newSession?.user) {
+          setIsLoading(false);
+          window.location.href = '/reset-password';
+          return;
+        }
+
         if (event === 'TOKEN_REFRESHED' && newSession?.user) {
           try {
             if (!profileRef.current) {

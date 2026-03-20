@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import {
   Form,
   FormField,
@@ -112,6 +112,15 @@ export function LoginForm({ variant }: LoginFormProps) {
             </FormItem>
           )}
         />
+
+        <div className="flex justify-end">
+          <Link
+            to="/forgot-password"
+            className="text-sm text-muted-foreground hover:text-primary transition-colors"
+          >
+            Forgot password?
+          </Link>
+        </div>
 
         <Button
           type="submit"
