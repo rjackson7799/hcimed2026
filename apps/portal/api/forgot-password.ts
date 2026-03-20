@@ -65,9 +65,12 @@ export async function POST(request: Request) {
       .single();
 
     if (profileError || !profile) {
+      console.error('Profile lookup failed:', profileError?.message, profileError?.code, 'email:', email);
       // User doesn't exist — return success anyway to prevent enumeration
       return successResponse;
     }
+
+    console.log('Profile found:', profile.id, profile.email);
 
     // Generate HMAC-signed reset token (expires in 1 hour)
     const expires = Date.now() + 60 * 60 * 1000; // 1 hour
@@ -110,6 +113,8 @@ export async function POST(request: Request) {
 
     if (emailError) {
       console.error('Resend error:', emailError);
+    } else {
+      console.log('Reset email sent successfully to:', email);
     }
 
     return successResponse;
