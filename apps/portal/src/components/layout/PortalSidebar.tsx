@@ -71,6 +71,7 @@ export function PortalSidebar() {
               <SidebarMenuButton
                 asChild
                 isActive={isActive(item.href)}
+                tooltip={item.title}
               >
                 <Link to={item.href}>
                   <item.icon className="h-4 w-4" />
@@ -85,23 +86,23 @@ export function PortalSidebar() {
   );
 
   return (
-    <Sidebar className="border-r-0">
+    <Sidebar collapsible="icon" className="border-r-0">
       <SidebarHeader className="px-3 py-4">
         {role === 'broker' && profile?.logo_url ? (
           <div className="flex items-center gap-2">
             <img
               src={profile.logo_url}
               alt={profile.company_name ?? 'Partner'}
-              className="h-8 w-auto max-w-[140px] object-contain"
+              className="h-8 w-auto max-w-[140px] object-contain group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:max-w-[2rem]"
             />
-            <span className="text-xs text-muted-foreground">Broker Access</span>
+            <span className="text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">Broker Access</span>
           </div>
         ) : (
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground text-sm font-bold">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground text-sm font-bold">
               HCI
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col group-data-[collapsible=icon]:hidden">
               <span className="text-sm font-semibold">HCI Portal</span>
               <span className="text-xs text-muted-foreground">{profile ? getDisplayTitle(profile) : role} Access</span>
             </div>
@@ -125,17 +126,17 @@ export function PortalSidebar() {
 
       <SidebarFooter className="px-3 pt-4 pb-3">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-medium">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-medium">
             {profile?.full_name?.charAt(0) ?? '?'}
           </div>
-          <div className="flex flex-col min-w-0">
+          <div className="flex flex-col min-w-0 group-data-[collapsible=icon]:hidden">
             <span className="text-sm font-medium truncate">{profile?.full_name}</span>
             <span className="text-xs text-muted-foreground truncate">{profile?.email}</span>
           </div>
         </div>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={signOut}>
+            <SidebarMenuButton onClick={signOut} tooltip="Sign Out">
               <LogOut className="h-4 w-4" />
               <span>Sign Out</span>
             </SidebarMenuButton>
