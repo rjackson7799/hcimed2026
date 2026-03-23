@@ -24,6 +24,7 @@ import {
   MapPin,
   ClipboardCheck,
   HeartPulse,
+  CalendarDays,
   LogOut,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
@@ -49,6 +50,7 @@ const adminNav: NavItem[] = [
 
 const staffNav: NavItem[] = [
   { title: 'Patient Queue', href: '/staff', icon: ClipboardList },
+  { title: 'Staff Calendar', href: '/admin/calendar', icon: CalendarDays },
 ];
 
 const brokerNav: NavItem[] = [

@@ -41,6 +41,13 @@ import type {
   CcmReimbursementRate,
 } from './ccm-rpm';
 
+import type {
+  CalStaffSchedule,
+  CalTimeOffRequest,
+  CalScheduleOverride,
+  CalTimeOffEffective,
+} from './staff-calendar';
+
 export interface Database {
   public: {
     Tables: {
@@ -213,6 +220,22 @@ export interface Database {
         Insert: Omit<CcmReimbursementRate, 'id'>;
         Update: Partial<Omit<CcmReimbursementRate, 'id'>>;
       };
+      // Staff Calendar Module tables (cal_ prefix)
+      cal_staff_schedules: {
+        Row: CalStaffSchedule;
+        Insert: Omit<CalStaffSchedule, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<CalStaffSchedule, 'id' | 'created_at'>>;
+      };
+      cal_time_off_requests: {
+        Row: CalTimeOffRequest;
+        Insert: Omit<CalTimeOffRequest, 'id' | 'status' | 'admin_status' | 'admin_reviewed_by' | 'admin_reviewed_at' | 'admin_notes' | 'director_status' | 'director_reviewed_by' | 'director_reviewed_at' | 'director_notes' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<CalTimeOffRequest, 'id' | 'requester_id' | 'created_at'>>;
+      };
+      cal_schedule_overrides: {
+        Row: CalScheduleOverride;
+        Insert: Omit<CalScheduleOverride, 'id' | 'created_at'>;
+        Update: Partial<Omit<CalScheduleOverride, 'id' | 'created_at'>>;
+      };
     };
     Views: {
       v_project_summary: {
@@ -223,6 +246,9 @@ export interface Database {
       };
       v_daily_call_volume: {
         Row: DailyCallVolume;
+      };
+      v_cal_time_off_effective: {
+        Row: CalTimeOffEffective;
       };
     };
   };

@@ -26,6 +26,7 @@ const PracticeHealthPage = lazy(() => import("@/pages/PracticeHealthPage").then(
 const MobileDocsPage = lazy(() => import("@/components/mobile-docs/MobileDocsPage").then(m => ({ default: m.MobileDocsPage })));
 const AwvTrackerPage = lazy(() => import("@/components/awv-tracker/AwvTrackerPage").then(m => ({ default: m.AwvTrackerPage })));
 const CcmRpmPage = lazy(() => import("@/components/ccm-rpm/CcmRpmPage").then(m => ({ default: m.CcmRpmPage })));
+const StaffCalendarPage = lazy(() => import("@/pages/StaffCalendarPage").then(m => ({ default: m.StaffCalendarPage })));
 
 // Staff & Broker pages
 const StaffDashboardPage = lazy(() => import("@/pages/StaffDashboardPage").then(m => ({ default: m.StaffDashboardPage })));
@@ -70,6 +71,7 @@ const App = () => (
                 <Route path="/admin/mobile-docs" element={<RoleGuard allowedRoles={['admin']}><MobileDocsPage /></RoleGuard>} />
                 <Route path="/admin/awv-tracker" element={<RoleGuard allowedRoles={['admin', 'staff']}><AwvTrackerPage /></RoleGuard>} />
                 <Route path="/admin/ccm-rpm" element={<RoleGuard allowedRoles={['admin', 'staff']}><CcmRpmPage /></RoleGuard>} />
+                <Route path="/admin/calendar" element={<RoleGuard allowedRoles={['admin', 'staff', 'provider']}><StaffCalendarPage /></RoleGuard>} />
 
                 {/* Staff routes */}
                 <Route path="/staff" element={<RoleGuard allowedRoles={['admin', 'staff', 'provider']}><StaffDashboardPage /></RoleGuard>} />
