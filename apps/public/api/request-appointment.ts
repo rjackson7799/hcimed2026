@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { generateAppointmentConfirmationEmail } from '../lib/email-templates.js';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -377,6 +378,24 @@ export async function POST(request: Request) {
         JSON.stringify({ error: "Failed to send appointment request" }),
         { status: 500, headers: { "Content-Type": "application/json" } }
       );
+    }
+
+    // Send confirmation email to patient (non-blocking)
+    try {
+      await resend.emails.send({
+        from: 'HCI Medical Group <noreply@hcimed.com>',
+        to: [data.email],
+        subject: 'Appointment Request Received - HCI Medical Group',
+        html: generateAppointmentConfirmationEmail({
+          firstName: data.firstName,
+          preferredDate: formatDate(data.preferredDate),
+          preferredTime: TIME_PREFERENCE_LABELS[data.preferredTime] || data.preferredTime,
+          reasonForVisit: VISIT_REASON_LABELS[data.reasonForVisit] || data.reasonForVisit,
+        }),
+      });
+    } catch (confirmError) {
+      console.error('Failed to send appointment confirmation email:', confirmError);
+      // Don't fail the request - staff notification was successful
     }
 
     return new Response(JSON.stringify({ success: true }), {

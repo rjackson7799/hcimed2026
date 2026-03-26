@@ -214,3 +214,59 @@ export function generateApplicationConfirmationEmail(data: ApplicationConfirmati
 
   return wrapEmailContent(content, `Thank you for applying to ${data.positionTitle} at HCI Medical Group. We will review your application and be in touch.`);
 }
+
+export interface AppointmentConfirmationData {
+  firstName: string;
+  preferredDate: string;
+  preferredTime: string;
+  reasonForVisit: string;
+}
+
+/**
+ * Generates a confirmation email for appointment request submissions
+ */
+export function generateAppointmentConfirmationEmail(data: AppointmentConfirmationData): string {
+  const content = `
+    <h2 style="color: ${EMAIL_COLORS.primaryDark}; margin: 0 0 20px; font-size: 24px;">Appointment Request Received</h2>
+
+    <p style="color: ${EMAIL_COLORS.textPrimary}; font-size: 16px; line-height: 1.6; margin: 0 0 16px;">
+      Dear ${escapeHtml(data.firstName)},
+    </p>
+
+    <p style="color: ${EMAIL_COLORS.textPrimary}; font-size: 16px; line-height: 1.6; margin: 0 0 16px;">
+      Thank you for requesting an appointment with HCI Medical Group. We have received your request and our scheduling team will contact you within <strong>1-2 business days</strong> to confirm your appointment.
+    </p>
+
+    <div style="background: #f9fafb; border-left: 4px solid ${EMAIL_COLORS.accent}; padding: 20px; margin: 25px 0; border-radius: 0 8px 8px 0;">
+      <p style="margin: 0 0 12px; font-weight: 600; color: ${EMAIL_COLORS.primaryDark};">Your Appointment Request:</p>
+      <p style="margin: 8px 0; color: #4b5563; font-size: 14px;">
+        <strong>Preferred Date:</strong> ${escapeHtml(data.preferredDate)}
+      </p>
+      <p style="margin: 8px 0; color: #4b5563; font-size: 14px;">
+        <strong>Time Preference:</strong> ${escapeHtml(data.preferredTime)}
+      </p>
+      <p style="margin: 8px 0; color: #4b5563; font-size: 14px;">
+        <strong>Reason for Visit:</strong> ${escapeHtml(data.reasonForVisit)}
+      </p>
+    </div>
+
+    <p style="color: ${EMAIL_COLORS.textPrimary}; font-size: 16px; line-height: 1.6; margin: 0 0 16px;">
+      Please note that this is a request, not a confirmed appointment. Our team will reach out to you by phone or email to finalize the date and time.
+    </p>
+
+    <p style="color: ${EMAIL_COLORS.textPrimary}; font-size: 16px; line-height: 1.6; margin: 0 0 16px;">
+      If your matter is urgent, please call us directly at <strong><a href="tel:6267924185" style="color: ${EMAIL_COLORS.accent}; text-decoration: none;">(626) 792-4185</a></strong> during our office hours (Mon-Fri, 9AM-5PM PT).
+    </p>
+
+    <p style="color: ${EMAIL_COLORS.textPrimary}; font-size: 16px; line-height: 1.6; margin: 0 0 16px;">
+      We look forward to seeing you soon.
+    </p>
+
+    <p style="color: ${EMAIL_COLORS.textPrimary}; font-size: 16px; line-height: 1.6; margin: 30px 0 0;">
+      Warm regards,<br>
+      <strong style="color: ${EMAIL_COLORS.primaryDark};">The HCI Medical Group Team</strong>
+    </p>
+  `;
+
+  return wrapEmailContent(content, 'Thank you for requesting an appointment with HCI Medical Group. We will contact you within 1-2 business days.');
+}
