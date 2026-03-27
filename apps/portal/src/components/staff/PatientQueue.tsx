@@ -9,6 +9,17 @@ import {
 } from '@hci/shared/ui/select';
 import { Button } from '@hci/shared/ui/button';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@hci/shared/ui/alert-dialog';
+import {
   Table,
   TableBody,
   TableCell,
@@ -17,9 +28,11 @@ import {
   TableRow,
 } from '@hci/shared/ui/table';
 import { ToggleGroup, ToggleGroupItem } from '@hci/shared/ui/toggle-group';
-import { Search, ChevronLeft, ChevronRight, Phone, ChevronDown, ChevronUp, LayoutGrid, TableProperties } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Phone, ChevronDown, ChevronUp, LayoutGrid, TableProperties, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { useIsMobile } from '@hci/shared/hooks/use-mobile';
-import { usePatients } from '@/hooks/usePatients';
+import { usePatients, useDeletePatient } from '@/hooks/usePatients';
+import { useAuth } from '@/context/AuthContext';
 import { PatientCard } from './PatientCard';
 import { CallLogger } from './CallLogger';
 import { CallHistory } from './CallHistory';
@@ -41,6 +54,8 @@ interface StaffPatientTableProps {
 function StaffPatientTable({ patients }: StaffPatientTableProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [callLoggerId, setCallLoggerId] = useState<string | null>(null);
+  const { role } = useAuth();
+  const deletePatient = useDeletePatient();
 
   return (
     <div className="rounded-lg border overflow-hidden">
@@ -87,6 +102,50 @@ function StaffPatientTable({ patients }: StaffPatientTableProps) {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-1">
+                    {role === 'admin' && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-destructive hover:text-destructive"
+                            title="Delete patient"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete patient?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Remove {formatPatientName(patient.first_name, patient.last_name)} from
+                              this project. This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              onClick={() => {
+                                deletePatient.mutate(
+                                  { patientId: patient.id, projectId: patient.project_id },
+                                  {
+                                    onSuccess: () => toast.success('Patient deleted'),
+                                    onError: () =>
+                                      toast.error(
+                                        'Failed to delete patient. They may have existing call records.'
+                                      ),
+                                  }
+                                );
+                              }}
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
                     <a
                       href={`tel:${patient.phone_primary}`}
                       onClick={(e) => e.stopPropagation()}
