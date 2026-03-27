@@ -74,8 +74,9 @@ export function AddPatientDialog({ open, onOpenChange, projectId }: AddPatientDi
       await addPatient.mutateAsync({ ...data, project_id: projectId });
       toast.success('Patient added successfully');
       handleClose();
-    } catch {
-      toast.error('Failed to add patient. Please try again.');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      toast.error(`Failed to add patient: ${msg}`);
     }
   }
 

@@ -73,25 +73,42 @@ export function useAddPatient() {
 
   return useMutation({
     mutationFn: async (payload: OutreachPatientFormData & { project_id: string }) => {
-      const { data, error } = await supabase
-        .from('patients')
-        .insert({
-          project_id: payload.project_id,
-          first_name: payload.first_name,
-          last_name: payload.last_name,
-          date_of_birth: payload.date_of_birth,
-          phone_primary: payload.phone_primary,
-          phone_secondary: payload.phone_secondary || null,
-          current_insurance: payload.current_insurance || null,
-          target_insurance: payload.target_insurance || null,
-          member_id: payload.member_id || null,
-          import_notes: payload.import_notes || null,
-        })
-        .select()
-        .single();
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15_000);
 
-      if (error) throw error;
-      return data as Patient;
+      try {
+        const { data, error } = await supabase
+          .from('patients')
+          .insert({
+            project_id: payload.project_id,
+            first_name: payload.first_name,
+            last_name: payload.last_name,
+            date_of_birth: payload.date_of_birth,
+            phone_primary: payload.phone_primary,
+            phone_secondary: payload.phone_secondary || null,
+            current_insurance: payload.current_insurance || null,
+            target_insurance: payload.target_insurance || null,
+            member_id: payload.member_id || null,
+            import_notes: payload.import_notes || null,
+          })
+          .select()
+          .single()
+          .abortSignal(controller.signal);
+
+        if (error) {
+          console.error('[AddPatient] Supabase error:', error);
+          throw error;
+        }
+        return data as Patient;
+      } catch (err) {
+        if (controller.signal.aborted) {
+          throw new Error('Request timed out — please check your connection and try again.');
+        }
+        console.error('[AddPatient] Unexpected error:', err);
+        throw err;
+      } finally {
+        clearTimeout(timeout);
+      }
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['patients', variables.project_id] });
