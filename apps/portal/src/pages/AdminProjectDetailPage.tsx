@@ -1,13 +1,15 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Button } from '@hci/shared/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@hci/shared/ui/card';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, UserPlus } from 'lucide-react';
 import { useProject } from '@/hooks/useProjects';
 import { useProjectSummary, useStaffActivity, useDailyCallVolume } from '@/hooks/useDashboard';
 import { useRealtime } from '@/hooks/useRealtime';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { ExportButton } from '@/components/shared/ExportButton';
 import { CsvUploader } from '@/components/admin/CsvUploader';
+import { AddPatientDialog } from '@/components/admin/AddPatientDialog';
 import { ProjectAssignments } from '@/components/admin/ProjectAssignments';
 import { useProjectAssignments } from '@/hooks/useProjectAssignments';
 import { SummaryCards } from '@/components/admin/SummaryCards';
@@ -21,6 +23,7 @@ import { formatDate } from '@/utils/formatters';
 export function AdminProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
 
+  const [addOpen, setAddOpen] = useState(false);
   const { data: project, isLoading, error, refetch } = useProject(id!);
 
   const { data: assignments } = useProjectAssignments(id!);
@@ -127,8 +130,22 @@ export function AdminProjectDetailPage() {
       {dailyVolume && <DailyCallChart data={dailyVolume} />}
       {staffActivity && <StaffActivityTable data={staffActivity} />}
 
-      {/* CSV Upload */}
-      <CsvUploader projectId={project.id} onImportComplete={() => refetch()} />
+      {/* Add Patients */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg">Add Patients</CardTitle>
+            <Button size="sm" onClick={() => setAddOpen(true)}>
+              <UserPlus className="mr-2 h-4 w-4" />
+              Add Patient
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <CsvUploader projectId={project.id} onImportComplete={() => refetch()} />
+        </CardContent>
+      </Card>
+      <AddPatientDialog open={addOpen} onOpenChange={setAddOpen} projectId={project.id} />
 
       {/* Assignments */}
       <ProjectAssignments projectId={project.id} />

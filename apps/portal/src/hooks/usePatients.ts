@@ -1,7 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import type { Patient, OutreachStatus } from '@/types';
 import { PATIENTS_PAGE_SIZE } from '@/utils/constants';
+import type { OutreachPatientFormData } from '@/schemas/outreachPatientSchema';
 
 interface PatientFilters {
   search?: string;
@@ -64,5 +65,58 @@ export function usePatient(patientId: string) {
       return data as Patient;
     },
     enabled: !!patientId,
+  });
+}
+
+export function useAddPatient() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: OutreachPatientFormData & { project_id: string }) => {
+      const { data, error } = await supabase
+        .from('patients')
+        .insert({
+          project_id: payload.project_id,
+          first_name: payload.first_name,
+          last_name: payload.last_name,
+          date_of_birth: payload.date_of_birth,
+          phone_primary: payload.phone_primary,
+          phone_secondary: payload.phone_secondary || null,
+          address_line1: payload.address_line1 || null,
+          address_city: payload.address_city || null,
+          address_state: payload.address_state || null,
+          address_zip: payload.address_zip || null,
+          current_insurance: payload.current_insurance || null,
+          target_insurance: payload.target_insurance || null,
+          member_id: payload.member_id || null,
+          import_notes: payload.import_notes || null,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as Patient;
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['patients', variables.project_id] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', variables.project_id] });
+    },
+  });
+}
+
+export function useDeletePatient() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ patientId, projectId }: { patientId: string; projectId: string }) => {
+      const { error } = await supabase.from('patients').delete().eq('id', patientId);
+      if (error) throw error;
+      return { patientId, projectId };
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['patients', variables.projectId] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', variables.projectId] });
+      queryClient.invalidateQueries({ queryKey: ['patient', variables.patientId] });
+    },
   });
 }

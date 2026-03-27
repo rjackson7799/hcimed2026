@@ -1,13 +1,26 @@
 import { useState } from 'react';
 import { Button } from '@hci/shared/ui/button';
 import { Card } from '@hci/shared/ui/card';
-import { Phone, ChevronDown, ChevronUp } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@hci/shared/ui/alert-dialog';
+import { Phone, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { CallLogger } from './CallLogger';
 import { CallHistory } from './CallHistory';
 import { BrokerForward } from './BrokerForward';
 import { formatPhone, formatPhoneMasked, formatPatientName, formatRelativeTime } from '@/utils/formatters';
 import { useAuth } from '@/context/AuthContext';
+import { useDeletePatient } from '@/hooks/usePatients';
 import type { Patient } from '@/types';
 
 interface PatientCardProps {
@@ -18,6 +31,7 @@ export function PatientCard({ patient }: PatientCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showCallLogger, setShowCallLogger] = useState(false);
   const { role } = useAuth();
+  const deletePatient = useDeletePatient();
   // Admins see full phone; staff/provider/broker see masked number per HIPAA minimum-necessary
   const displayPhone = role === 'admin' ? formatPhone : formatPhoneMasked;
 
@@ -54,6 +68,52 @@ export function PatientCard({ patient }: PatientCardProps) {
           >
             <Phone className="h-4 w-4 text-primary" />
           </a>
+
+          {/* Admin-only delete */}
+          {role === 'admin' && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-destructive hover:text-destructive"
+                  title="Delete patient"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete patient?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Remove {formatPatientName(patient.first_name, patient.last_name)} from this
+                    project. This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    onClick={() => {
+                      deletePatient.mutate(
+                        { patientId: patient.id, projectId: patient.project_id },
+                        {
+                          onSuccess: () => toast.success('Patient deleted'),
+                          onError: () =>
+                            toast.error(
+                              'Failed to delete patient. They may have existing call records.'
+                            ),
+                        }
+                      );
+                    }}
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
 
           {/* Log Call button */}
           <Button
