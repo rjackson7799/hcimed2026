@@ -10,7 +10,10 @@ export const outreachPatientSchema = z.object({
   phone_primary: z
     .string()
     .min(1, 'Phone number is required')
-    .regex(/\d{10,}/, 'Must contain at least 10 digits'),
+    .refine(
+      (val) => val.replace(/\D/g, '').length >= 10,
+      'Must contain at least 10 digits',
+    ),
   phone_secondary: z.string().optional().or(z.literal('')),
 
   // Step 2 — Insurance & Identifiers
