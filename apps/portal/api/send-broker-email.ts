@@ -132,7 +132,7 @@ export async function POST(request: Request) {
     const { data, error: emailError } = await resend.emails.send({
       from: 'HCI Patient Outreach <noreply@hcimed.com>',
       to: brokerEmails,
-      cc: ['admin@hcimed.com', 'billing@hcimed.com'],
+      cc: ['admin@hcimed.com', 'care@hcimed.com', 'billing@hcimed.com'],
       subject: `Patient Forwarded: ${escapeHtml(patient.first_name)} — ${escapeHtml(project.name)}`,
       html: `
         <h2>Patient Forwarded for Broker Assistance</h2>
