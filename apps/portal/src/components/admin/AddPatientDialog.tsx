@@ -27,7 +27,7 @@ interface AddPatientDialogProps {
   projectId: string;
 }
 
-const STEPS = ['Patient Info', 'Address', 'Insurance & ID'] as const;
+const STEPS = ['Patient Info', 'Insurance & ID'] as const;
 
 export function AddPatientDialog({ open, onOpenChange, projectId }: AddPatientDialogProps) {
   const [step, setStep] = useState(0);
@@ -47,10 +47,6 @@ export function AddPatientDialog({ open, onOpenChange, projectId }: AddPatientDi
       date_of_birth: '',
       phone_primary: '',
       phone_secondary: '',
-      address_line1: '',
-      address_city: '',
-      address_state: '',
-      address_zip: '',
       current_insurance: '',
       target_insurance: '',
       member_id: '',
@@ -172,35 +168,8 @@ export function AddPatientDialog({ open, onOpenChange, projectId }: AddPatientDi
             </div>
           )}
 
-          {/* Step 2: Address */}
+          {/* Step 2: Insurance & Identifiers */}
           {step === 1 && (
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="address_line1">Street Address</Label>
-                <Input id="address_line1" {...register('address_line1')} />
-              </div>
-              <div className="grid gap-4 sm:grid-cols-3">
-                <div>
-                  <Label htmlFor="address_city">City</Label>
-                  <Input id="address_city" {...register('address_city')} />
-                </div>
-                <div>
-                  <Label htmlFor="address_state">State</Label>
-                  <Input id="address_state" placeholder="CA" maxLength={2} {...register('address_state')} />
-                </div>
-                <div>
-                  <Label htmlFor="address_zip">ZIP Code</Label>
-                  <Input id="address_zip" placeholder="91101" {...register('address_zip')} />
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                All address fields are optional
-              </p>
-            </div>
-          )}
-
-          {/* Step 3: Insurance & Identifiers */}
-          {step === 2 && (
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>

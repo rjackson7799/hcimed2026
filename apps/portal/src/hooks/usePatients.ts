@@ -12,7 +12,7 @@ interface PatientFilters {
 
 export function usePatients(projectId: string, filters?: PatientFilters) {
   return useQuery({
-    queryKey: ['patients', projectId, filters],
+    queryKey: ['patients', projectId, filters?.search, filters?.status, filters?.page],
     queryFn: async () => {
       let query = supabase
         .from('patients')
@@ -82,10 +82,6 @@ export function useAddPatient() {
           date_of_birth: payload.date_of_birth,
           phone_primary: payload.phone_primary,
           phone_secondary: payload.phone_secondary || null,
-          address_line1: payload.address_line1 || null,
-          address_city: payload.address_city || null,
-          address_state: payload.address_state || null,
-          address_zip: payload.address_zip || null,
           current_insurance: payload.current_insurance || null,
           target_insurance: payload.target_insurance || null,
           member_id: payload.member_id || null,
