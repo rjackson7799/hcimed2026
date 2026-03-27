@@ -45,7 +45,7 @@ import type { Patient, OutreachStatus } from '@/types';
 
 type ViewMode = 'card' | 'table';
 
-const TABLE_COL_COUNT = 9;
+const TABLE_COL_COUNT = 7;
 
 interface StaffPatientTableProps {
   patients: Patient[];
@@ -65,8 +65,6 @@ function StaffPatientTable({ patients }: StaffPatientTableProps) {
             <TableHead>Patient</TableHead>
             <TableHead>DOB</TableHead>
             <TableHead>Phone</TableHead>
-            <TableHead>Member ID</TableHead>
-            <TableHead className="hidden lg:table-cell">Insurance</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="text-center">Attempts</TableHead>
             <TableHead className="hidden lg:table-cell">Last Contact</TableHead>
@@ -88,10 +86,6 @@ function StaffPatientTable({ patients }: StaffPatientTableProps) {
                 </TableCell>
                 <TableCell>
                   {formatPhone(patient.phone_primary)}
-                </TableCell>
-                <TableCell className="truncate max-w-0">{patient.member_id || '—'}</TableCell>
-                <TableCell className="hidden lg:table-cell truncate max-w-0">
-                  {patient.current_insurance || '—'}
                 </TableCell>
                 <TableCell>
                   <StatusBadge status={patient.outreach_status} />
