@@ -6,17 +6,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@hci/shared/ui/select';
+import { Button } from '@hci/shared/ui/button';
 import { Card } from '@hci/shared/ui/card';
-import { Users, Phone, AlertCircle } from 'lucide-react';
+import { Users, Phone, AlertCircle, UserPlus } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useMyProjects } from '@/hooks/useMyProjects';
 import { PatientQueue } from '@/components/staff/PatientQueue';
+import { AddPatientDialog } from '@/components/admin/AddPatientDialog';
 import { PageSkeleton } from '@/components/shared/LoadingStates';
 
 export function StaffDashboardPage() {
   const { profile } = useAuth();
   const { data: projects, isLoading } = useMyProjects();
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [addOpen, setAddOpen] = useState(false);
 
   // Auto-select first project when loaded
   useEffect(() => {
@@ -55,6 +58,11 @@ export function StaffDashboardPage() {
             Welcome, {profile?.full_name ?? 'Staff'}
           </p>
         </div>
+
+        <Button size="sm" onClick={() => setAddOpen(true)} disabled={!selectedProjectId}>
+          <UserPlus className="mr-2 h-4 w-4" />
+          Add Patient
+        </Button>
 
         {projects.length > 1 && (
           <Select
@@ -101,6 +109,10 @@ export function StaffDashboardPage() {
       {/* Patient queue */}
       {selectedProjectId && (
         <PatientQueue projectId={selectedProjectId} />
+      )}
+
+      {selectedProjectId && (
+        <AddPatientDialog open={addOpen} onOpenChange={setAddOpen} projectId={selectedProjectId} />
       )}
     </div>
   );
