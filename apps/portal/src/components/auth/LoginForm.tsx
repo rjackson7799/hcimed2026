@@ -16,6 +16,7 @@ import { Alert, AlertDescription } from '@hci/shared/ui/alert';
 import { Loader2, AlertCircle, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { loginSchema, type LoginFormData } from '@/schemas/loginSchema';
+import { classifyError } from '@/lib/errors';
 
 interface LoginFormProps {
   variant: 'hci' | 'partner';
@@ -42,16 +43,19 @@ export function LoginForm({ variant }: LoginFormProps) {
   const onSubmit = async (data: LoginFormData) => {
     setIsSubmitting(true);
     setError(null);
-
-    const result = await signIn(data.email, data.password);
-
-    if (result.error) {
-      setError(result.error);
+    try {
+      const result = await signIn(data.email, data.password);
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      navigate(from, { replace: true });
+    } catch (err) {
+      const classified = classifyError(err);
+      setError(classified.userMessage);
+    } finally {
       setIsSubmitting(false);
-      return;
     }
-
-    navigate(from, { replace: true });
   };
 
   return (

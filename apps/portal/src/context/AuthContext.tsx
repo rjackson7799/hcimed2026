@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef, ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
+import { logEvent } from '@/lib/logEvent';
 import type { Profile } from '@/types';
 import { SESSION_TIMEOUT_MS, SESSION_WARNING_MS } from '@/utils/constants';
 
@@ -28,43 +30,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [showTimeoutWarning, setShowTimeoutWarning] = useState(false);
 
+  const navigate = useNavigate();
+
   const warningTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const logoutTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const lastActivityRef = useRef<number>(Date.now());
   const profileRef = useRef<Profile | null>(null);
+  const showTimeoutWarningRef = useRef(false);
 
   useEffect(() => {
     profileRef.current = profile;
   }, [profile]);
+
+  useEffect(() => {
+    showTimeoutWarningRef.current = showTimeoutWarning;
+  }, [showTimeoutWarning]);
 
   const getLoginPath = useCallback((roleValue?: Profile['role'] | null) => {
     if (roleValue === 'broker' || window.location.pathname.startsWith('/broker')) {
       return '/partner-login';
     }
     return '/login';
-  }, []);
-
-  const logAuditEvent = useCallback((
-    action: 'LOGIN_FAILED' | 'LOGIN_SUCCESS',
-    email: string,
-    accessToken?: string
-  ) => {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8_000);
-
-    fetch('/api/audit-log', {
-      method: 'POST',
-      signal: controller.signal,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-      },
-      body: JSON.stringify({ action, email }),
-    })
-      .catch(() => {
-        // Audit log failure should not block login flow
-      })
-      .finally(() => clearTimeout(timeoutId));
   }, []);
 
   const resetTimers = useCallback(() => {
@@ -79,11 +65,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, SESSION_WARNING_MS);
 
     logoutTimerRef.current = setTimeout(async () => {
-      const loginPath = getLoginPath(profileRef.current?.role);
+      logEvent({ action: 'SESSION_TIMEOUT' });
       await supabase.auth.signOut();
-      window.location.href = loginPath;
+      // SIGNED_OUT handler will navigate
     }, SESSION_TIMEOUT_MS);
-  }, [getLoginPath]);
+  }, []);
 
   const extendSession = useCallback(() => {
     resetTimers();
@@ -94,8 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!session) return;
 
     const handleActivity = () => {
-      // Only reset if we haven't shown warning yet
-      if (!showTimeoutWarning) {
+      if (!showTimeoutWarningRef.current) {
         resetTimers();
       }
     };
@@ -109,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
       if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
     };
-  }, [session, showTimeoutWarning, resetTimers]);
+  }, [session, resetTimers]);
 
   // Fetch profile from Supabase with retry for transient failures
   const fetchProfile = useCallback(async (userId: string, retries = 2): Promise<Profile | null> => {
@@ -175,7 +160,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setShowTimeoutWarning(false);
           if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
           if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
-          window.location.href = loginPath;
+          logEvent({ action: 'AUTH_TOKEN_REFRESH_FAILED' });
+          navigate(loginPath, { replace: true });
           return;
         }
 
@@ -187,6 +173,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const userProfile = await fetchProfile(newSession.user.id);
             if (isMounted) {
               setProfile(userProfile);
+              if (!userProfile) {
+                logEvent({ action: 'PROFILE_FETCH_FAILED', context: { userId: newSession.user.id } });
+              }
               setIsLoading(false);
             }
           } catch {
@@ -196,7 +185,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (event === 'PASSWORD_RECOVERY' && newSession?.user) {
           setIsLoading(false);
-          window.location.href = '/reset-password';
+          navigate('/reset-password', { replace: true });
           return;
         }
 
@@ -220,8 +209,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setShowTimeoutWarning(false);
           if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
           if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
-          // Safety net: redirect to login if signOut() didn't already navigate
-          window.location.href = loginPath;
+          logEvent({ action: 'SESSION_FORCED_LOGOUT' });
+          navigate(loginPath, { replace: true });
           return;
         }
       }
@@ -237,20 +226,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      logAuditEvent('LOGIN_FAILED', email);
+      logEvent({ action: 'LOGIN_FAILED', email });
       // Return generic message to prevent user enumeration
       return { error: 'Invalid email or password' };
     }
 
-    logAuditEvent('LOGIN_SUCCESS', email, data.session?.access_token);
+    logEvent({ action: 'LOGIN_SUCCESS', email, accessToken: data.session?.access_token });
 
     return { error: null };
   };
 
   const signOut = async () => {
-    const loginPath = getLoginPath(profile?.role);
     await supabase.auth.signOut();
-    window.location.href = loginPath;
+    // SIGNED_OUT event handler performs the single navigate
   };
 
   const canViewRevenue =
@@ -267,7 +255,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         profile,
         session,
         isLoading,
-        isAuthenticated: !!session && !!profile,
+        isAuthenticated: !!session && !!user,
         showTimeoutWarning,
         role: profile?.role ?? null,
         canViewRevenue,

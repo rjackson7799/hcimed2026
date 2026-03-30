@@ -16,6 +16,20 @@ import { TableSkeleton } from '@/components/shared/LoadingStates';
 import { formatDateTime } from '@/utils/formatters';
 import type { AuditLog } from '@/types';
 
+const ACTION_BADGE_STYLES: Record<string, string> = {
+  LOGIN_SUCCESS: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+  LOGIN_FAILED: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+  AUTH_TOKEN_REFRESH_FAILED: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
+  SESSION_FORCED_LOGOUT: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
+  REQUEST_TIMEOUT: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
+  SESSION_TIMEOUT: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+  PROFILE_FETCH_FAILED: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+};
+
+function getActionBadgeClass(action: string): string {
+  return ACTION_BADGE_STYLES[action] || 'bg-muted text-muted-foreground';
+}
+
 const PAGE_SIZE = 25;
 
 export function AuditLogViewer() {
@@ -97,7 +111,7 @@ export function AuditLogViewer() {
                     {log.profiles?.full_name || log.user_id?.slice(0, 8) || 'System'}
                   </TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-xs font-medium">
+                    <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${getActionBadgeClass(log.action)}`}>
                       {log.action}
                     </span>
                   </TableCell>

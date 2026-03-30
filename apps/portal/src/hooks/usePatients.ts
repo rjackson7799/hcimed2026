@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase';
 import type { Patient, OutreachStatus } from '@/types';
 import { PATIENTS_PAGE_SIZE } from '@/utils/constants';
 import type { OutreachPatientFormData } from '@/schemas/outreachPatientSchema';
+import { logEvent } from '@/lib/logEvent';
 
 interface PatientFilters {
   search?: string;
@@ -126,21 +127,34 @@ export function useUpdatePatient() {
       projectId,
       data,
     }: { patientId: string; projectId: string; data: OutreachPatientFormData }) => {
-      const { error } = await supabase
-        .from('patients')
-        .update({
-          first_name: data.first_name,
-          last_name: data.last_name,
-          date_of_birth: data.date_of_birth,
-          phone_primary: data.phone_primary,
-          phone_secondary: data.phone_secondary || null,
-          current_insurance: data.current_insurance || null,
-          target_insurance: data.target_insurance || null,
-          member_id: data.member_id || null,
-          import_notes: data.import_notes || null,
-        })
-        .eq('id', patientId);
-      if (error) throw error;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15_000);
+      try {
+        const { error } = await supabase
+          .from('patients')
+          .update({
+            first_name: data.first_name,
+            last_name: data.last_name,
+            date_of_birth: data.date_of_birth,
+            phone_primary: data.phone_primary,
+            phone_secondary: data.phone_secondary || null,
+            current_insurance: data.current_insurance || null,
+            target_insurance: data.target_insurance || null,
+            member_id: data.member_id || null,
+            import_notes: data.import_notes || null,
+          })
+          .eq('id', patientId)
+          .abortSignal(controller.signal);
+        if (error) throw error;
+      } catch (err) {
+        if (controller.signal.aborted) {
+          logEvent({ action: 'REQUEST_TIMEOUT', context: { table: 'patients', operation: 'update', patientId } });
+          throw new Error('Request timed out — please check your connection and try again.');
+        }
+        throw err;
+      } finally {
+        clearTimeout(timeout);
+      }
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['patients', variables.projectId] });
@@ -154,9 +168,25 @@ export function useDeletePatient() {
 
   return useMutation({
     mutationFn: async ({ patientId, projectId }: { patientId: string; projectId: string }) => {
-      const { error } = await supabase.from('patients').delete().eq('id', patientId);
-      if (error) throw error;
-      return { patientId, projectId };
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15_000);
+      try {
+        const { error } = await supabase
+          .from('patients')
+          .delete()
+          .eq('id', patientId)
+          .abortSignal(controller.signal);
+        if (error) throw error;
+        return { patientId, projectId };
+      } catch (err) {
+        if (controller.signal.aborted) {
+          logEvent({ action: 'REQUEST_TIMEOUT', context: { table: 'patients', operation: 'delete', patientId } });
+          throw new Error('Request timed out — please check your connection and try again.');
+        }
+        throw err;
+      } finally {
+        clearTimeout(timeout);
+      }
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['patients', variables.projectId] });

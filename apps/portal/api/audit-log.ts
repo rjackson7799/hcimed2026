@@ -1,6 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 
-const ALLOWED_ACTIONS = ['LOGIN_FAILED', 'LOGIN_SUCCESS'] as const;
+const ALLOWED_ACTIONS = [
+  'LOGIN_SUCCESS',
+  'LOGIN_FAILED',
+  'AUTH_TOKEN_REFRESH_FAILED',
+  'SESSION_FORCED_LOGOUT',
+  'SESSION_TIMEOUT',
+  'PROFILE_FETCH_FAILED',
+  'REQUEST_TIMEOUT',
+] as const;
 
 export async function POST(request: Request) {
   try {
@@ -19,7 +27,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { action, email } = body;
+    const { action, email, context } = body;
 
     if (!action || !ALLOWED_ACTIONS.includes(action)) {
       return new Response(JSON.stringify({ error: 'Invalid action' }), {
@@ -28,7 +36,8 @@ export async function POST(request: Request) {
       });
     }
 
-    if (!email || typeof email !== 'string') {
+    const EMAIL_REQUIRED_ACTIONS = ['LOGIN_SUCCESS', 'LOGIN_FAILED'] as const;
+    if (EMAIL_REQUIRED_ACTIONS.includes(action) && (!email || typeof email !== 'string')) {
       return new Response(JSON.stringify({ error: 'Missing required field: email' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -57,7 +66,7 @@ export async function POST(request: Request) {
       user_id: userId,
       action,
       table_name: 'auth',
-      new_values: { email },
+      new_values: { ...(email && { email }), ...(context && { context }) },
       ip_address: ipAddress,
       user_agent: userAgent,
     });
