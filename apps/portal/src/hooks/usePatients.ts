@@ -117,6 +117,38 @@ export function useAddPatient() {
   });
 }
 
+export function useUpdatePatient() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      patientId,
+      projectId,
+      data,
+    }: { patientId: string; projectId: string; data: OutreachPatientFormData }) => {
+      const { error } = await supabase
+        .from('patients')
+        .update({
+          first_name: data.first_name,
+          last_name: data.last_name,
+          date_of_birth: data.date_of_birth,
+          phone_primary: data.phone_primary,
+          phone_secondary: data.phone_secondary || null,
+          current_insurance: data.current_insurance || null,
+          target_insurance: data.target_insurance || null,
+          member_id: data.member_id || null,
+          import_notes: data.import_notes || null,
+        })
+        .eq('id', patientId);
+      if (error) throw error;
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['patients', variables.projectId] });
+      queryClient.invalidateQueries({ queryKey: ['patient', variables.patientId] });
+    },
+  });
+}
+
 export function useDeletePatient() {
   const queryClient = useQueryClient();
 

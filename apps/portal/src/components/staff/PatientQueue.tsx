@@ -28,11 +28,12 @@ import {
   TableRow,
 } from '@hci/shared/ui/table';
 import { ToggleGroup, ToggleGroupItem } from '@hci/shared/ui/toggle-group';
-import { Search, ChevronLeft, ChevronRight, Phone, ChevronDown, ChevronUp, LayoutGrid, TableProperties, Trash2 } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Phone, ChevronDown, ChevronUp, LayoutGrid, TableProperties, Trash2, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 import { useIsMobile } from '@hci/shared/hooks/use-mobile';
 import { usePatients, useDeletePatient } from '@/hooks/usePatients';
 import { useAuth } from '@/context/AuthContext';
+import { EditPatientDialog } from '@/components/admin/EditPatientDialog';
 import { PatientCard } from './PatientCard';
 import { CallLogger } from './CallLogger';
 import { CallHistory } from './CallHistory';
@@ -54,6 +55,7 @@ interface StaffPatientTableProps {
 function StaffPatientTable({ patients }: StaffPatientTableProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [callLoggerId, setCallLoggerId] = useState<string | null>(null);
+  const [editPatient, setEditPatient] = useState<Patient | null>(null);
   const { role } = useAuth();
   const deletePatient = useDeletePatient();
 
@@ -96,6 +98,17 @@ function StaffPatientTable({ patients }: StaffPatientTableProps) {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-1">
+                    {role === 'admin' && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        title="Edit patient"
+                        onClick={(e) => { e.stopPropagation(); setEditPatient(patient); }}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                    )}
                     {role === 'admin' && (
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -217,6 +230,13 @@ function StaffPatientTable({ patients }: StaffPatientTableProps) {
           ))}
         </TableBody>
       </Table>
+      {editPatient && (
+        <EditPatientDialog
+          open={!!editPatient}
+          onOpenChange={(open) => { if (!open) setEditPatient(null); }}
+          patient={editPatient}
+        />
+      )}
     </div>
   );
 }
