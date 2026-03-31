@@ -45,7 +45,7 @@ export function AuditLogViewer() {
         .order('created_at', { ascending: false });
 
       if (search) {
-        const term = `%${search}%`;
+        const term = `*${search}*`;
         query = query.or(`action.ilike.${term},table_name.ilike.${term}`);
       }
 

@@ -27,7 +27,7 @@ export function usePatients(projectId: string, filters?: PatientFilters) {
       }
 
       if (filters?.search) {
-        const term = `%${filters.search}%`;
+        const term = `*${filters.search}*`;
         query = query.or(
           `first_name.ilike.${term},last_name.ilike.${term},phone_primary.ilike.${term},member_id.ilike.${term}`
         );
