@@ -2,7 +2,7 @@
 
 Tracking document for Pasadena Health Hub (hcimed.com) development.
 
-**Last updated:** 2026-03-18
+**Last updated:** 2026-03-30
 
 ---
 
@@ -33,6 +33,24 @@ Tracking document for Pasadena Health Hub (hcimed.com) development.
 - [x] Branded confirmation emails for contact and careers forms
 - [x] Vercel serverless API functions (3 endpoints)
 - [x] Skip-to-content keyboard navigation
+- [x] Patient testimonials section with star ratings (placeholder data, ready for real reviews)
+- [x] "Accepting New Patients" banner with dismissible localStorage (7-day re-show)
+- [x] Insurance trust signal badges (Medicare, Aetna, BCBS, Cigna, United, Regal)
+- [x] New patient 3-step visual on appointments page
+- [x] Newsletter email signup across site (footer, homepage, blog, newsletters)
+- [x] Newsletter subscribe API endpoint (Resend Contacts)
+- [x] Enhanced provider profiles with philosophy callouts, credentials, focus area tags, Physician JSON-LD
+- [x] FAQ data extraction for reuse + ServiceFAQ accordion on 3 service pages with FAQPage JSON-LD
+- [x] Blog category/tag filtering system with URL-based search params
+- [x] Related posts on blog post pages (shared-tag matching algorithm)
+- [x] 7 seed blog posts (8 total) across 4 categories
+- [x] Featured blog posts section on homepage
+- [x] 10 local SEO neighborhood pages at /areas/:slug with LocalBusiness JSON-LD
+- [x] Performance: async font loading, preconnect hints, OptimizedImage component, lazy below-fold sections
+- [x] Blog pagination (6 posts/page)
+- [x] Patient Resource Center (/resources) — forms, insurance info, visit prep guides, patient rights
+- [x] 4 Health Topic Hub pages (/topics/:slug) with MedicalWebPage JSON-LD
+- [x] Blog RSS feed (build-time generation at /blog/feed.xml)
 
 ### Monorepo Migration & Portal Subdomain (2026-03-18)
 
@@ -56,6 +74,7 @@ Design spec: `docs/superpowers/specs/2026-03-18-portal-subdomain-migration-desig
 
 - [x] **Milestone 0:** Supabase client, type foundations, enums, formatters, constants
 - [x] **Milestone 1:** Dual-path auth (`/login`, `/partner-login` on portal.hcimed.com), session timeout (30 min), role-based guards
+- [x] **Auth stability fixes (2026-03-30):** 6 bug fixes (navigate vs window.location, double-nav, isAuthenticated, timer loop, LoginForm try/catch, AbortController timeouts) + structured audit logging (7 event types, error classifier, color-coded badges) + search wildcard fix
 - [x] **Milestone 2:** Portal shell with shadcn Sidebar, role-aware navigation, mobile bottom nav
 - [x] **Milestone 3:** Admin project CRUD, CSV upload with validation/dedup, staff assignment, user management
 - [x] **Milestone 4:** Staff patient queue (search, filter, pagination), one-tap call logging with dispositions, call history
@@ -293,6 +312,8 @@ Full roadmap: See plan file or `docs/superpowers/specs/2026-03-12-mobile-docs-he
 - Fixed Resend email from address to use verified domain (2026-01-12)
 - Fixed user deactivation status not updating in UI (2026-02-25) — RLS policy + optimistic cache fix
 - Added hard-delete for inactive users with audit log preservation (2026-02-25)
+- Fixed portal catch-all route crash — `PortalRedirect` was rendered outside `AuthProvider`, causing "useAuth must be used within an AuthProvider" error on unknown paths like `/portal` (2026-03-20)
+- Fixed portal password reset flow — custom HMAC token-based reset, `SUPABASE_URL` env var prefix, GoTrue API calls (2026-03-20)
 
 ---
 
@@ -342,6 +363,60 @@ See `docs/BACKLOG.md` for mobile responsiveness fixes, portal enhancements, and 
 ---
 
 ## Changelog
+
+### 2026-03-30
+- **Auth Stability & Logging Fixes (portal):** Fixed 6 confirmed bugs causing tab freezes, infinite spinners, and broken logout on the staff portal. Commits: `f567d51`, `b6fecf7`.
+  - **Bug 1 — Tab freeze on login/logout:** Replaced all 5 `window.location.href` calls in `AuthContext.tsx` with React Router `navigate()` to prevent full-page reloads mid-React render.
+  - **Bug 2 — Double navigation on signOut:** `signOut()` now only calls `supabase.auth.signOut()`; the `SIGNED_OUT` event handler performs the single navigate. Eliminates competing reloads.
+  - **Bug 3 — Profile fetch blocks auth:** Changed `isAuthenticated` from `!!session && !!profile` to `!!session && !!user`. Missing profile no longer causes redirect loops.
+  - **Bug 4 — LoginForm spinner stuck:** Wrapped `onSubmit` in `try/catch/finally` so `isSubmitting` always resets, even if `signIn()` throws unexpectedly.
+  - **Bug 5 — Session timeout timer loop:** Removed `showTimeoutWarning` from effect dependency array, replaced with a ref (`showTimeoutWarningRef`). Timer no longer resets itself when the warning fires.
+  - **Bug 6 — Patient mutations hang forever:** Added 15-second `AbortController` timeout to `useUpdatePatient` and `useDeletePatient` (matching existing `useAddPatient` pattern).
+  - **New file `logEvent.ts`:** Shared fire-and-forget audit logger with 7 event types and 8-second timeout.
+  - **New file `errors.ts`:** Supabase error classifier — maps raw errors to user-friendly messages with flags (`isTimeout`, `isNetworkError`, `isAuthError`, `isRateLimit`).
+  - **Extended `audit-log.ts`:** 7 action types (up from 2), email optional for system events, `context` field in `new_values`.
+  - **AuditLogViewer badges:** Color-coded severity — green (success), red (failed), orange (auth/timeout), yellow (session/profile).
+  - **Search fix:** Changed ILIKE wildcard from `%` to `*` in `usePatients` and `AuditLogViewer` queries. The `%` character was being misinterpreted as URL percent-encoding (e.g., `%ad` in `%adkin%` = byte 0xAD), corrupting PostgREST queries and causing search to hang. PostgREST supports `*` as a URL-safe alternative.
+  - **Design spec:** `docs/superpowers/specs/2026-03-30-auth-stability-logging-design.md`
+  - **Implementation plan:** `.claude/plans/steady-tickling-forest.md`
+
+### 2026-03-23
+- **Patient Growth & Brand Visibility — Phase 3 (complete):**
+  - 4-feature initiative: performance optimization, patient resource center, health topic hubs, blog RSS feed
+  - **Performance optimization:** Moved Google Fonts from render-blocking `@import` to async `media="print" onload` pattern in `index.html` with preconnect hints. Created `OptimizedImage` component (`<picture>` with WebP support, lazy/eager loading). Created `useLazySection` Intersection Observer hook — applied to 3 below-fold homepage sections (FeaturedBlogPosts, TestimonialsSection, NewsletterSignup). Added `dns-prefetch` for Resend API.
+  - **Blog pagination:** 6 posts per page with `BlogPagination` component (Previous/Next + page numbers), preserves category/tag filters across pages via URL search params.
+  - **Patient Resource Center** (`/resources`): New page with 4 sections — downloadable patient forms (4 placeholder PDFs in `public/forms/`), 4 visit preparation guides with checklists (First Visit, Annual Physical, Medicare AWV, Chronic Care Follow-Up), 6 expandable insurance info cards (Medicare, Aetna, BCBS, Cigna, UHC, Regal), patient rights & privacy section, quick links grid. Data in `src/data/resources-data.ts`.
+  - **Health Topic Hubs** (`/topics/:slug`): 4 SEO-focused topical authority pages — Diabetes Care, Heart Health, Medicare & Senior Services, Preventive Care. Each aggregates related blog posts (filtered by tags, deduplicated), service page links, keyword-matched FAQs from `faq-data.ts`, and a CTA. `MedicalWebPage` JSON-LD schema on each hub. Data in `src/data/topic-hubs.ts`. Health Topics links in footer.
+  - **Blog RSS Feed:** Build-time `scripts/generate-rss.ts` (Bun) reads blog markdown, generates RSS 2.0 XML at `public/blog/feed.xml`. Integrated into `build:public` script. Auto-discovery `<link>` tag in `index.html`. All 8 posts included.
+  - 16 new files, 9 modified files; `bun run build:public` passes clean
+  - New routes: `/resources`, `/topics/:slug` (4 slugs), RSS at `/blog/feed.xml`
+  - Sitemap updated with `/resources` + 4 topic slugs
+
+- **Patient Growth & Brand Visibility — Phase 2 (complete):**
+  - 4-feature content engine initiative: blog category/tag system, local SEO neighborhood pages, seed blog content, featured posts on homepage
+  - Design spec: `docs/superpowers/specs/2026-03-22-patient-growth-phase1-design.md` (Phase 2 section in roadmap)
+  - **Blog category/tag system:** Added `BlogCategory` type (`Internal Medicine | Senior Care | Wellness | Practice News`) and `category?` field to blog frontmatter. New `BlogFilterBar` component with category pills + tag cloud, URL-based filtering via `useSearchParams` (`/blog?category=X` or `/blog?tag=Y`). New `RelatedPosts` component showing articles with shared tags. Made tag pills clickable on `BlogCard` and `BlogPost` pages. New functions: `getPostsByCategory`, `getRelatedPosts`, `getAllCategories`.
+  - **Local SEO neighborhood pages** (`/areas/:slug`): 10 data-driven area pages — Pasadena (anchor), Altadena, South Pasadena, San Marino, Arcadia, Sierra Madre, La Cañada Flintridge, Monrovia, Temple City, Glendale. `NeighborhoodPage` template with area intro, services grid, directions card, providers section, testimonials, and CTA. `LocalBusinessSchema` JSON-LD (`MedicalClinic + LocalBusiness` with `areaServed`). Data in `src/data/neighborhoods.ts`. Footer "Our Services" column replaced with "Areas We Serve" links.
+  - **Seed blog content:** 7 new markdown posts — diabetes management, high blood pressure, first visit guide, CCM benefits, preventive screenings, remote monitoring, flu prep. 3 marked featured. Staggered dates (March 1-20). Each links to relevant service pages. Updated existing Medicare post with `category: "Senior Care"`. Total: 8 blog posts.
+  - **Featured posts on homepage:** `FeaturedBlogPosts` component showing 3 featured articles between "Why Choose Us" and contact form, with "View All Articles" link to `/blog`.
+  - 14 new files, 11 modified files; `bun run build:public` passes clean
+  - New routes: `/areas/:slug` (10 slugs). Sitemap updated with 10 area routes + 7 new blog routes.
+
+- **Patient Growth & Brand Visibility — Phase 1 (complete):**
+  - 5-feature initiative to improve patient acquisition, trust signals, and conversion on hcimed.com
+  - Design spec: `docs/superpowers/specs/2026-03-22-patient-growth-phase1-design.md`
+  - **Testimonials:** `TestimonialCard` + `TestimonialsSection` components with 8 placeholder reviews (star ratings, category filtering). Placed on homepage. Data in `src/data/testimonials.ts` — marked TODO for real review swap-in.
+  - **Trust signals:** `NewPatientBanner` (dismissible, 7-day localStorage re-show), `InsuranceLogos` (6 text badges — no logo licensing needed), `NewPatientSteps` (3-step visual: Request → Confirm → Visit). Placed on homepage + appointments page.
+  - **Newsletter signup:** `NewsletterSignup` component with 3 variants (inline/section/compact). New `api/newsletter-subscribe.ts` endpoint using Resend Contacts API with rate limiter (5 req/min/IP). Placed in footer (all pages), homepage, blog posts (replaces old CTA), newsletter archive. Requires `RESEND_AUDIENCE_ID` env var on Vercel.
+  - **Enhanced provider profiles:** `ProviderCredentials` (2-column grid with education/certifications/languages/experience) + `FocusAreaTags` (Badge chips). Philosophy callout blockquotes + Physician JSON-LD schema added to all 3 provider pages (DrJackson, AppleEvangelista, MarilethTan).
+  - **FAQ schema on service pages:** Extracted 15 FAQ entries from `FAQ.tsx` into `src/data/faq-data.ts` with `generateFaqSchema()` helper. Created `ServiceFAQ` accordion component with FAQPage JSON-LD. Added to Physical Exams, Senior Care+, Chronic Care pages (9 new service-specific FAQs).
+  - New `src/data/` directory convention for static typed data arrays (distinct from `src/config/` and `src/content/`)
+  - Added `googleBusinessProfile` URL to `siteConfig.links`
+  - 12 new files, 13 modified files; `bun run build:public` passes clean
+  - No new routes — all features are additions to existing pages
+
+### 2026-03-22
+- **Provider profile pictures** — Added placeholder avatar circles (brand gradient + initials) to the providers listing page and all 3 individual provider detail pages (`DrJackson.tsx`, `AppleEvangelista.tsx`, `MarilethTan.tsx`). Listing cards show 112px avatars; detail pages show 160px avatars. Ready to swap for real headshots when available.
 
 ### 2026-03-12
 - **AWV Tracker Module — Phase 3 (Revenue Dashboard + Provider Tracking):**
