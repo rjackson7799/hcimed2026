@@ -1,6 +1,7 @@
 import {
   Stethoscope, Zap, HeartPulse, UserRound, Microscope,
   Heart, Shield, Activity, Home, Smartphone,
+  BookOpen, Users, Scale, Syringe,
   type LucideIcon,
 } from "lucide-react";
 
@@ -11,12 +12,22 @@ export interface NavLink {
   icon: LucideIcon;
 }
 
+export const aboutUsLinks: NavLink[] = [
+  { title: "Our Story", href: "/our-story", description: "Our legacy of caring since 1978", icon: BookOpen },
+  { title: "Our Providers", href: "/providers", description: "Meet our physicians and nurse practitioners", icon: Users },
+];
+
 export const internalMedicineLinks: NavLink[] = [
   { title: "Physical Exams", href: "/internal-medicine/physical-exams", description: "Comprehensive annual wellness visits", icon: Stethoscope },
   { title: "Acute Care", href: "/internal-medicine/acute-care", description: "Illness, infections & minor injuries", icon: Zap },
   { title: "Women's Health", href: "/internal-medicine/womens-health", description: "Preventive screenings & hormonal health", icon: HeartPulse },
   { title: "Men's Health", href: "/internal-medicine/mens-health", description: "Prostate health & cardiovascular screening", icon: UserRound },
   { title: "Diagnostics", href: "/internal-medicine/diagnostics", description: "In-office testing & lab services", icon: Microscope },
+];
+
+export const programsLinks: NavLink[] = [
+  { title: "Medical Weight Loss", href: "/programs/medical-weight-loss", description: "Physician-supervised GLP-1 weight management program", icon: Scale },
+  { title: "Men's Health & TRT", href: "/programs/mens-health-trt", description: "Testosterone replacement therapy with in-office injections", icon: Syringe },
 ];
 
 export const seniorCareLinks: NavLink[] = [

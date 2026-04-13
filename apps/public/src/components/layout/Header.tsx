@@ -13,7 +13,7 @@ import {
 import { cn } from "@hci/shared/lib/utils";
 import { siteConfig } from "@/config/site";
 import hciLogo from "@/assets/hci-logo.png";
-import { internalMedicineLinks, seniorCareLinks } from "./nav-data";
+import { aboutUsLinks, internalMedicineLinks, seniorCareLinks, programsLinks } from "./nav-data";
 import { ContactBar } from "./ContactBar";
 import { MobileNav } from "./MobileNav";
 
@@ -65,14 +65,36 @@ export function Header() {
             </NavigationMenuItem>
 
             <NavigationMenuItem>
-              <Link to="/our-story">
-                <NavigationMenuLink className={cn(
-                  "group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50",
-                  isActive("/our-story") && "bg-accent text-accent-foreground"
-                )}>
-                  Our Story
-                </NavigationMenuLink>
-              </Link>
+              <NavigationMenuTrigger className={cn((isActive("/our-story") || isActive("/providers")) && "bg-accent text-accent-foreground")}>
+                About Us
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[400px] gap-2 p-4">
+                  {aboutUsLinks.map((link) => {
+                    const IconComponent = link.icon;
+                    return (
+                      <li key={link.href}>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            to={link.href}
+                            className="flex items-start gap-3 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground group"
+                          >
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                              <IconComponent className="h-5 w-5 text-primary" aria-hidden="true" />
+                            </div>
+                            <div className="pt-0.5">
+                              <div className="text-sm font-medium leading-none mb-1.5">{link.title}</div>
+                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                {link.description}
+                              </p>
+                            </div>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </NavigationMenuContent>
             </NavigationMenuItem>
 
             <NavigationMenuItem>
@@ -115,6 +137,39 @@ export function Header() {
               <NavigationMenuContent>
                 <ul className="grid w-[400px] gap-2 p-4 md:w-[540px] md:grid-cols-2">
                   {seniorCareLinks.map((link) => {
+                    const IconComponent = link.icon;
+                    return (
+                      <li key={link.href}>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            to={link.href}
+                            className="flex items-start gap-3 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground group"
+                          >
+                            <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-secondary/20 transition-colors">
+                              <IconComponent className="h-5 w-5 text-secondary" aria-hidden="true" />
+                            </div>
+                            <div className="pt-0.5">
+                              <div className="text-sm font-medium leading-none mb-1.5">{link.title}</div>
+                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                {link.description}
+                              </p>
+                            </div>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+
+            <NavigationMenuItem>
+              <NavigationMenuTrigger className={cn(isActive("/programs") && "bg-accent text-accent-foreground")}>
+                Programs
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[400px] gap-2 p-4">
+                  {programsLinks.map((link) => {
                     const IconComponent = link.icon;
                     return (
                       <li key={link.href}>

@@ -31,6 +31,16 @@ const ChronicCare = lazyWithRetry(() => import("./pages/senior-care/ChronicCare"
 const TransitionCare = lazyWithRetry(() => import("./pages/senior-care/TransitionCare"));
 const RemoteMonitoring = lazyWithRetry(() => import("./pages/senior-care/RemoteMonitoring"));
 
+// Provider Pages
+const Providers = lazyWithRetry(() => import("./pages/providers/Providers"));
+const DrJackson = lazyWithRetry(() => import("./pages/providers/DrJackson"));
+const AppleEvangelista = lazyWithRetry(() => import("./pages/providers/AppleEvangelista"));
+const MarilethTan = lazyWithRetry(() => import("./pages/providers/MarilethTan"));
+
+// Program Pages
+const MedicalWeightLoss = lazyWithRetry(() => import("./pages/programs/MedicalWeightLoss"));
+const MensHealthTRT = lazyWithRetry(() => import("./pages/programs/MensHealthTRT"));
+
 // Other Pages
 const Careers = lazyWithRetry(() => import("./pages/Careers"));
 const Appointments = lazyWithRetry(() => import("./pages/Appointments"));
@@ -39,6 +49,17 @@ const InsuranceUpdate = lazyWithRetry(() => import("./pages/InsuranceUpdate"));
 // Blog Pages
 const Blog = lazyWithRetry(() => import("./pages/Blog"));
 const BlogPost = lazyWithRetry(() => import("./pages/BlogPost"));
+
+// Newsletter Pages
+const Newsletters = lazyWithRetry(() => import("./pages/Newsletters"));
+const NewsletterIssue = lazyWithRetry(() => import("./pages/NewsletterIssue"));
+
+// Area Pages
+const AreaPage = lazyWithRetry(() => import("./pages/AreaPage"));
+
+// Resource & Topic Pages
+const Resources = lazyWithRetry(() => import("./pages/Resources"));
+const TopicHub = lazyWithRetry(() => import("./pages/TopicHub"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -72,12 +93,22 @@ const App = () => (
               <Route path="/internal-medicine/mens-health" element={<MensHealth />} />
               <Route path="/internal-medicine/diagnostics" element={<Diagnostics />} />
 
+              {/* Provider Routes */}
+              <Route path="/providers" element={<Providers />} />
+              <Route path="/providers/dr-jackson" element={<DrJackson />} />
+              <Route path="/providers/apple-evangelista" element={<AppleEvangelista />} />
+              <Route path="/providers/marileth-tan" element={<MarilethTan />} />
+
               {/* Senior Care Routes */}
               <Route path="/senior-care-plus" element={<SeniorCarePlus />} />
               <Route path="/senior-care/prevention-wellness" element={<PreventionWellness />} />
               <Route path="/senior-care/chronic-care" element={<ChronicCare />} />
               <Route path="/senior-care/transition-care" element={<TransitionCare />} />
               <Route path="/senior-care/remote-monitoring" element={<RemoteMonitoring />} />
+
+              {/* Programs */}
+              <Route path="/programs/medical-weight-loss" element={<MedicalWeightLoss />} />
+              <Route path="/programs/mens-health-trt" element={<MensHealthTRT />} />
 
               {/* Careers */}
               <Route path="/careers" element={<Careers />} />
@@ -91,6 +122,17 @@ const App = () => (
               {/* Blog */}
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
+
+              {/* Newsletters */}
+              <Route path="/newsletters" element={<Newsletters />} />
+              <Route path="/newsletters/:slug" element={<NewsletterIssue />} />
+
+              {/* Resources & Topics */}
+              <Route path="/resources" element={<Resources />} />
+              <Route path="/topics/:slug" element={<TopicHub />} />
+
+              {/* Areas We Serve */}
+              <Route path="/areas/:slug" element={<AreaPage />} />
 
               {/* Catch-all route */}
               <Route path="*" element={<NotFound />} />

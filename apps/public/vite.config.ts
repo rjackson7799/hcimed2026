@@ -14,6 +14,32 @@ function getBlogSlugs(): string[] {
     .map((f) => `/blog/${f.replace(".md", "")}`);
 }
 
+// Area page slugs for sitemap generation
+function getAreaSlugs(): string[] {
+  return [
+    '/areas/pasadena',
+    '/areas/altadena',
+    '/areas/south-pasadena',
+    '/areas/san-marino',
+    '/areas/arcadia',
+    '/areas/sierra-madre',
+    '/areas/la-canada-flintridge',
+    '/areas/monrovia',
+    '/areas/temple-city',
+    '/areas/glendale',
+  ];
+}
+
+// Dynamically discover newsletter slugs for sitemap generation
+function getNewsletterSlugs(): string[] {
+  const newsletterDir = path.resolve(__dirname, "src/content/newsletters");
+  if (!fs.existsSync(newsletterDir)) return [];
+  return fs
+    .readdirSync(newsletterDir)
+    .filter((f) => f.endsWith(".md"))
+    .map((f) => `/newsletters/${f.replace(".md", "")}`);
+}
+
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
@@ -27,6 +53,10 @@ export default defineConfig({
       dynamicRoutes: [
         "/",
         "/our-story",
+        "/providers",
+        "/providers/dr-jackson",
+        "/providers/apple-evangelista",
+        "/providers/marileth-tan",
         "/contact",
         "/faq",
         "/appointments",
@@ -42,8 +72,18 @@ export default defineConfig({
         "/senior-care/chronic-care",
         "/senior-care/transition-care",
         "/senior-care/remote-monitoring",
+        "/programs/medical-weight-loss",
+        "/programs/mens-health-trt",
         "/blog",
         ...getBlogSlugs(),
+        "/newsletters",
+        ...getNewsletterSlugs(),
+        ...getAreaSlugs(),
+        "/resources",
+        "/topics/diabetes-care",
+        "/topics/heart-health",
+        "/topics/medicare-senior-services",
+        "/topics/preventive-care",
       ],
       changefreq: "monthly",
       priority: 0.8,
