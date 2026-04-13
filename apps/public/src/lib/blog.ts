@@ -1,5 +1,6 @@
 import { marked } from 'marked';
-import type { BlogPost, BlogPostMeta, BlogPostFrontmatter } from '@/types/blog';
+import type { BlogPost, BlogPostMeta, BlogCategory } from '@/types/blog';
+import { parseFrontmatter } from '@/lib/frontmatter';
 
 // Import all markdown files from the blog content directory at build time
 const blogFiles = import.meta.glob('../content/blog/*.md', {
@@ -7,81 +8,6 @@ const blogFiles = import.meta.glob('../content/blog/*.md', {
   import: 'default',
   eager: true,
 }) as Record<string, string>;
-
-// Simple frontmatter parser (browser-compatible, no Buffer needed)
-function parseFrontmatter(content: string): { data: Record<string, unknown>; content: string } {
-  const frontmatterRegex = /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/;
-  const match = content.match(frontmatterRegex);
-
-  if (!match) {
-    return { data: {}, content };
-  }
-
-  const [, frontmatterStr, markdownContent] = match;
-  const data: Record<string, unknown> = {};
-
-  // Parse YAML-like frontmatter (simple key: value pairs)
-  const lines = frontmatterStr.split('\n');
-  let currentKey = '';
-  let inArray = false;
-  let arrayValues: string[] = [];
-
-  for (const line of lines) {
-    const trimmedLine = line.trim();
-
-    // Skip empty lines
-    if (!trimmedLine) continue;
-
-    // Check if this is an array item
-    if (trimmedLine.startsWith('- ') && inArray) {
-      const value = trimmedLine.slice(2).replace(/^["']|["']$/g, '');
-      arrayValues.push(value);
-      continue;
-    }
-
-    // If we were in an array, save it
-    if (inArray && currentKey) {
-      data[currentKey] = arrayValues;
-      inArray = false;
-      arrayValues = [];
-    }
-
-    // Check for key: value pair
-    const colonIndex = trimmedLine.indexOf(':');
-    if (colonIndex > 0) {
-      const key = trimmedLine.slice(0, colonIndex).trim();
-      const value = trimmedLine.slice(colonIndex + 1).trim();
-
-      // Check if this starts an array
-      if (value === '' || value === '[]') {
-        currentKey = key;
-        inArray = true;
-        arrayValues = [];
-      } else if (value.startsWith('[') && value.endsWith(']')) {
-        // Inline array like ["tag1", "tag2"]
-        const arrayContent = value.slice(1, -1);
-        data[key] = arrayContent
-          .split(',')
-          .map((item) => item.trim().replace(/^["']|["']$/g, ''))
-          .filter(Boolean);
-      } else {
-        // Regular value - remove quotes if present
-        data[key] = value.replace(/^["']|["']$/g, '');
-
-        // Convert boolean strings
-        if (data[key] === 'true') data[key] = true;
-        if (data[key] === 'false') data[key] = false;
-      }
-    }
-  }
-
-  // Handle any remaining array
-  if (inArray && currentKey) {
-    data[currentKey] = arrayValues;
-  }
-
-  return { data, content: markdownContent };
-}
 
 function parsePost(filename: string, content: string): BlogPost {
   const { data, content: markdownContent } = parseFrontmatter(content);
@@ -98,6 +24,7 @@ function parsePost(filename: string, content: string): BlogPost {
     image: data.image as string | undefined,
     tags: (data.tags as string[]) || [],
     featured: (data.featured as boolean) || false,
+    category: (data.category as BlogCategory | undefined),
     content: htmlContent,
   };
 }
@@ -149,4 +76,34 @@ export function getAllTags(): string[] {
   });
 
   return Array.from(tagSet).sort();
+}
+
+export function getAllCategories(): BlogCategory[] {
+  return ['Internal Medicine', 'Senior Care', 'Wellness', 'Practice News'];
+}
+
+export function getPostsByCategory(category: BlogCategory): BlogPostMeta[] {
+  return getAllPosts().filter((post) => post.category === category);
+}
+
+export function getRelatedPosts(currentSlug: string, limit = 3): BlogPostMeta[] {
+  const allPosts = getAllPosts();
+  const current = allPosts.find((p) => p.slug === currentSlug);
+  if (!current || current.tags.length === 0) return [];
+
+  const currentTags = new Set(current.tags.map((t) => t.toLowerCase()));
+
+  const scored = allPosts
+    .filter((p) => p.slug !== currentSlug)
+    .map((post) => {
+      const shared = post.tags.filter((t) => currentTags.has(t.toLowerCase())).length;
+      return { post, shared };
+    })
+    .filter(({ shared }) => shared > 0)
+    .sort((a, b) => {
+      if (b.shared !== a.shared) return b.shared - a.shared;
+      return new Date(b.post.date).getTime() - new Date(a.post.date).getTime();
+    });
+
+  return scored.slice(0, limit).map(({ post }) => post);
 }

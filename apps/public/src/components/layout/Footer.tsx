@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import { siteConfig } from "@/config/site";
+import { NewsletterSignup } from "@/components/newsletter/NewsletterSignup";
 import hciLogo from "@/assets/hci-logo.png";
 
 export function Footer() {
@@ -26,19 +27,26 @@ export function Footer() {
               <li><Link to="/faq" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">FAQ</Link></li>
               <li><Link to="/contact" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Contact Us</Link></li>
               <li><Link to="/blog" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Health Resources</Link></li>
+              <li><Link to="/newsletters" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Newsletters</Link></li>
+              <li><Link to="/resources" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Patient Resources</Link></li>
               <li><Link to="/careers" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Careers</Link></li>
             </ul>
           </nav>
 
-          {/* Services */}
-          <nav className="space-y-4" aria-label="Our services">
-            <h3 className="font-display text-lg font-semibold">Our Services</h3>
+          {/* Areas We Serve */}
+          <nav className="space-y-4" aria-label="Areas we serve">
+            <h3 className="font-display text-lg font-semibold">Areas We Serve</h3>
             <ul className="space-y-2">
-              <li><Link to="/internal-medicine/physical-exams" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Physical Exams</Link></li>
-              <li><Link to="/internal-medicine/womens-health" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Women's Health</Link></li>
-              <li><Link to="/internal-medicine/mens-health" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Men's Health</Link></li>
-              <li><Link to="/senior-care/chronic-care" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Chronic Care Management</Link></li>
-              <li><Link to="/senior-care/remote-monitoring" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Remote Monitoring</Link></li>
+              <li><Link to="/areas/pasadena" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Pasadena</Link></li>
+              <li><Link to="/areas/altadena" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Altadena</Link></li>
+              <li><Link to="/areas/south-pasadena" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">South Pasadena</Link></li>
+              <li><Link to="/areas/san-marino" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">San Marino</Link></li>
+              <li><Link to="/areas/arcadia" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Arcadia</Link></li>
+              <li><Link to="/areas/sierra-madre" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Sierra Madre</Link></li>
+              <li><Link to="/areas/la-canada-flintridge" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">La Cañada Flintridge</Link></li>
+              <li><Link to="/areas/monrovia" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Monrovia</Link></li>
+              <li><Link to="/areas/temple-city" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Temple City</Link></li>
+              <li><Link to="/areas/glendale" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors inline-block py-1">Glendale</Link></li>
             </ul>
           </nav>
 
@@ -70,10 +78,22 @@ export function Footer() {
                 <span className="text-primary-foreground/80">{siteConfig.hours.weekdays}</span>
               </li>
             </ul>
+            <NewsletterSignup variant="compact" />
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-primary-foreground/20 text-center text-primary-foreground/60 text-sm">
+        {/* Health Topics */}
+        <div className="mt-8 pt-8 border-t border-primary-foreground/20">
+          <nav aria-label="Health topics" className="flex flex-wrap items-center gap-x-6 gap-y-2 justify-center text-sm">
+            <span className="font-display font-semibold text-primary-foreground">Health Topics:</span>
+            <Link to="/topics/diabetes-care" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">Diabetes Care</Link>
+            <Link to="/topics/heart-health" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">Heart Health</Link>
+            <Link to="/topics/medicare-senior-services" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">Medicare & Senior Services</Link>
+            <Link to="/topics/preventive-care" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">Preventive Care</Link>
+          </nav>
+        </div>
+
+        <div className="mt-8 pt-8 border-t border-primary-foreground/20 text-center text-primary-foreground/60 text-sm">
           <p>&copy; {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
         </div>
       </div>

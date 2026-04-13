@@ -36,6 +36,7 @@ export const siteConfig = {
   links: {
     patientPortal: 'https://www.healow.com/apps/practice/hci-medical-group-inc-24741?v=2',
     appointments: '/appointments',
+    googleBusinessProfile: 'https://g.page/hci-medical-group',
   },
 
   maps: {

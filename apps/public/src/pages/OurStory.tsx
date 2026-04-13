@@ -6,10 +6,6 @@ import { PageHero } from "@/components/PageHero";
 import { Button } from "@hci/shared/ui/button";
 import { Heart, Users, Award, Clock, ArrowRight } from "lucide-react";
 
-// TODO: When team photos are available, import them here and add to the respective sections
-// import drJacksonPhoto from "@/assets/team/dr-jackson.jpg";
-// import evelindaPhoto from "@/assets/team/evelinda.jpg";
-
 export default function OurStory() {
   return (
     <Layout>
@@ -46,113 +42,15 @@ export default function OurStory() {
         </div>
       </section>
 
-      {/* Medical Director */}
-      <section className="py-16 md:py-24 bg-muted">
-        <div className="container">
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-card rounded-2xl p-8 md:p-12 card-shadow">
-              <div className="text-center mb-8 pb-8 border-b border-border">
-                <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">
-                  Dr. Roy H. Jackson, M.D.
-                </h2>
-                <p className="text-secondary font-semibold text-lg mb-1">Medical Director</p>
-                <p className="text-muted-foreground">
-                  Board Certified Internal Medicine & Geriatric Care Specialist
-                </p>
-              </div>
-              <div className="prose prose-lg max-w-none">
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  Dr. Roy H. Jackson has been the heart of HCI Medical Group since 1978, bringing
-                  over four decades of dedicated medical expertise to the Pasadena community. As
-                  Medical Director, Dr. Jackson has built a practice renowned for its compassionate
-                  approach to internal medicine and specialized geriatric care, serving generations
-                  of families throughout their healthcare journeys.
-                </p>
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  A graduate of the University of Southern California Medical Center, Dr. Jackson
-                  completed his internal medicine residency at USC and has remained committed to
-                  delivering exceptional, personalized care to diverse patient populations. His
-                  particular focus on geriatric medicine reflects his deep understanding that
-                  healthcare needs evolve throughout life, requiring both clinical excellence and
-                  genuine human connection.
-                </p>
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  Beyond his clinical practice at HCI Medical Group, Dr. Jackson has served the
-                  community through Mobile Docs since 1998, providing essential home-based care
-                  to homebound patients, ensuring that quality healthcare reaches those who need
-                  it most. His career has been marked by leadership roles including Medical Director
-                  positions at Andrew Escajeda Clinic, St. Luke's Medical Center, and various
-                  community healthcare facilities throughout Los Angeles County.
-                </p>
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  Dr. Jackson's commitment to healthcare excellence has earned recognition from
-                  the California State Assembly, the City of Pasadena, and Consumer's Research
-                  Council of America. He maintains active memberships in the American Medical
-                  Association, American College of Physicians, California Medical Association,
-                  and National Medical Association, staying current with the latest advances in
-                  internal medicine and geriatric care.
-                </p>
-                <p className="text-muted-foreground leading-relaxed">
-                  At HCI Medical Group, Dr. Jackson leads a team dedicated to providing comprehensive,
-                  evidence-based care that addresses the whole person—from preventive medicine and
-                  chronic disease management to the aesthetic wellness services that help patients
-                  feel their best at every age. His philosophy is simple: healthcare should grow
-                  with you, meeting your needs today while preparing for your tomorrow.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Care Team */}
-      <section className="py-16 md:py-24">
-        <div className="container">
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-center text-foreground mb-12">
-            Our Care Team
-          </h2>
-          <div className="max-w-3xl mx-auto">
-            {/* Apple Evangelista */}
-            <div className="bg-card rounded-xl p-8 card-shadow">
-              <div className="text-center mb-6 pb-6 border-b border-border">
-                <h3 className="font-display text-2xl font-semibold mb-2">
-                  Apple Evangelista, MSN, APRN, AGACNP-BC, CCRN
-                </h3>
-                <p className="text-secondary font-medium">
-                  Nurse Practitioner & Medical Aesthetics Specialist
-                </p>
-              </div>
-              <div className="space-y-4 text-muted-foreground leading-relaxed">
-                <p>
-                  Apple Evangelista brings a unique blend of critical care expertise and aesthetic
-                  medicine to HCI Medical Group, combining over a decade of clinical nursing
-                  excellence with specialized training in advanced medical aesthetics. As a
-                  board-certified Adult-Gerontology Acute Care Nurse Practitioner, Apple delivers
-                  comprehensive care that bridges traditional healthcare with modern wellness treatments.
-                </p>
-                <p>
-                  With a Master of Science in Nursing from Chamberlain University and board
-                  certification from the American Nurses Credentialing Center, Apple's clinical
-                  foundation is built on extensive experience in critical care settings, including
-                  years as a preceptor and relief charge nurse at Emanate Health hospitals.
-                </p>
-                <p>
-                  Since 2022, Apple has distinguished herself as an aesthetic nurse injector and
-                  specialist in skin treatments, medical devices, and laser therapies. Her approach
-                  is rooted in understanding each patient's unique goals and creating personalized
-                  treatment plans that enhance natural beauty while supporting overall wellness.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="text-center mt-10">
-            <Button asChild size="lg">
-              <Link to="/careers">
-                Join Our Team
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
+      {/* Meet Our Providers CTA */}
+      <section className="py-12 bg-muted">
+        <div className="container text-center">
+          <Button asChild size="lg" variant="outline">
+            <Link to="/providers">
+              Meet Our Providers
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
         </div>
       </section>
 
@@ -212,10 +110,18 @@ export default function OurStory() {
             </h2>
             <p className="text-xl text-muted-foreground leading-relaxed">
               To provide compassionate, comprehensive healthcare that empowers our patients 
-              to live their healthiest lives. We are committed to treating every individual 
-              with dignity and respect while delivering personalized care that addresses 
+              to live their healthiest lives. We are committed to treating every individual
+              with dignity and respect while delivering personalized care that addresses
               their unique needs at every stage of life.
             </p>
+            <div className="mt-8">
+              <Button asChild size="lg">
+                <Link to="/careers">
+                  Join Our Team
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>

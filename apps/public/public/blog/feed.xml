@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>HCI Medical Group — Health Resources</title>
+    <link>https://hcimed.com/blog</link>
+    <description>Health tips, medical insights, and wellness resources from HCI Medical Group in Pasadena.</description>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 20 Mar 2026 00:00:00 GMT</lastBuildDate>
+    <atom:link href="https://hcimed.com/blog/feed.xml" rel="self" type="application/rss+xml"/>
+    <image>
+      <url>https://hcimed.com/favicon-32x32.png</url>
+      <title>HCI Medical Group</title>
+      <link>https://hcimed.com</link>
+    </image>
+    <item>
+      <title>Getting Ready for Flu Season: Your Complete Guide</title>
+      <link>https://hcimed.com/blog/flu-season-preparation</link>
+      <description>Everything you need to know about protecting yourself and your family during flu season, including when to get vaccinated and when to see your doctor.</description>
+      <pubDate>Fri, 20 Mar 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://hcimed.com/blog/flu-season-preparation</guid>
+      <category>Wellness</category>
+      <author>care@hcimed.com (HCI Medical Group)</author>
+    </item>
+    <item>
+      <title>Remote Patient Monitoring: How It Works and Who Benefits</title>
+      <link>https://hcimed.com/blog/remote-patient-monitoring-guide</link>
+      <description>Learn how remote patient monitoring uses everyday devices to help your doctor track your health between visits—and why it matters for chronic conditions.</description>
+      <pubDate>Tue, 17 Mar 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://hcimed.com/blog/remote-patient-monitoring-guide</guid>
+      <category>Senior Care</category>
+      <author>care@hcimed.com (HCI Medical Group)</author>
+    </item>
+    <item>
+      <title>Preventive Health Screenings You Need at Every Age</title>
+      <link>https://hcimed.com/blog/preventive-screenings-by-age</link>
+      <description>A practical guide to the health screenings recommended at every stage of adulthood, from your 20s through your senior years.</description>
+      <pubDate>Sat, 14 Mar 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://hcimed.com/blog/preventive-screenings-by-age</guid>
+      <category>Wellness</category>
+      <author>care@hcimed.com (HCI Medical Group)</author>
+    </item>
+    <item>
+      <title>How Chronic Care Management Helps You Stay Healthier at Home</title>
+      <link>https://hcimed.com/blog/benefits-of-chronic-care-management</link>
+      <description>Discover how Medicare&apos;s Chronic Care Management program provides ongoing support between doctor visits for patients with multiple chronic conditions.</description>
+      <pubDate>Wed, 11 Mar 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://hcimed.com/blog/benefits-of-chronic-care-management</guid>
+      <category>Senior Care</category>
+      <author>care@hcimed.com (HCI Medical Group)</author>
+    </item>
+    <item>
+      <title>What to Expect at Your First Visit to HCI Medical Group</title>
+      <link>https://hcimed.com/blog/what-to-expect-first-visit</link>
+      <description>New to HCI Medical Group? Here&apos;s everything you need to know about your first appointment, from what to bring to what we&apos;ll cover together.</description>
+      <pubDate>Sun, 08 Mar 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://hcimed.com/blog/what-to-expect-first-visit</guid>
+      <category>Practice News</category>
+      <author>care@hcimed.com (HCI Medical Group)</author>
+    </item>
+    <item>
+      <title>Understanding High Blood Pressure: What Your Numbers Mean</title>
+      <link>https://hcimed.com/blog/understanding-high-blood-pressure</link>
+      <description>Learn how to read your blood pressure numbers, understand the risks of hypertension, and discover what you can do to keep your heart healthy.</description>
+      <pubDate>Thu, 05 Mar 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://hcimed.com/blog/understanding-high-blood-pressure</guid>
+      <category>Internal Medicine</category>
+      <author>care@hcimed.com (HCI Medical Group)</author>
+    </item>
+    <item>
+      <title>A Patient&apos;s Guide to Managing Type 2 Diabetes</title>
+      <link>https://hcimed.com/blog/managing-type-2-diabetes</link>
+      <description>Practical steps for managing type 2 diabetes, from blood sugar monitoring to lifestyle changes that make a real difference.</description>
+      <pubDate>Sun, 01 Mar 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://hcimed.com/blog/managing-type-2-diabetes</guid>
+      <category>Internal Medicine</category>
+      <author>care@hcimed.com (HCI Medical Group)</author>
+    </item>
+    <item>
+      <title>Understanding Your Medicare Annual Wellness Visit</title>
+      <link>https://hcimed.com/blog/medicare-annual-wellness-visit</link>
+      <description>Learn what to expect during your Medicare Annual Wellness Visit and how this free preventive benefit can help you stay healthy.</description>
+      <pubDate>Thu, 15 Jan 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://hcimed.com/blog/medicare-annual-wellness-visit</guid>
+      <category>Senior Care</category>
+      <author>care@hcimed.com (HCI Medical Group)</author>
+    </item>
+  </channel>
+</rss>

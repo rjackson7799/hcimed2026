@@ -5,6 +5,8 @@ import { pageSEO } from "@/config/seo";
 import { PageHero } from "@/components/PageHero";
 import { Button } from "@hci/shared/ui/button";
 import infographic from "@/assets/services/seniorcare_infographic.png";
+import { ServiceFAQ } from "@/components/faq/ServiceFAQ";
+import { seniorCareFaqs } from "@/data/faq-data";
 import {
   Heart,
   Shield,
@@ -269,6 +271,13 @@ export default function SeniorCarePlus() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-16 md:py-24">
+        <div className="container max-w-3xl">
+          <ServiceFAQ faqs={seniorCareFaqs} />
         </div>
       </section>
 

@@ -5,6 +5,8 @@ import { PageHero } from "@/components/PageHero";
 import { Button } from "@hci/shared/ui/button";
 import { Link } from "react-router-dom";
 import { CheckCircle } from "lucide-react";
+import { ServiceFAQ } from "@/components/faq/ServiceFAQ";
+import { physicalExamFaqs } from "@/data/faq-data";
 
 export default function PhysicalExams() {
   const services = [
@@ -70,6 +72,8 @@ export default function PhysicalExams() {
                 <li>• Wear comfortable, loose-fitting clothing</li>
               </ul>
             </div>
+
+            <ServiceFAQ faqs={physicalExamFaqs} />
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Button asChild size="lg" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground">

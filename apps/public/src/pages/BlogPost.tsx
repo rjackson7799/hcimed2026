@@ -3,9 +3,11 @@ import { Layout } from '@/components/layout/Layout';
 import { SEO } from '@/components/SEO';
 import { ArticleSchema } from '@/components/ArticleSchema';
 import { BlogContent } from '@/components/blog/BlogContent';
-import { getPostBySlug } from '@/lib/blog';
+import { RelatedPosts } from '@/components/blog/RelatedPosts';
+import { getPostBySlug, getRelatedPosts } from '@/lib/blog';
 import { siteConfig } from '@/config/site';
 import { ArrowLeft, Calendar, User } from 'lucide-react';
+import { NewsletterSignup } from '@/components/newsletter/NewsletterSignup';
 
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
@@ -63,12 +65,13 @@ export default function BlogPost() {
             {post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-4">
                 {post.tags.map((tag) => (
-                  <span
+                  <Link
                     key={tag}
-                    className="text-xs font-medium px-3 py-1 rounded-full bg-secondary/10 text-secondary"
+                    to={`/blog?tag=${encodeURIComponent(tag)}`}
+                    className="text-xs font-medium px-3 py-1 rounded-full bg-secondary/10 text-secondary hover:bg-secondary/20 transition-colors"
                   >
                     {tag}
-                  </span>
+                  </Link>
                 ))}
               </div>
             )}
@@ -106,23 +109,12 @@ export default function BlogPost() {
           {/* Content */}
           <BlogContent content={post.content} />
 
-          {/* Footer CTA */}
+          {/* Related Posts */}
+          <RelatedPosts posts={getRelatedPosts(post.slug, 3)} />
+
+          {/* Newsletter Signup */}
           <div className="mt-12 pt-8 border-t border-border">
-            <div className="bg-muted rounded-xl p-6 text-center">
-              <h3 className="font-display text-xl font-semibold text-foreground mb-2">
-                Have Questions About Your Health?
-              </h3>
-              <p className="text-muted-foreground mb-4">
-                Our team is here to help. Schedule an appointment to discuss your health
-                concerns with our experienced providers.
-              </p>
-              <Link
-                to="/contact"
-                className="inline-flex items-center justify-center px-6 py-3 bg-secondary text-secondary-foreground font-medium rounded-lg hover:bg-secondary/90 transition-colors"
-              >
-                Contact Us
-              </Link>
-            </div>
+            <NewsletterSignup variant="section" />
           </div>
         </div>
       </article>

@@ -6,6 +6,7 @@ date: "2026-01-15"
 author: "HCI Medical Group"
 tags: ["Medicare", "Preventive Care", "Senior Health"]
 featured: true
+category: "Senior Care"
 ---
 
 Your **Medicare Annual Wellness Visit** (AWV) is one of the most valuable preventive benefits available to you—and it's covered at no cost when you visit a participating provider like HCI Medical Group.

@@ -1,3 +1,5 @@
+export type BlogCategory = 'Internal Medicine' | 'Senior Care' | 'Wellness' | 'Practice News';
+
 export interface BlogPostFrontmatter {
   title: string;
   slug: string;
@@ -7,6 +9,7 @@ export interface BlogPostFrontmatter {
   image?: string;
   tags: string[];
   featured?: boolean;
+  category?: BlogCategory;
 }
 
 export interface BlogPost extends BlogPostFrontmatter {

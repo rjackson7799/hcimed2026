@@ -31,12 +31,14 @@ export function BlogCard({ post }: BlogCardProps) {
         {post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
             {post.tags.slice(0, 3).map((tag) => (
-              <span
+              <Link
                 key={tag}
-                className="text-xs font-medium px-2 py-1 rounded-full bg-secondary/10 text-secondary"
+                to={`/blog?tag=${encodeURIComponent(tag)}`}
+                className="text-xs font-medium px-2 py-1 rounded-full bg-secondary/10 text-secondary hover:bg-secondary/20 transition-colors"
+                onClick={(e) => e.stopPropagation()}
               >
                 {tag}
-              </span>
+              </Link>
             ))}
           </div>
         )}

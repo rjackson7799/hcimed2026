@@ -6,7 +6,7 @@
   "scripts": {
     "dev:public": "cd apps/public && bun run dev",
     "dev:portal": "cd apps/portal && bun run dev",
-    "build:public": "cd apps/public && bun run build",
+    "build:public": "bun scripts/generate-rss.ts && cd apps/public && bun run build",
     "build:portal": "cd apps/portal && bun run build",
     "build": "bun run build:public && bun run build:portal",
     "type-check": "cd apps/public && bun run type-check && cd ../portal && bun run type-check",

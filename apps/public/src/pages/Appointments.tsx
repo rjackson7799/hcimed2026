@@ -6,6 +6,8 @@ import { AppointmentRequestForm } from "@/components/AppointmentRequestForm";
 import { Phone, Clock, MapPin, CalendarCheck, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { siteConfig } from "@/config/site";
+import { InsuranceLogos } from "@/components/trust/InsuranceLogos";
+import { NewPatientSteps } from "@/components/trust/NewPatientSteps";
 
 export default function Appointments() {
   return (
@@ -18,6 +20,12 @@ export default function Appointments() {
 
       <section className="py-16 md:py-24">
         <div className="container">
+          {/* Insurance & Steps */}
+          <div className="mb-12">
+            <InsuranceLogos className="mb-8" />
+            <NewPatientSteps />
+          </div>
+
           <div className="grid lg:grid-cols-3 gap-12">
             {/* Main Form Column */}
             <div className="lg:col-span-2">

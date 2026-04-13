@@ -6,6 +6,12 @@ import { Button } from "@hci/shared/ui/button";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ContactForm } from "@/components/ContactForm";
 import { HeroImagePlaceholder, ServiceCardImagePlaceholder } from "@/components/ImagePlaceholder";
+import { TestimonialsSection } from "@/components/testimonials/TestimonialsSection";
+import { NewPatientBanner } from "@/components/trust/NewPatientBanner";
+import { InsuranceLogos } from "@/components/trust/InsuranceLogos";
+import { NewsletterSignup } from "@/components/newsletter/NewsletterSignup";
+import { FeaturedBlogPosts } from "@/components/blog/FeaturedBlogPosts";
+import { useLazySection } from "@/hooks/useLazySection";
 import {
   Stethoscope,
   Heart,
@@ -53,6 +59,10 @@ const localBusinessSchema = {
 };
 
 export default function Index() {
+  const blogSection = useLazySection();
+  const testimonialsSection = useLazySection();
+  const newsletterSection = useLazySection();
+
   return (
     <Layout>
       <SEO {...pageSEO.home} structuredData={localBusinessSchema} />
@@ -96,6 +106,9 @@ export default function Index() {
         </div>
       </section>
 
+      {/* New Patient Banner */}
+      <NewPatientBanner />
+
       {/* Quick Contact Bar */}
       <section className="bg-card border-b border-border">
         <div className="container py-6">
@@ -118,6 +131,13 @@ export default function Index() {
               <a href={`tel:${siteConfig.contact.phoneRaw}`}>Call Now</a>
             </Button>
           </div>
+        </div>
+      </section>
+
+      {/* Insurance Trust Signals */}
+      <section className="py-8 bg-background">
+        <div className="container">
+          <InsuranceLogos />
         </div>
       </section>
 
@@ -266,6 +286,11 @@ export default function Index() {
         </div>
       </section>
 
+      {/* Featured Blog Posts */}
+      <div ref={blogSection.ref} className="min-h-[200px]">
+        {blogSection.isVisible && <FeaturedBlogPosts />}
+      </div>
+
       {/* Contact Section */}
       <section className="py-16 md:py-24 section-gradient">
         <div className="container">
@@ -317,6 +342,17 @@ export default function Index() {
           </div>
         </div>
       </section>
+
+      {/* Patient Testimonials */}
+      <div ref={testimonialsSection.ref} className="min-h-[200px]">
+        {testimonialsSection.isVisible && <TestimonialsSection />}
+      </div>
+
+      {/* Newsletter Signup */}
+      <div ref={newsletterSection.ref} className="min-h-[100px]">
+        {newsletterSection.isVisible && <NewsletterSignup variant="inline" />}
+      </div>
+
     </Layout>
   );
 }

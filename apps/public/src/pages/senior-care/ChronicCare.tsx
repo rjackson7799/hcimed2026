@@ -5,6 +5,8 @@ import { PageHero } from "@/components/PageHero";
 import { Button } from "@hci/shared/ui/button";
 import { Link } from "react-router-dom";
 import { CheckCircle } from "lucide-react";
+import { ServiceFAQ } from "@/components/faq/ServiceFAQ";
+import { chronicCareFaqs } from "@/data/faq-data";
 
 export default function ChronicCare() {
   const conditions = [
@@ -80,6 +82,8 @@ export default function ChronicCare() {
                 better manage your health.
               </p>
             </div>
+
+            <ServiceFAQ faqs={chronicCareFaqs} />
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Button asChild size="lg" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground">
