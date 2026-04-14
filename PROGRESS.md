@@ -51,8 +51,8 @@ Tracking document for Pasadena Health Hub (hcimed.com) development.
 - [x] Patient Resource Center (/resources) — forms, insurance info, visit prep guides, patient rights
 - [x] 4 Health Topic Hub pages (/topics/:slug) with MedicalWebPage JSON-LD
 - [x] Blog RSS feed (build-time generation at /blog/feed.xml)
-- [x] Medical Weight Loss program page (`/programs/medical-weight-loss`) — GLP-1 cash-pay program with sticky sidebar enrollment form, Resend API, FAQ accordion, pricing card
-- [x] Men's Health & TRT program page (`/programs/mens-health-trt`) — testosterone replacement therapy with in-office injections, symptom cards, 3-tier pricing, cross-link to Weight Loss
+- [x] Medical Weight Loss program page (`/programs/medical-weight-loss`) — GLP-1 cash-pay program with sticky sidebar enrollment form, Resend API, FAQ accordion, pricing card, custom hero photography
+- [x] Men's Health & TRT program page (`/programs/mens-health-trt`) — testosterone replacement therapy with in-office injections, symptom cards, 3-tier pricing, cross-link to Weight Loss, custom hero photography
 - [x] "Programs" dropdown navigation — two-column desktop menu consolidating specialty programs (Weight Loss, TRT) and Senior Care+ services
 
 ### Monorepo Migration & Portal Subdomain (2026-03-18)
@@ -368,7 +368,7 @@ See `docs/BACKLOG.md` for mobile responsiveness fixes, portal enhancements, and 
 ## Changelog
 
 ### 2026-04-13
-- **Specialty Program Pages — Medical Weight Loss + Men's Health TRT (public site):** Two new conversion-oriented landing pages for cash-pay programs. Commits: `91c3293`, `e17d8c0`, `21eb613`.
+- **Specialty Program Pages — Medical Weight Loss + Men's Health TRT (public site):** Two new conversion-oriented landing pages for cash-pay programs. Commits: `91c3293`, `e17d8c0`, `21eb613`, `f54f12c`, `dfb5f23`, `1f96f57`.
   - **New "Programs" navigation dropdown:** Added between Senior Care and FAQ. Desktop shows a two-column menu with "Specialty Programs" (Weight Loss, TRT) and "Senior Care+" (5 senior care services). Mobile shows a single accordion with section labels. Senior Care dropdown removed from top-level nav — reduced from 7 to 6 items.
   - **Medical Weight Loss page** (`/programs/medical-weight-loss`): GLP-1 cash-pay program. Hero with 3 CTAs (Call, Enroll Online scroll-to-form, Learn More). Sticky sidebar form on desktop with compact/expandable states — 4 core fields always visible (intent, name, phone, email), "More options" reveals current patient + message. 10 content sections: What Is GLP-1, Why HCI (6 cards), What's Included (8-item checklist), How It Works (4-step timeline), Pricing ($299/$175), Is This Right for You, 9-item FAQ with JSON-LD, Care Team, cross-link to TRT, full-width CTA footer. `MedicalBusiness` JSON-LD schema.
   - **Men's Health & TRT page** (`/programs/mens-health-trt`): Testosterone replacement therapy with in-office injections. Similar layout structure with TRT-specific content: 8 symptom cards (fatigue, low libido, muscle loss, etc.), 6 "Why HCI" cards, 9-item checklist (including CURES compliance), 4-step process (Evaluate → Diagnose → Treat → Optimize), 3-tier pricing ($349/$249/$150 for in-office vs self-inject), 11-item FAQ (including fertility warning, schedule III disclosure), "Beyond TRT" services list, cross-link to Weight Loss.
@@ -376,6 +376,9 @@ See `docs/BACKLOG.md` for mobile responsiveness fixes, portal enhancements, and 
   - **Form submission:** Both forms use React Hook Form + Zod validation. Honeypot spam protection. Rate limiting (5 req/min per IP). Resend API sends staff notification + patient confirmation emails. New env vars: `EMAIL_RECIPIENTS_WEIGHTLOSS`, `EMAIL_RECIPIENTS_TRT` (fall back to `EMAIL_RECIPIENTS_APPOINTMENTS`).
   - **New files:** `apps/public/src/pages/programs/MedicalWeightLoss.tsx`, `apps/public/src/pages/programs/MensHealthTRT.tsx`, `WeightLossForm.tsx`, `TRTForm.tsx`, `weightLossSchema.ts`, `trtSchema.ts`, `weight-loss-faqs.ts`, `trt-faqs.ts`, `api/weight-loss-inquiry.ts`, `api/trt-inquiry.ts`.
   - **Infrastructure fix (`e17d8c0`):** Committed 79 previously untracked source files (pages, components, data, blog content, PDFs) that were referenced by committed code but had never been pushed — causing the initial Vercel build to fail after only 11 modules transformed.
+  - **Hero background images (`dfb5f23`):** Replaced the solid blue `hero-gradient` on both program pages with custom photography (`weight-loss-hero.png`, `trt-hero.png` in `apps/public/src/assets/hero/`). Gradient overlay `from-primary via-primary/90 to-primary/50` darkens the left side (where copy sits) and fades toward the right so the image shows through. Decorative SVG illustrations removed — the photos carry the visual weight now.
+  - **Repo hygiene (`dfb5f23`):** Added `.superpowers/` (brainstorm session artifacts) and `.claude/plans/` to `.gitignore`.
+  - **Miscellaneous cleanup (`1f96f57`):** Bundled ~20 previously uncommitted files — portal practice-health income streams work (`IncomeStreamsRow.tsx`, `useIncomeStreams.ts`, updates to `generate-insights.ts`, `PracticeHealthPage.tsx`, `practice-health.ts`), provider page tweaks (DrJackson, AppleEvangelista → "Evelinda" name fix in `seo.ts`, MarilethTan, Providers), `NeighborhoodPage.tsx` tweak, plus 4 PRDs (AWV, CCM/RPM, Mobile Docs, Backlog), 2 migration SQL files, and 4 design specs.
   - **Design spec:** `docs/superpowers/specs/2026-04-13-medical-weight-loss-page-design.md`
   - **Content specs:** `docs/Medical_Weight_Loss_Webpage_Spec.md`, `docs/Mens_Health_TRT_Webpage_Spec.md`
 
