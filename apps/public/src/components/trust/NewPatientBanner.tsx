@@ -39,7 +39,7 @@ export function NewPatientBanner() {
             asChild
             size="sm"
             variant="outline"
-            className="border-secondary-foreground/40 text-secondary-foreground hover:bg-secondary-foreground hover:text-secondary"
+            className="bg-white text-secondary hover:bg-white/90 border-transparent"
           >
             <Link to="/appointments">Request Appointment</Link>
           </Button>
