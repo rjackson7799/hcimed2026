@@ -2,7 +2,7 @@
 
 Tracking document for Pasadena Health Hub (hcimed.com) development.
 
-**Last updated:** 2026-03-30
+**Last updated:** 2026-04-13
 
 ---
 
@@ -51,6 +51,9 @@ Tracking document for Pasadena Health Hub (hcimed.com) development.
 - [x] Patient Resource Center (/resources) — forms, insurance info, visit prep guides, patient rights
 - [x] 4 Health Topic Hub pages (/topics/:slug) with MedicalWebPage JSON-LD
 - [x] Blog RSS feed (build-time generation at /blog/feed.xml)
+- [x] Medical Weight Loss program page (`/programs/medical-weight-loss`) — GLP-1 cash-pay program with sticky sidebar enrollment form, Resend API, FAQ accordion, pricing card
+- [x] Men's Health & TRT program page (`/programs/mens-health-trt`) — testosterone replacement therapy with in-office injections, symptom cards, 3-tier pricing, cross-link to Weight Loss
+- [x] "Programs" dropdown navigation — two-column desktop menu consolidating specialty programs (Weight Loss, TRT) and Senior Care+ services
 
 ### Monorepo Migration & Portal Subdomain (2026-03-18)
 
@@ -363,6 +366,18 @@ See `docs/BACKLOG.md` for mobile responsiveness fixes, portal enhancements, and 
 ---
 
 ## Changelog
+
+### 2026-04-13
+- **Specialty Program Pages — Medical Weight Loss + Men's Health TRT (public site):** Two new conversion-oriented landing pages for cash-pay programs. Commits: `91c3293`, `e17d8c0`, `21eb613`.
+  - **New "Programs" navigation dropdown:** Added between Senior Care and FAQ. Desktop shows a two-column menu with "Specialty Programs" (Weight Loss, TRT) and "Senior Care+" (5 senior care services). Mobile shows a single accordion with section labels. Senior Care dropdown removed from top-level nav — reduced from 7 to 6 items.
+  - **Medical Weight Loss page** (`/programs/medical-weight-loss`): GLP-1 cash-pay program. Hero with 3 CTAs (Call, Enroll Online scroll-to-form, Learn More). Sticky sidebar form on desktop with compact/expandable states — 4 core fields always visible (intent, name, phone, email), "More options" reveals current patient + message. 10 content sections: What Is GLP-1, Why HCI (6 cards), What's Included (8-item checklist), How It Works (4-step timeline), Pricing ($299/$175), Is This Right for You, 9-item FAQ with JSON-LD, Care Team, cross-link to TRT, full-width CTA footer. `MedicalBusiness` JSON-LD schema.
+  - **Men's Health & TRT page** (`/programs/mens-health-trt`): Testosterone replacement therapy with in-office injections. Similar layout structure with TRT-specific content: 8 symptom cards (fatigue, low libido, muscle loss, etc.), 6 "Why HCI" cards, 9-item checklist (including CURES compliance), 4-step process (Evaluate → Diagnose → Treat → Optimize), 3-tier pricing ($349/$249/$150 for in-office vs self-inject), 11-item FAQ (including fertility warning, schedule III disclosure), "Beyond TRT" services list, cross-link to Weight Loss.
+  - **Cross-linking:** Subtle accent card at the bottom of each page content column linking to the other program. Keeps patients on-site if they arrived for one service but are interested in another.
+  - **Form submission:** Both forms use React Hook Form + Zod validation. Honeypot spam protection. Rate limiting (5 req/min per IP). Resend API sends staff notification + patient confirmation emails. New env vars: `EMAIL_RECIPIENTS_WEIGHTLOSS`, `EMAIL_RECIPIENTS_TRT` (fall back to `EMAIL_RECIPIENTS_APPOINTMENTS`).
+  - **New files:** `apps/public/src/pages/programs/MedicalWeightLoss.tsx`, `apps/public/src/pages/programs/MensHealthTRT.tsx`, `WeightLossForm.tsx`, `TRTForm.tsx`, `weightLossSchema.ts`, `trtSchema.ts`, `weight-loss-faqs.ts`, `trt-faqs.ts`, `api/weight-loss-inquiry.ts`, `api/trt-inquiry.ts`.
+  - **Infrastructure fix (`e17d8c0`):** Committed 79 previously untracked source files (pages, components, data, blog content, PDFs) that were referenced by committed code but had never been pushed — causing the initial Vercel build to fail after only 11 modules transformed.
+  - **Design spec:** `docs/superpowers/specs/2026-04-13-medical-weight-loss-page-design.md`
+  - **Content specs:** `docs/Medical_Weight_Loss_Webpage_Spec.md`, `docs/Mens_Health_TRT_Webpage_Spec.md`
 
 ### 2026-03-30
 - **Auth Stability & Logging Fixes (portal):** Fixed 6 confirmed bugs causing tab freezes, infinite spinners, and broken logout on the staff portal. Commits: `f567d51`, `b6fecf7`.
