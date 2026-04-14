@@ -189,8 +189,8 @@ export function NeighborhoodPage({ neighborhood }: NeighborhoodPageProps) {
           <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
               { name: 'Dr. Roy H. Jackson', role: 'Founding Physician', href: '/providers/dr-jackson', initials: 'RJ' },
-              { name: 'Apple Evangelista, NP', role: 'Nurse Practitioner', href: '/providers/apple-evangelista', initials: 'AE' },
-              { name: 'Marileth Tan, NP', role: 'Nurse Practitioner', href: '/providers/marileth-tan', initials: 'MT' },
+              { name: 'Evelinda "Apple" Evangelista, NP', role: 'Nurse Practitioner', href: '/providers/apple-evangelista', initials: 'AE' },
+              { name: 'Marileth "Bap" Tan, NP', role: 'Nurse Practitioner', href: '/providers/marileth-tan', initials: 'MT' },
             ].map((provider) => (
               <Link
                 key={provider.href}

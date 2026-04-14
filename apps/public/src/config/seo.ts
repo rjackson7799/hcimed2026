@@ -36,14 +36,14 @@ export const pageSEO: Record<string, PageSEO> = {
   },
 
   appleEvangelista: {
-    title: 'Apple Evangelista, MSN, APRN — Nurse Practitioner',
+    title: 'Evelinda "Apple" Evangelista, MSN, APRN — Nurse Practitioner',
     description:
-      'Apple Evangelista, board-certified Adult-Gerontology Acute Care Nurse Practitioner and medical aesthetics specialist at HCI Medical Group in Pasadena.',
+      'Evelinda "Apple" Evangelista, board-certified Adult-Gerontology Acute Care Nurse Practitioner and medical aesthetics specialist at HCI Medical Group in Pasadena.',
     canonical: `${siteConfig.url}/providers/apple-evangelista`,
   },
 
   marilethTan: {
-    title: 'Marileth Tan, MSN, FNP-C — Family Nurse Practitioner',
+    title: 'Marileth "Bap" Tan, MSN, FNP-C — Family Nurse Practitioner',
     description:
       'Marileth "Bap" Tan, board-certified Family Nurse Practitioner with 17+ years of critical care and primary care experience at HCI Medical Group in Pasadena.',
     canonical: `${siteConfig.url}/providers/marileth-tan`,

@@ -257,6 +257,21 @@ export interface EmLevelEntry {
   percentage: number;
 }
 
+// ─── Income Streams Types ─────────────────────────────────────────
+
+export interface IncomeStreamValue {
+  current: number;
+  previous: number;
+  trend: { direction: 'up' | 'down' | 'flat'; percentage: number; label: string };
+}
+
+export interface IncomeStreamData {
+  awv: IncomeStreamValue;
+  ccm: IncomeStreamValue;
+  rpm: IncomeStreamValue;
+  total: IncomeStreamValue;
+}
+
 // ─── Upload Pipeline Types ─────────────────────────────────────────
 
 export interface ReportDetectionResult {

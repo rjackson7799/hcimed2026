@@ -20,7 +20,7 @@ const credentials = {
 const physicianSchema = {
   '@context': 'https://schema.org',
   '@type': 'Physician',
-  name: 'Apple Evangelista',
+  name: 'Evelinda Evangelista',
   medicalSpecialty: 'InternalMedicine',
   jobTitle: 'Nurse Practitioner',
   memberOf: { '@type': 'MedicalOrganization', name: siteConfig.name },
@@ -39,7 +39,7 @@ export default function AppleEvangelista() {
     <Layout>
       <SEO {...pageSEO.appleEvangelista} structuredData={physicianSchema} />
       <PageHero
-        title="Apple Evangelista, MSN, APRN, AGACNP-BC, CCRN"
+        title={'Evelinda "Apple" Evangelista, MSN, APRN, AGACNP-BC, CCRN'}
         subtitle="Nurse Practitioner & Medical Aesthetics Specialist"
       />
 
@@ -64,7 +64,7 @@ export default function AppleEvangelista() {
                   </div>
                 </div>
                 <h3 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">
-                  Apple Evangelista, MSN, APRN, AGACNP-BC, CCRN
+                  Evelinda "Apple" Evangelista, MSN, APRN, AGACNP-BC, CCRN
                 </h3>
                 <p className="text-secondary font-semibold text-lg">
                   Nurse Practitioner & Medical Aesthetics Specialist
@@ -84,20 +84,20 @@ export default function AppleEvangelista() {
 
               <div className="prose prose-lg max-w-none space-y-4">
                 <p className="text-muted-foreground leading-relaxed">
-                  Apple Evangelista brings a unique blend of critical care expertise and aesthetic
+                  Ms. Evangelista brings a unique blend of critical care expertise and aesthetic
                   medicine to HCI Medical Group, combining over a decade of clinical nursing
                   excellence with specialized training in advanced medical aesthetics. As a
-                  board-certified Adult-Gerontology Acute Care Nurse Practitioner, Apple delivers
+                  board-certified Adult-Gerontology Acute Care Nurse Practitioner, Ms. Evangelista delivers
                   comprehensive care that bridges traditional healthcare with modern wellness treatments.
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
                   With a Master of Science in Nursing from Chamberlain University and board
-                  certification from the American Nurses Credentialing Center, Apple's clinical
+                  certification from the American Nurses Credentialing Center, Ms. Evangelista's clinical
                   foundation is built on extensive experience in critical care settings, including
                   years as a preceptor and relief charge nurse at Emanate Health hospitals.
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
-                  Since 2022, Apple has distinguished herself as an aesthetic nurse injector and
+                  Since 2022, Ms. Evangelista has distinguished herself as an aesthetic nurse injector and
                   specialist in skin treatments, medical devices, and laser therapies. Her approach
                   is rooted in understanding each patient's unique goals and creating personalized
                   treatment plans that enhance natural beauty while supporting overall wellness.

@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@hci/shared/ui/tabs';
 import { Activity } from 'lucide-react';
 import { SummaryHeader } from '@/components/practice-health/SummaryHeader';
+import { IncomeStreamsRow } from '@/components/practice-health/IncomeStreamsRow';
 import { OverviewTab } from '@/components/practice-health/OverviewTab';
 import { ProvidersTab } from '@/components/practice-health/ProvidersTab';
 import { FinancialTab } from '@/components/practice-health/FinancialTab';
 import { OperationsTab } from '@/components/practice-health/OperationsTab';
+import { useKpiData } from '@/hooks/useKpiData';
 import { PH_TABS } from '@/lib/practice-health-constants';
 import type { PhTabId } from '@/lib/practice-health-constants';
 import type { KpiFilters } from '@/types/practice-health';
@@ -27,6 +29,7 @@ function getDefaultFilters(): KpiFilters {
 export function PracticeHealthPage() {
   const [tab, setTab] = useState<PhTabId>('overview');
   const [filters, setFilters] = useState<KpiFilters>(getDefaultFilters);
+  const { data: kpiData } = useKpiData(filters);
 
   return (
     <div className="space-y-6">
@@ -39,6 +42,12 @@ export function PracticeHealthPage() {
       </div>
 
       <SummaryHeader filters={filters} onFiltersChange={setFilters} />
+
+      <IncomeStreamsRow
+        filters={filters}
+        ecwEstCollections={kpiData?.current.estCollections ?? 0}
+        ecwEstCollectionsPrevious={kpiData?.previous.estCollections ?? 0}
+      />
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as PhTabId)}>
         <TabsList>

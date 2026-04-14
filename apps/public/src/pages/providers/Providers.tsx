@@ -16,21 +16,21 @@ const providers = [
     href: "/providers/dr-jackson",
   },
   {
-    name: "Apple Evangelista, MSN, APRN, AGACNP-BC, CCRN",
+    name: 'Evelinda "Apple" Evangelista, MSN, APRN, AGACNP-BC, CCRN',
     title: "Nurse Practitioner & Medical Aesthetics Specialist",
     credentials: "Board Certified Adult-Gerontology Acute Care Nurse Practitioner",
     initials: "AE",
     summary:
-      "Combining over a decade of critical care expertise with specialized training in advanced medical aesthetics, Apple delivers comprehensive care that bridges traditional healthcare with modern wellness treatments.",
+      "Combining over a decade of critical care expertise with specialized training in advanced medical aesthetics, Ms. Evangelista delivers comprehensive care that bridges traditional healthcare with modern wellness treatments.",
     href: "/providers/apple-evangelista",
   },
   {
-    name: "Marileth Tan, MSN, FNP-C, CCRN",
+    name: 'Marileth "Bap" Tan, MSN, FNP-C, CCRN',
     title: "Family Nurse Practitioner",
     credentials: "Board Certified Family Nurse Practitioner",
     initials: "MT",
     summary:
-      "With over 17 years of clinical experience spanning critical care, primary care, and emergency medicine, Bap delivers comprehensive, evidence-based care across the lifespan.",
+      "With over 17 years of clinical experience spanning critical care, primary care, and emergency medicine, Ms. Tan delivers comprehensive, evidence-based care across the lifespan.",
     href: "/providers/marileth-tan",
   },
 ];

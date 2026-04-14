@@ -39,7 +39,7 @@ export default function MarilethTan() {
     <Layout>
       <SEO {...pageSEO.marilethTan} structuredData={physicianSchema} />
       <PageHero
-        title="Marileth Tan, MSN, FNP-C, CCRN"
+        title={'Marileth "Bap" Tan, MSN, FNP-C, CCRN'}
         subtitle="Family Nurse Practitioner"
       />
 
@@ -84,7 +84,7 @@ export default function MarilethTan() {
 
               <div className="prose prose-lg max-w-none space-y-4">
                 <p className="text-muted-foreground leading-relaxed">
-                  Bap Tan brings over 17 years of clinical nursing excellence to HCI Medical
+                  Ms. Tan brings over 17 years of clinical nursing excellence to HCI Medical
                   Group, with deep expertise spanning critical care, primary care, and emergency
                   medicine. As a board-certified Family Nurse Practitioner, she delivers
                   comprehensive, evidence-based care across the lifespan — from preventive
@@ -93,13 +93,13 @@ export default function MarilethTan() {
                 <p className="text-muted-foreground leading-relaxed">
                   With a Master of Science in Nursing from United States University and a
                   Bachelor of Science in Nursing from California State University, Fullerton,
-                  Bap's clinical foundation was built through more than a decade of CCU/ICU
+                  Ms. Tan's clinical foundation was built through more than a decade of CCU/ICU
                   nursing at Inter-Community Hospital in Covina, where she served as a relief
                   charge nurse, mentored new nurses, and earned both the DAISY Award (2017) and
                   Nurse of the Year for Displaying Integrity (2018).
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
-                  Since earning her FNP-C certification, Bap has expanded her practice to
+                  Since earning her FNP-C certification, Ms. Tan has expanded her practice to
                   include primary care at Adventist Health and Omni Family Health, as well as
                   emergency department fast-track care with Vituity — managing everything from
                   minor trauma and infections to complex chronic conditions. She also serves as
@@ -107,7 +107,7 @@ export default function MarilethTan() {
                   the next generation of nurse practitioners.
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
-                  Bap is fluent in English and Tagalog, reflecting HCI Medical Group's
+                  Ms. Tan is fluent in English and Tagalog, reflecting HCI Medical Group's
                   commitment to serving the diverse communities of the San Gabriel Valley.
                 </p>
               </div>

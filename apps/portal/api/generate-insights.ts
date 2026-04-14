@@ -39,6 +39,85 @@ const BENCHMARKS = {
   revenuePerEncounter: 281,
 };
 
+// ─── Income Stream Helpers ───────────────────────────────────────────
+
+const CCM_CPT_CODES = ['99490', '99439', '99491'];
+const RPM_CPT_CODES = ['99453', '99454', '99457', '99458'];
+
+interface IncomeStreamSummary {
+  awv: { completions: number; revenue: number; eligible: number; completionRate: number };
+  ccm: { enrolled: number; revenue: number };
+  rpm: { activeDevices: number; revenue: number };
+}
+
+async function fetchIncomeStreamSummary(
+  sb: ReturnType<typeof createClient>,
+  start: string,
+  end: string
+): Promise<IncomeStreamSummary> {
+  // AWV data
+  const [awvCompleted, awvEligible] = await Promise.all([
+    sb
+      .from('awv_tracking')
+      .select('billed_amount')
+      .eq('completion_status', 'Completed')
+      .gte('completion_date', start)
+      .lte('completion_date', end),
+    sb
+      .from('awv_tracking')
+      .select('id', { count: 'exact', head: true })
+      .eq('eligibility_status', 'Eligible')
+      .in('completion_status', ['Not Started', 'Scheduled']),
+  ]);
+
+  const awvRevenue = (awvCompleted.data || []).reduce(
+    (sum, r) => sum + ((r as { billed_amount: number | null }).billed_amount ?? 0),
+    0
+  );
+  const awvCompletionCount = awvCompleted.data?.length ?? 0;
+  const awvEligibleCount = awvEligible.count ?? 0;
+  const totalPool = awvCompletionCount + awvEligibleCount;
+
+  // CCM/RPM reimbursement
+  const { data: reimbRows } = await sb
+    .from('ccm_reimbursement')
+    .select('cpt_code, paid_amount')
+    .gte('service_month', start)
+    .lte('service_month', end);
+
+  let ccmRevenue = 0;
+  let rpmRevenue = 0;
+  for (const row of reimbRows || []) {
+    const amount = (row as { paid_amount: number }).paid_amount ?? 0;
+    const code = (row as { cpt_code: string }).cpt_code;
+    if (CCM_CPT_CODES.includes(code)) ccmRevenue += amount;
+    else if (RPM_CPT_CODES.includes(code)) rpmRevenue += amount;
+  }
+
+  // CCM enrollment count
+  const { count: enrolledCount } = await sb
+    .from('ccm_enrollment')
+    .select('id', { count: 'exact', head: true })
+    .eq('enrollment_status', 'Enrolled');
+
+  // RPM active devices
+  const { count: activeDevices } = await sb
+    .from('ccm_devices')
+    .select('id', { count: 'exact', head: true })
+    .eq('device_status', 'Active');
+
+  return {
+    awv: {
+      completions: awvCompletionCount,
+      revenue: awvRevenue,
+      eligible: awvEligibleCount,
+      completionRate: totalPool > 0 ? awvCompletionCount / totalPool : 0,
+    },
+    ccm: { enrolled: enrolledCount ?? 0, revenue: ccmRevenue },
+    rpm: { activeDevices: activeDevices ?? 0, revenue: rpmRevenue },
+  };
+}
+
 // ─── Types ───────────────────────────────────────────────────────────
 
 interface InsightResponse {
@@ -108,11 +187,12 @@ export async function POST(request: Request) {
     const { start, end } = dateRange;
 
     // 4. Fetch data in parallel
-    const [kpi, providers, operational, payerMix] = await Promise.all([
+    const [kpi, providers, operational, payerMix, incomeStreams] = await Promise.all([
       fetchKpiSummary(start, end),
       fetchProviderProductivity(start, end),
       fetchOperationalSummary(start, end),
       fetchPayerMix(start, end),
+      fetchIncomeStreamSummary(supabase, start, end),
     ]);
 
     // 5. Build prompt
@@ -144,6 +224,14 @@ ${providers.map((p) => `- ${p.providerName} (${p.role.toUpperCase()}): ${p.visit
 ### Payer Mix (Top 8)
 ${payerMix.slice(0, 8).map((p) => `- ${p.payer}: $${p.charges.toLocaleString()} (${(p.percentage * 100).toFixed(1)}%)`).join('\n')}
 
+### Income Streams (AWV, CCM, RPM)
+- AWV Completions: ${incomeStreams.awv.completions} (${(incomeStreams.awv.completionRate * 100).toFixed(1)}% completion rate)
+- AWV Revenue: $${incomeStreams.awv.revenue.toLocaleString()}
+- AWV Eligible Remaining: ${incomeStreams.awv.eligible} patients
+- CCM Enrolled: ${incomeStreams.ccm.enrolled} patients, Revenue: $${incomeStreams.ccm.revenue.toLocaleString()}
+- RPM Active Devices: ${incomeStreams.rpm.activeDevices}, Revenue: $${incomeStreams.rpm.revenue.toLocaleString()}
+- Total Income Streams Revenue: $${(incomeStreams.awv.revenue + incomeStreams.ccm.revenue + incomeStreams.rpm.revenue).toLocaleString()}
+
 ### Industry Benchmarks
 - NP visits/day target: ${BENCHMARKS.visitsPerDay.np}
 - NP wRVU/month target: ${BENCHMARKS.wrvuPerMonth.np}
@@ -156,6 +244,8 @@ ${payerMix.slice(0, 8).map((p) => `- ${p.payer}: $${p.charges.toLocaleString()} 
     const systemPrompt = `You are a healthcare practice management analyst for HCI Medical Group, a trusted internal medicine and senior care practice in Pasadena, CA. You analyze practice performance data and generate concise, actionable insights for the medical director.
 
 Your analysis should be grounded in the data provided. Compare metrics against benchmarks and prior periods. Focus on what's most impactful for a small practice.
+
+The practice has multiple income streams: eCW office visits (charges/collections), Annual Wellness Visits (AWV), Chronic Care Management (CCM), and Remote Patient Monitoring (RPM). Analyze all streams together — identify which are growing, which have untapped potential, and how they contribute to total practice revenue.
 
 Respond with valid JSON matching this exact structure:
 {
