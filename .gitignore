@@ -21,6 +21,12 @@ docs/files/
 # Environment files (catch bare .env in addition to *.local)
 .env
 
+# Superpowers brainstorm session artifacts (mockups, state)
+.superpowers/
+
+# Claude Code plan files
+.claude/plans/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

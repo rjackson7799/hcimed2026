@@ -15,6 +15,7 @@ import { TRTForm } from "@/components/trt/TRTForm";
 import { pageSEO } from "@/config/seo";
 import { siteConfig } from "@/config/site";
 import { trtFaqs } from "@/data/trt-faqs";
+import trtHero from "@/assets/hero/trt-hero.png";
 
 const medicalBusinessSchema = {
   "@context": "https://schema.org",
@@ -116,25 +117,18 @@ export default function MensHealthTRT() {
       </Helmet>
 
       {/* Hero Section */}
-      <section className="hero-gradient relative overflow-hidden py-16 md:py-24">
-        <svg
-          className="absolute right-8 top-1/2 -translate-y-1/2 opacity-10 hidden md:block"
-          width="320"
-          height="320"
-          viewBox="0 0 320 320"
-          fill="none"
+      <section className="relative overflow-hidden py-16 md:py-24">
+        {/* Background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${trtHero})` }}
           aria-hidden="true"
-        >
-          <circle cx="160" cy="160" r="140" stroke="white" strokeWidth="2" opacity="0.4" />
-          <circle cx="160" cy="160" r="95" stroke="white" strokeWidth="1.5" opacity="0.25" />
-          {/* Abstract testosterone molecule hint */}
-          <circle cx="120" cy="130" r="20" stroke="white" strokeWidth="2" fill="none" opacity="0.4" />
-          <circle cx="180" cy="130" r="20" stroke="white" strokeWidth="2" fill="none" opacity="0.4" />
-          <circle cx="150" cy="180" r="20" stroke="white" strokeWidth="2" fill="none" opacity="0.4" />
-          <line x1="138" y1="138" x2="162" y2="138" stroke="white" strokeWidth="2" opacity="0.3" />
-          <line x1="132" y1="148" x2="142" y2="172" stroke="white" strokeWidth="2" opacity="0.3" />
-          <line x1="168" y1="148" x2="158" y2="172" stroke="white" strokeWidth="2" opacity="0.3" />
-        </svg>
+        />
+        {/* Gradient overlay \u2014 darker on left for text contrast */}
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-primary via-primary/90 to-primary/50"
+          aria-hidden="true"
+        />
 
         <div className="container relative z-10">
           <p className="text-sm text-primary-foreground/70 font-medium tracking-wide uppercase mb-3 animate-fade-in">
