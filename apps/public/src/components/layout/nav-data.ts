@@ -37,3 +37,13 @@ export const seniorCareLinks: NavLink[] = [
   { title: "Transition of Care", href: "/senior-care/transition-care", description: "Hospital discharge support", icon: Home },
   { title: "Remote Monitoring", href: "/senior-care/remote-monitoring", description: "Telehealth & remote patient monitoring", icon: Smartphone },
 ];
+
+export interface NavGroup {
+  label: string;
+  links: NavLink[];
+}
+
+export const programsGroups: NavGroup[] = [
+  { label: "Specialty Programs", links: programsLinks },
+  { label: "Senior Care+", links: seniorCareLinks },
+];

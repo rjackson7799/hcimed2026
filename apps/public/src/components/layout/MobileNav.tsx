@@ -4,7 +4,7 @@ import { Phone, Mail, ChevronDown } from "lucide-react";
 import { Button } from "@hci/shared/ui/button";
 import { cn } from "@hci/shared/lib/utils";
 import { siteConfig } from "@/config/site";
-import { aboutUsLinks, internalMedicineLinks, seniorCareLinks, programsLinks } from "./nav-data";
+import { aboutUsLinks, internalMedicineLinks, programsGroups } from "./nav-data";
 
 interface MobileNavProps {
   onClose: () => void;
@@ -13,7 +13,6 @@ interface MobileNavProps {
 export function MobileNav({ onClose }: MobileNavProps) {
   const [aboutUsOpen, setAboutUsOpen] = useState(false);
   const [internalMedicineOpen, setInternalMedicineOpen] = useState(false);
-  const [seniorCareOpen, setSeniorCareOpen] = useState(false);
   const [programsOpen, setProgramsOpen] = useState(false);
 
   return (
@@ -112,43 +111,6 @@ export function MobileNav({ onClose }: MobileNavProps) {
 
           <div className="space-y-1">
             <button
-              onClick={() => setSeniorCareOpen(!seniorCareOpen)}
-              className="flex items-center justify-between w-full py-3 px-2 font-medium text-foreground hover:bg-accent/50 rounded-md transition-colors touch-target"
-              aria-expanded={seniorCareOpen}
-            >
-              <span>Senior Care</span>
-              <ChevronDown
-                className={cn(
-                  "h-4 w-4 transition-transform duration-200",
-                  seniorCareOpen && "rotate-180"
-                )}
-                aria-hidden="true"
-              />
-            </button>
-            <div
-              className={cn(
-                "pl-4 space-y-1 overflow-hidden transition-all duration-200",
-                seniorCareOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-              )}
-            >
-              {seniorCareLinks.map((link) => {
-                const IconComponent = link.icon;
-                return (
-                  <Link
-                    key={link.href}
-                    to={link.href}
-                    className="flex items-center gap-3 py-3 px-2 text-muted-foreground hover:text-secondary hover:bg-accent/50 rounded-md transition-colors touch-target"
-                  >
-                    <IconComponent className="h-5 w-5 text-secondary/70" aria-hidden="true" />
-                    <span>{link.title}</span>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <button
               onClick={() => setProgramsOpen(!programsOpen)}
               className="flex items-center justify-between w-full py-3 px-2 font-medium text-foreground hover:bg-accent/50 rounded-md transition-colors touch-target"
               aria-expanded={programsOpen}
@@ -164,23 +126,30 @@ export function MobileNav({ onClose }: MobileNavProps) {
             </button>
             <div
               className={cn(
-                "pl-4 space-y-1 overflow-hidden transition-all duration-200",
-                programsOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+                "pl-4 space-y-3 overflow-hidden transition-all duration-200",
+                programsOpen ? "max-h-[900px] opacity-100 pt-1" : "max-h-0 opacity-0"
               )}
             >
-              {programsLinks.map((link) => {
-                const IconComponent = link.icon;
-                return (
-                  <Link
-                    key={link.href}
-                    to={link.href}
-                    className="flex items-center gap-3 py-3 px-2 text-muted-foreground hover:text-secondary hover:bg-accent/50 rounded-md transition-colors touch-target"
-                  >
-                    <IconComponent className="h-5 w-5 text-secondary/70" aria-hidden="true" />
-                    <span>{link.title}</span>
-                  </Link>
-                );
-              })}
+              {programsGroups.map((group) => (
+                <div key={group.label} className="space-y-1">
+                  <p className="text-xs font-semibold text-secondary uppercase tracking-widest px-2 pt-1">
+                    {group.label}
+                  </p>
+                  {group.links.map((link) => {
+                    const IconComponent = link.icon;
+                    return (
+                      <Link
+                        key={link.href}
+                        to={link.href}
+                        className="flex items-center gap-3 py-3 px-2 text-muted-foreground hover:text-secondary hover:bg-accent/50 rounded-md transition-colors touch-target"
+                      >
+                        <IconComponent className="h-5 w-5 text-secondary/70" aria-hidden="true" />
+                        <span>{link.title}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
           </div>
 
