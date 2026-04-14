@@ -4,13 +4,16 @@ import { SEO } from "@/components/SEO";
 import { pageSEO } from "@/config/seo";
 import { PageHero } from "@/components/PageHero";
 import { ArrowRight } from "lucide-react";
+import drJacksonPhoto from "@/assets/providers/dr-jackson.jpg";
+import appleEvangelistaPhoto from "@/assets/providers/apple-evangelista.jpg";
+import marilethTanPhoto from "@/assets/providers/marileth-tan.jpg";
 
 const providers = [
   {
     name: "Dr. Roy H. Jackson, M.D.",
     title: "Medical Director",
     credentials: "Board Certified Internal Medicine & Geriatric Care Specialist",
-    initials: "RJ",
+    photo: drJacksonPhoto,
     summary:
       "Leading HCI Medical Group since 1978, Dr. Jackson brings over four decades of dedicated expertise in internal medicine and geriatric care to the Pasadena community.",
     href: "/providers/dr-jackson",
@@ -19,7 +22,7 @@ const providers = [
     name: 'Evelinda "Apple" Evangelista, MSN, APRN, AGACNP-BC, CCRN',
     title: "Nurse Practitioner & Medical Aesthetics Specialist",
     credentials: "Board Certified Adult-Gerontology Acute Care Nurse Practitioner",
-    initials: "AE",
+    photo: appleEvangelistaPhoto,
     summary:
       "Combining over a decade of critical care expertise with specialized training in advanced medical aesthetics, Ms. Evangelista delivers comprehensive care that bridges traditional healthcare with modern wellness treatments.",
     href: "/providers/apple-evangelista",
@@ -28,7 +31,7 @@ const providers = [
     name: 'Marileth "Bap" Tan, MSN, FNP-C, CCRN',
     title: "Family Nurse Practitioner",
     credentials: "Board Certified Family Nurse Practitioner",
-    initials: "MT",
+    photo: marilethTanPhoto,
     summary:
       "With over 17 years of clinical experience spanning critical care, primary care, and emergency medicine, Ms. Tan delivers comprehensive, evidence-based care across the lifespan.",
     href: "/providers/marileth-tan",
@@ -54,11 +57,12 @@ export default function Providers() {
                 className="group bg-card rounded-xl p-8 card-shadow hover:shadow-lg transition-shadow"
               >
                 <div className="flex justify-center mb-6">
-                  <div className="w-28 h-28 rounded-full bg-gradient-to-br from-[hsl(207,44%,24%)] to-[hsl(199,75%,42%)] flex items-center justify-center ring-4 ring-background shadow-md">
-                    <span className="font-display text-2xl font-semibold text-white">
-                      {provider.initials}
-                    </span>
-                  </div>
+                  <img
+                    src={provider.photo}
+                    alt={provider.name}
+                    loading="lazy"
+                    className="w-28 h-28 rounded-full object-cover ring-4 ring-background shadow-md"
+                  />
                 </div>
                 <div className="mb-6 pb-6 border-b border-border">
                   <h2 className="font-display text-xl font-semibold mb-2 group-hover:text-primary transition-colors">

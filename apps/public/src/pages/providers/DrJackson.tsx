@@ -7,6 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import { FocusAreaTags } from "@/components/providers/FocusAreaTags";
 import { ProviderCredentials } from "@/components/providers/ProviderCredentials";
 import { siteConfig } from "@/config/site";
+import drJacksonPhoto from "@/assets/providers/dr-jackson.jpg";
 
 const focusAreas = ['Medicare Wellness', 'Diabetes Management', 'Hypertension', 'Preventive Care', 'Senior Health'];
 
@@ -57,11 +58,11 @@ export default function DrJackson() {
             <div className="bg-card rounded-2xl p-8 md:p-12 card-shadow">
               <div className="text-center mb-8 pb-8 border-b border-border">
                 <div className="flex justify-center mb-6">
-                  <div className="w-36 h-36 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-[hsl(207,44%,24%)] to-[hsl(199,75%,42%)] flex items-center justify-center ring-4 ring-background shadow-lg">
-                    <span className="font-display text-4xl md:text-5xl font-semibold text-white">
-                      RJ
-                    </span>
-                  </div>
+                  <img
+                    src={drJacksonPhoto}
+                    alt="Dr. Roy H. Jackson, M.D."
+                    className="w-36 h-36 md:w-40 md:h-40 rounded-full object-cover ring-4 ring-background shadow-lg"
+                  />
                 </div>
                 <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">
                   Dr. Roy H. Jackson, M.D.
