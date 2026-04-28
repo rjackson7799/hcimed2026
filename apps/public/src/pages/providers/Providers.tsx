@@ -4,39 +4,7 @@ import { SEO } from "@/components/SEO";
 import { pageSEO } from "@/config/seo";
 import { PageHero } from "@/components/PageHero";
 import { ArrowRight } from "lucide-react";
-import drJacksonPhoto from "@/assets/providers/dr-jackson.jpg";
-import appleEvangelistaPhoto from "@/assets/providers/apple-evangelista.jpg";
-import marilethTanPhoto from "@/assets/providers/marileth-tan.jpg";
-
-const providers = [
-  {
-    name: "Dr. Roy H. Jackson, M.D.",
-    title: "Medical Director",
-    credentials: "Board Certified Internal Medicine & Geriatric Care Specialist",
-    photo: drJacksonPhoto,
-    summary:
-      "Leading HCI Medical Group since 1978, Dr. Jackson brings over four decades of dedicated expertise in internal medicine and geriatric care to the Pasadena community.",
-    href: "/providers/dr-jackson",
-  },
-  {
-    name: 'Evelinda "Apple" Evangelista, MSN, APRN, AGACNP-BC, CCRN',
-    title: "Nurse Practitioner & Medical Aesthetics Specialist",
-    credentials: "Board Certified Adult-Gerontology Acute Care Nurse Practitioner",
-    photo: appleEvangelistaPhoto,
-    summary:
-      "Combining over a decade of critical care expertise with specialized training in advanced medical aesthetics, Ms. Evangelista delivers comprehensive care that bridges traditional healthcare with modern wellness treatments.",
-    href: "/providers/apple-evangelista",
-  },
-  {
-    name: 'Marileth "Bap" Tan, MSN, FNP-C, CCRN',
-    title: "Family Nurse Practitioner",
-    credentials: "Board Certified Family Nurse Practitioner",
-    photo: marilethTanPhoto,
-    summary:
-      "With over 17 years of clinical experience spanning critical care, primary care, and emergency medicine, Ms. Tan delivers comprehensive, evidence-based care across the lifespan.",
-    href: "/providers/marileth-tan",
-  },
-];
+import { providers } from "@/data/providers";
 
 export default function Providers() {
   return (
@@ -44,46 +12,90 @@ export default function Providers() {
       <SEO {...pageSEO.providers} />
       <PageHero
         title="Our Providers"
-        subtitle="Meet the experienced team behind your care"
+        subtitle="Meet the experienced, compassionate team dedicated to your health at every stage of life."
       />
 
       <section className="py-16 md:py-24">
         <div className="container">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="max-w-5xl mx-auto space-y-10">
             {providers.map((provider) => (
-              <Link
+              <article
                 key={provider.href}
-                to={provider.href}
-                className="group bg-card rounded-xl p-8 card-shadow hover:shadow-lg transition-shadow"
+                className="grid md:grid-cols-[340px_1fr] bg-card rounded-xl overflow-hidden border border-border card-shadow hover:shadow-[var(--card-shadow-hover)] transition-shadow"
               >
-                <div className="flex justify-center mb-6">
+                <div className="relative bg-muted aspect-[4/5] md:aspect-auto md:min-h-[440px]">
                   <img
                     src={provider.photo}
                     alt={provider.name}
                     loading="lazy"
-                    className="w-28 h-28 rounded-full object-cover ring-4 ring-background shadow-md"
+                    className="absolute inset-0 w-full h-full object-cover object-[center_top]"
                   />
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-primary/90 to-transparent pt-10 pb-4 px-5">
+                    <span className="inline-block bg-secondary text-secondary-foreground text-[10px] font-bold tracking-[0.15em] uppercase px-3 py-1 rounded-sm">
+                      {provider.roleBadge}
+                    </span>
+                  </div>
                 </div>
-                <div className="mb-6 pb-6 border-b border-border">
-                  <h2 className="font-display text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
+
+                <div className="p-8 md:p-10 flex flex-col">
+                  <h2 className="font-display text-xl md:text-2xl font-bold text-primary leading-tight mb-1">
                     {provider.name}
                   </h2>
-                  <p className="text-secondary font-medium text-sm mb-1">
+                  <p className="text-secondary text-sm font-bold mb-1">
                     {provider.title}
                   </p>
-                  <p className="text-muted-foreground text-sm">
-                    {provider.credentials}
+                  <p className="text-muted-foreground text-sm mb-5">
+                    {provider.credentialsLine}
                   </p>
+                  <hr className="border-t border-border mb-5" />
+                  <p className="text-foreground/80 leading-relaxed mb-6 flex-1">
+                    {provider.shortBio}
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {provider.specialties.map((specialty) => (
+                      <span
+                        key={specialty}
+                        className="bg-muted border border-border text-primary text-xs font-semibold px-3 py-1 rounded-full"
+                      >
+                        {specialty}
+                      </span>
+                    ))}
+                  </div>
+                  <Link
+                    to={provider.href}
+                    className="group inline-flex items-center gap-1.5 text-secondary font-semibold text-sm hover:gap-2 transition-all w-fit"
+                  >
+                    View Full Profile
+                    <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                  </Link>
                 </div>
-                <p className="text-muted-foreground leading-relaxed mb-6">
-                  {provider.summary}
-                </p>
-                <span className="inline-flex items-center text-sm font-medium text-primary group-hover:underline">
-                  View Profile
-                  <ArrowRight className="ml-1 h-4 w-4" />
-                </span>
-              </Link>
+              </article>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-muted/50 border-t border-border py-14">
+        <div className="container max-w-2xl text-center">
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-primary mb-3">
+            Ready to Meet Your Care Team?
+          </h2>
+          <p className="text-muted-foreground mb-6">
+            Whether you're a new patient or returning for ongoing care, we're here to help you take the next step toward better health.
+          </p>
+          <div className="flex flex-wrap gap-3 justify-center">
+            <Link
+              to="/appointments"
+              className="bg-secondary text-secondary-foreground font-semibold px-6 py-3 rounded-md hover:bg-secondary/90 transition-colors"
+            >
+              Request an Appointment
+            </Link>
+            <a
+              href="tel:6267924185"
+              className="border-2 border-primary text-primary font-semibold px-6 py-3 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors"
+            >
+              (626) 792-4185
+            </a>
           </div>
         </div>
       </section>
