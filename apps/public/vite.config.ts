@@ -74,6 +74,7 @@ export default defineConfig({
         "/senior-care/remote-monitoring",
         "/programs/medical-weight-loss",
         "/programs/mens-health-trt",
+        "/programs/weight-loss-trt",
         "/blog",
         ...getBlogSlugs(),
         "/newsletters",

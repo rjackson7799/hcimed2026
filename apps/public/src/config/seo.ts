@@ -171,6 +171,13 @@ export const pageSEO: Record<string, PageSEO> = {
     canonical: `${siteConfig.url}/programs/mens-health-trt`,
   },
 
+  weightLossTrt: {
+    title: "Medical Weight Loss & TRT Programs | Friends & Family 15% Off",
+    description:
+      "Physician-led Medical Weight Loss and Testosterone Replacement Therapy programs at HCI Medical Group in Pasadena. Save 15% with our Friends & Family program — for HCI patients and their loved ones. New patients register by May 31, 2026.",
+    canonical: `${siteConfig.url}/programs/weight-loss-trt`,
+  },
+
   // Blog pages
   blog: {
     title: 'Health Resources & Blog',

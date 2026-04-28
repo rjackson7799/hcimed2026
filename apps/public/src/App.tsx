@@ -40,6 +40,7 @@ const MarilethTan = lazyWithRetry(() => import("./pages/providers/MarilethTan"))
 // Program Pages
 const MedicalWeightLoss = lazyWithRetry(() => import("./pages/programs/MedicalWeightLoss"));
 const MensHealthTRT = lazyWithRetry(() => import("./pages/programs/MensHealthTRT"));
+const WeightLossTrt = lazyWithRetry(() => import("./pages/programs/WeightLossTrt"));
 
 // Other Pages
 const Careers = lazyWithRetry(() => import("./pages/Careers"));
@@ -109,6 +110,7 @@ const App = () => (
               {/* Programs */}
               <Route path="/programs/medical-weight-loss" element={<MedicalWeightLoss />} />
               <Route path="/programs/mens-health-trt" element={<MensHealthTRT />} />
+              <Route path="/programs/weight-loss-trt" element={<WeightLossTrt />} />
 
               {/* Careers */}
               <Route path="/careers" element={<Careers />} />
