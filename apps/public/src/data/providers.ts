@@ -103,7 +103,7 @@ export const providers: Provider[] = [
     ],
     quote:
       "I believe in treating the whole person, not just symptoms. My goal is to help every patient feel empowered and informed about their health journey.",
-    specialties: ["Acute Care", "Medical Aesthetics", "Women's Health", "Wellness", "Skin Treatments"],
+    specialties: ["Adult-Gerontology", "Primary Care", "Acute Care", "Women's Health", "Medical Aesthetics"],
     services: [
       "Preventive & Primary Care",
       "Neuromodulators (Botox / Dysport)",

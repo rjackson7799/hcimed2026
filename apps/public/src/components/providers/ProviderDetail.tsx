@@ -53,12 +53,12 @@ export function ProviderDetail({ provider, otherProviders }: ProviderDetailProps
             <div className="pb-10 md:pb-12 order-2 md:order-1">
               <Link
                 to="/providers"
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-foreground/60 hover:text-primary-foreground/90 transition-colors mb-6"
+                className="flex w-fit items-center gap-1.5 text-sm font-semibold text-primary-foreground/60 hover:text-primary-foreground/90 transition-colors mb-6"
               >
                 <ArrowLeft className="h-4 w-4" />
                 All Providers
               </Link>
-              <span className="inline-block bg-secondary text-secondary-foreground text-[10px] font-bold tracking-[0.2em] uppercase px-3 py-1 rounded-sm mb-4">
+              <span className="block w-fit bg-secondary text-secondary-foreground text-[10px] font-bold tracking-[0.2em] uppercase px-3 py-1 rounded-sm mb-4">
                 {provider.roleBadge}
               </span>
               <h1 className="font-display text-3xl md:text-4xl font-bold leading-tight mb-3">
