@@ -2,15 +2,19 @@ import { useState } from 'react';
 import { CheckCircle, Loader2, Mail } from 'lucide-react';
 import { Button } from '@hci/shared/ui/button';
 import { cn } from '@hci/shared/lib/utils';
+import { useUtmCapture } from '@/hooks/useUtmCapture';
 
 interface NewsletterSignupProps {
   variant: 'inline' | 'section' | 'compact';
+  /** Optional human label for where the signup occurred (e.g. "footer", "blog-post"). Defaults to the variant. */
+  source?: string;
 }
 
-export function NewsletterSignup({ variant }: NewsletterSignupProps) {
+export function NewsletterSignup({ variant, source }: NewsletterSignupProps) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const utm = useUtmCapture();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -23,7 +27,13 @@ export function NewsletterSignup({ variant }: NewsletterSignupProps) {
       const res = await fetch('/api/newsletter-subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({
+          email: email.trim(),
+          source: source ?? variant,
+          utm_source: utm?.utmSource,
+          utm_medium: utm?.utmMedium,
+          utm_campaign: utm?.utmCampaign,
+        }),
       });
 
       const data = await res.json();

@@ -22,6 +22,7 @@ import {
 import { toast } from "sonner";
 import { Loader2, CheckCircle, Check } from "lucide-react";
 import { cn } from "@hci/shared/lib/utils";
+import { useUtmCapture } from "@/hooks/useUtmCapture";
 import {
   programsInquirySchema,
   type ProgramsInquiryFormData,
@@ -58,6 +59,7 @@ export function ProgramsInquiryForm({
 }: ProgramsInquiryFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const utm = useUtmCapture();
 
   const form = useForm<ProgramsInquiryFormData>({
     resolver: zodResolver(programsInquirySchema),
@@ -74,6 +76,7 @@ export function ProgramsInquiryForm({
       programInterest: undefined as unknown as ProgramsInquiryFormData["programInterest"],
       intent: [],
       message: "",
+      subscribeToUpdates: true,
       website: "",
     },
   });
@@ -97,7 +100,13 @@ export function ProgramsInquiryForm({
       const response = await fetch("/api/programs-inquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          utmSource: utm?.utmSource,
+          utmMedium: utm?.utmMedium,
+          utmCampaign: utm?.utmCampaign,
+          utmContent: utm?.utmContent,
+        }),
       });
 
       if (!response.ok) {
@@ -508,6 +517,49 @@ export function ProgramsInquiryForm({
                 <FormMessage />
               </FormItem>
             )}
+          />
+
+          <FormField
+            control={form.control}
+            name="subscribeToUpdates"
+            render={({ field }) => {
+              const checked = field.value !== false;
+              return (
+                <FormItem>
+                  <label
+                    className={cn(
+                      "flex items-start gap-3 p-3 rounded-md border-2 cursor-pointer transition-all",
+                      checked
+                        ? "border-secondary bg-secondary/5"
+                        : "border-border bg-card hover:border-secondary/50",
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "mt-0.5 h-5 w-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors",
+                        checked
+                          ? "bg-secondary border-secondary"
+                          : "bg-card border-border",
+                      )}
+                    >
+                      {checked && (
+                        <Check className="h-3.5 w-3.5 text-secondary-foreground" />
+                      )}
+                    </span>
+                    <input
+                      type="checkbox"
+                      className="sr-only"
+                      checked={checked}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                    />
+                    <span className="text-sm text-foreground leading-snug">
+                      Also subscribe me to HCI Medical Group updates &mdash; programs,
+                      health tips, and special offers. You can unsubscribe anytime.
+                    </span>
+                  </label>
+                </FormItem>
+              );
+            }}
           />
 
           <Button

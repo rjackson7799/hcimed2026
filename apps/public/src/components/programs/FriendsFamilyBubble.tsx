@@ -22,7 +22,10 @@ export function FriendsFamilyBubble({ onClick }: FriendsFamilyBubbleProps) {
       onClick={onClick}
       aria-label="Open Friends & Family discount details"
       className={cn(
-        "fixed z-40 bottom-5 right-5 md:bottom-6 md:right-6",
+        // Stacked above the AccessibilityControls floater (which sits at
+        // bottom-24 / lg:bottom-6, right-6, h-14 w-14). We sit on the same
+        // right edge but offset upward so the two never overlap.
+        "fixed z-40 bottom-44 lg:bottom-24 right-6",
         "flex items-center gap-2 pl-3 pr-4 py-2.5",
         "rounded-full bg-secondary text-secondary-foreground",
         "shadow-lg hover:shadow-xl",

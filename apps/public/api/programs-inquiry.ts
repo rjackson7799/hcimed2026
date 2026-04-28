@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { subscribe as beehiivSubscribe } from "./_lib/beehiiv";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -56,6 +57,11 @@ interface ProgramsInquiryPayload {
   programInterest: ProgramInterest;
   intent: Intent[];
   message?: string;
+  subscribeToUpdates?: boolean;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  utmContent?: string;
   website?: string; // honeypot
 }
 
@@ -168,6 +174,20 @@ function generateStaffEmailHtml(data: ProgramsInquiryPayload): string {
         <div class="section-title">Message from Lead</div>
         <div class="notes-text">${escapeHtml(data.message)}</div>
       </div>` : ""}
+      ${(data.utmSource || data.utmMedium || data.utmCampaign || data.utmContent) ? `
+      <div class="section">
+        <div class="section-title">Source</div>
+        ${data.utmSource ? `<div class="field"><span class="label">utm_source:</span><span class="value">${escapeHtml(data.utmSource)}</span></div>` : ""}
+        ${data.utmMedium ? `<div class="field"><span class="label">utm_medium:</span><span class="value">${escapeHtml(data.utmMedium)}</span></div>` : ""}
+        ${data.utmCampaign ? `<div class="field"><span class="label">utm_campaign:</span><span class="value">${escapeHtml(data.utmCampaign)}</span></div>` : ""}
+        ${data.utmContent ? `<div class="field"><span class="label">utm_content:</span><span class="value">${escapeHtml(data.utmContent)}</span></div>` : ""}
+        <div class="field"><span class="label">Newsletter opt-in:</span><span class="value">${data.subscribeToUpdates ? "Yes" : "No"}</span></div>
+      </div>` : `
+      <div class="section">
+        <div class="section-title">Source</div>
+        <div class="field"><span class="label">utm:</span><span class="value">(none — direct or organic)</span></div>
+        <div class="field"><span class="label">Newsletter opt-in:</span><span class="value">${data.subscribeToUpdates ? "Yes" : "No"}</span></div>
+      </div>`}
     </div>
     <div class="footer">
       <p>Submitted through the New Programs campaign page on hcimed.com</p>
@@ -332,6 +352,36 @@ export async function POST(request: Request) {
       });
     } catch (confirmError) {
       console.error("Failed to send programs inquiry confirmation email:", confirmError);
+    }
+
+    // Newsletter opt-in (non-blocking — must never fail the inquiry submission)
+    if (data.subscribeToUpdates) {
+      try {
+        const patientStatusValue =
+          data.patientStatus === "existing" ? "current" : "prospect";
+        await beehiivSubscribe({
+          email: data.email.trim().toLowerCase(),
+          tags: ["topic_programs", "lead_programs_page"],
+          customFields: [
+            { name: "First Name", value: data.firstName },
+            { name: "Last Name", value: data.lastName },
+            { name: "patient_status", value: patientStatusValue },
+            { name: "topic_programs", value: "yes" },
+            { name: "topic_health_tips", value: "yes" },
+            { name: "topic_practice_updates", value: "yes" },
+            { name: "topic_ff_promos", value: "yes" },
+            { name: "signup_source", value: "programs-inquiry-form" },
+          ],
+          utmSource: data.utmSource,
+          utmMedium: data.utmMedium,
+          utmCampaign: data.utmCampaign,
+          referringSite: "hcimed.com",
+          reactivateExisting: true,
+          sendWelcomeEmail: false,
+        });
+      } catch (subscribeError) {
+        console.error("Beehiiv subscribe (programs-inquiry opt-in) failed:", subscribeError);
+      }
     }
 
     return new Response(JSON.stringify({ success: true }), {

@@ -78,6 +78,11 @@ export const programsInquirySchema = z
       .string()
       .max(500, "Message must be 500 characters or less")
       .optional(),
+    subscribeToUpdates: z.boolean().optional().default(false),
+    utmSource: z.string().max(120).optional(),
+    utmMedium: z.string().max(120).optional(),
+    utmCampaign: z.string().max(120).optional(),
+    utmContent: z.string().max(120).optional(),
     // Honeypot field — must be empty
     website: z.string().max(0).optional(),
   })

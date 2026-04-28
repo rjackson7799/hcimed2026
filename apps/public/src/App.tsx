@@ -54,6 +54,8 @@ const BlogPost = lazyWithRetry(() => import("./pages/BlogPost"));
 // Newsletter Pages
 const Newsletters = lazyWithRetry(() => import("./pages/Newsletters"));
 const NewsletterIssue = lazyWithRetry(() => import("./pages/NewsletterIssue"));
+const Preferences = lazyWithRetry(() => import("./pages/Preferences"));
+const Unsubscribe = lazyWithRetry(() => import("./pages/Unsubscribe"));
 
 // Area Pages
 const AreaPage = lazyWithRetry(() => import("./pages/AreaPage"));
@@ -128,6 +130,8 @@ const App = () => (
               {/* Newsletters */}
               <Route path="/newsletters" element={<Newsletters />} />
               <Route path="/newsletters/:slug" element={<NewsletterIssue />} />
+              <Route path="/preferences" element={<Preferences />} />
+              <Route path="/unsubscribe" element={<Unsubscribe />} />
 
               {/* Resources & Topics */}
               <Route path="/resources" element={<Resources />} />
