@@ -1,5 +1,4 @@
 import { Resend } from "resend";
-import { generateAppointmentConfirmationEmail } from '../lib/email-templates.js';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -20,7 +19,18 @@ function checkRateLimit(ip: string): boolean {
   return true;
 }
 
-const APPOINTMENT_RECIPIENTS = (process.env.EMAIL_RECIPIENTS_APPOINTMENTS || 'care@hcimed.com').split(',').map(e => e.trim());
+const REQUIRED_APPOINTMENT_RECIPIENTS = ["care@hcimed.com", "admin@hcimed.com"];
+const APPOINTMENT_RECIPIENTS = Array.from(
+  new Set(
+    [
+      ...(process.env.EMAIL_RECIPIENTS_APPOINTMENTS || "")
+        .split(",")
+        .map((email) => email.trim().toLowerCase())
+        .filter(Boolean),
+      ...REQUIRED_APPOINTMENT_RECIPIENTS,
+    ],
+  ),
+);
 
 interface AppointmentPayload {
   patientType: "new" | "existing";
@@ -332,6 +342,60 @@ function generateEmailHtml(data: AppointmentPayload): string {
   `;
 }
 
+function generateAppointmentConfirmationEmail(data: {
+  firstName: string;
+  preferredDate: string;
+  preferredTime: string;
+  reasonForVisit: string;
+}): string {
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #f5f5f5; }
+    .container { max-width: 600px; margin: 0 auto; background: #fff; }
+    .header { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); color: white; padding: 30px 20px; text-align: center; }
+    .header h1 { margin: 0 0 8px; font-size: 22px; }
+    .header p { margin: 0; opacity: 0.9; font-size: 14px; }
+    .content { padding: 30px 20px; }
+    .content h2 { color: #1e3a5f; font-size: 20px; margin: 0 0 16px; }
+    .content p { color: #4b5563; font-size: 15px; margin: 0 0 14px; }
+    .summary { background: #f9fafb; border-left: 4px solid #2d8bc9; border-radius: 0 8px 8px 0; padding: 18px; margin: 24px 0; }
+    .summary p { margin: 8px 0; font-size: 14px; }
+    .footer { padding: 20px; background: #f3f4f6; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>HCI Medical Group</h1>
+      <p>Appointment Request</p>
+    </div>
+    <div class="content">
+      <h2>Appointment Request Received</h2>
+      <p>Dear ${escapeHtml(data.firstName)},</p>
+      <p>Thank you for requesting an appointment with HCI Medical Group. We received your request and our scheduling team will contact you within <strong>1-2 business days</strong> to confirm your appointment.</p>
+      <div class="summary">
+        <p><strong>Preferred Date:</strong> ${escapeHtml(data.preferredDate)}</p>
+        <p><strong>Time Preference:</strong> ${escapeHtml(data.preferredTime)}</p>
+        <p><strong>Reason for Visit:</strong> ${escapeHtml(data.reasonForVisit)}</p>
+      </div>
+      <p>Please note that this is a request, not a confirmed appointment. Our team will reach out to finalize the date and time.</p>
+      <p>If your matter is urgent, please call us directly at <a href="tel:6267924185" style="color:#2d8bc9;font-weight:600;">(626) 792-4185</a> during office hours.</p>
+      <p style="margin-top:20px;">Warm regards,<br><strong>HCI Medical Group</strong></p>
+    </div>
+    <div class="footer">
+      <p>HCI Medical Group | 65 N. Madison Ave. #709, Pasadena, CA 91101</p>
+      <p>(626) 792-4185 | <a href="https://hcimed.com" style="color:#2d8bc9;">hcimed.com</a></p>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
 export async function POST(request: Request) {
   try {
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
@@ -363,42 +427,43 @@ export async function POST(request: Request) {
     const isNewPatient = data.patientType === "new";
     const patientTypeLabel = isNewPatient ? "New Patient" : "Existing Patient";
 
-    const { error } = await resend.emails.send({
+    const staffEmail = await resend.emails.send({
       from: "HCI Appointments <noreply@hcimed.com>",
       to: APPOINTMENT_RECIPIENTS,
-      cc: ['admin@hcimed.com'],
       replyTo: data.email,
       subject: `Appointment Request - ${patientTypeLabel} - ${data.firstName} ${data.lastName}`,
       html: generateEmailHtml(data),
     });
 
-    if (error) {
-      console.error("Resend error:", error);
+    if (staffEmail.error) {
+      console.error("Resend staff notification error:", staffEmail.error);
       return new Response(
         JSON.stringify({ error: "Failed to send appointment request" }),
         { status: 500, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    // Send confirmation email to patient (non-blocking)
-    try {
-      await resend.emails.send({
-        from: 'HCI Medical Group <noreply@hcimed.com>',
-        to: [data.email],
-        subject: 'Appointment Request Received - HCI Medical Group',
-        html: generateAppointmentConfirmationEmail({
-          firstName: data.firstName,
-          preferredDate: formatDate(data.preferredDate),
-          preferredTime: TIME_PREFERENCE_LABELS[data.preferredTime] || data.preferredTime,
-          reasonForVisit: VISIT_REASON_LABELS[data.reasonForVisit] || data.reasonForVisit,
-        }),
-      });
-    } catch (confirmError) {
-      console.error('Failed to send appointment confirmation email:', confirmError);
-      // Don't fail the request - staff notification was successful
+    const patientEmail = await resend.emails.send({
+      from: 'HCI Medical Group <noreply@hcimed.com>',
+      to: [data.email],
+      subject: 'Appointment Request Received - HCI Medical Group',
+      html: generateAppointmentConfirmationEmail({
+        firstName: data.firstName,
+        preferredDate: formatDate(data.preferredDate),
+        preferredTime: TIME_PREFERENCE_LABELS[data.preferredTime] || data.preferredTime,
+        reasonForVisit: VISIT_REASON_LABELS[data.reasonForVisit] || data.reasonForVisit,
+      }),
+    });
+
+    if (patientEmail.error) {
+      console.error('Resend patient confirmation error:', patientEmail.error);
+      return new Response(
+        JSON.stringify({ error: "Failed to send appointment confirmation" }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
     }
 
-    return new Response(JSON.stringify({ success: true }), {
+    return new Response(JSON.stringify({ success: true, staffEmailId: staffEmail.data?.id, patientEmailId: patientEmail.data?.id }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
