@@ -354,44 +354,46 @@ function generateAppointmentConfirmationEmail(data: {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #f5f5f5; }
-    .container { max-width: 600px; margin: 0 auto; background: #fff; }
-    .header { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); color: white; padding: 30px 20px; text-align: center; }
-    .header h1 { margin: 0 0 8px; font-size: 22px; }
-    .header p { margin: 0; opacity: 0.9; font-size: 14px; }
-    .content { padding: 30px 20px; }
-    .content h2 { color: #1e3a5f; font-size: 20px; margin: 0 0 16px; }
-    .content p { color: #4b5563; font-size: 15px; margin: 0 0 14px; }
-    .summary { background: #f9fafb; border-left: 4px solid #2d8bc9; border-radius: 0 8px 8px 0; padding: 18px; margin: 24px 0; }
-    .summary p { margin: 8px 0; font-size: 14px; }
-    .footer { padding: 20px; background: #f3f4f6; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280; text-align: center; }
-  </style>
 </head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>HCI Medical Group</h1>
-      <p>Appointment Request</p>
-    </div>
-    <div class="content">
-      <h2>Appointment Request Received</h2>
-      <p>Dear ${escapeHtml(data.firstName)},</p>
-      <p>Thank you for requesting an appointment with HCI Medical Group. We received your request and our scheduling team will contact you within <strong>1-2 business days</strong> to confirm your appointment.</p>
-      <div class="summary">
-        <p><strong>Preferred Date:</strong> ${escapeHtml(data.preferredDate)}</p>
-        <p><strong>Time Preference:</strong> ${escapeHtml(data.preferredTime)}</p>
-        <p><strong>Reason for Visit:</strong> ${escapeHtml(data.reasonForVisit)}</p>
-      </div>
-      <p>Please note that this is a request, not a confirmed appointment. Our team will reach out to finalize the date and time.</p>
-      <p>If your matter is urgent, please call us directly at <a href="tel:6267924185" style="color:#2d8bc9;font-weight:600;">(626) 792-4185</a> during office hours.</p>
-      <p style="margin-top:20px;">Warm regards,<br><strong>HCI Medical Group</strong></p>
-    </div>
-    <div class="footer">
-      <p>HCI Medical Group | 65 N. Madison Ave. #709, Pasadena, CA 91101</p>
-      <p>(626) 792-4185 | <a href="https://hcimed.com" style="color:#2d8bc9;">hcimed.com</a></p>
-    </div>
-  </div>
+<body style="margin:0; padding:0; background:#f5f7fa; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color:#4b5563;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f5f7fa; margin:0; padding:0;">
+    <tr>
+      <td align="center" style="padding:12px 12px 20px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="width:100%; max-width:600px; background:#ffffff; border:1px solid #e5e7eb;">
+          <tr>
+            <td align="center" style="padding:16px 24px 10px; border-bottom:1px solid #e5e7eb;">
+              <img src="https://hcimed.com/email/hci-logo.png" alt="HCI Medical Group" width="220" style="display:block; width:220px; max-width:80%; height:auto; border:0; margin:0 auto;">
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:22px 30px 26px;">
+              <h1 style="color:#1e3a5f; font-size:22px; line-height:1.25; margin:0 0 16px; font-weight:700;">Appointment Request Received</h1>
+              <p style="font-size:16px; line-height:1.6; margin:0 0 14px;">Dear ${escapeHtml(data.firstName)},</p>
+              <p style="font-size:16px; line-height:1.6; margin:0 0 18px;">Thank you for requesting an appointment with HCI Medical Group. We received your request and our scheduling team will contact you within <strong>1 business day</strong> to confirm your appointment.</p>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f9fafb; border-left:4px solid #2d8bc9; margin:0 0 22px;">
+                <tr>
+                  <td style="padding:16px 18px;">
+                    <p style="font-size:15px; line-height:1.5; margin:0 0 8px;"><strong>Preferred Date:</strong> ${escapeHtml(data.preferredDate)}</p>
+                    <p style="font-size:15px; line-height:1.5; margin:0 0 8px;"><strong>Time Preference:</strong> ${escapeHtml(data.preferredTime)}</p>
+                    <p style="font-size:15px; line-height:1.5; margin:0;"><strong>Reason for Visit:</strong> ${escapeHtml(data.reasonForVisit)}</p>
+                  </td>
+                </tr>
+              </table>
+              <p style="font-size:16px; line-height:1.6; margin:0 0 14px;">Please note that this is a request, not a confirmed appointment. Our team will reach out to finalize the date and time.</p>
+              <p style="font-size:16px; line-height:1.6; margin:0 0 20px;">If your matter is urgent, please call us directly at <a href="tel:6267924185" style="color:#2d8bc9; font-weight:600;">(626) 792-4185</a> during office hours.</p>
+              <p style="font-size:16px; line-height:1.6; margin:0;">Warm regards,<br><strong style="color:#1e3a5f;">HCI Medical Group</strong></p>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding:18px 24px; background:#f3f4f6; border-top:1px solid #e5e7eb; color:#6b7280; font-size:13px; line-height:1.6;">
+              HCI Medical Group | 65 N. Madison Ave. #709, Pasadena, CA 91101<br>
+              (626) 792-4185 | <a href="https://hcimed.com" style="color:#2d8bc9;">hcimed.com</a>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>`;
 }
